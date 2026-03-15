@@ -35,7 +35,7 @@ const extractUserFromToken = (accessToken) => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
-        const storedUser = localStorage.getItem('user');
+        const storedUser = sessionStorage.getItem('user');
         return storedUser ? JSON.parse(storedUser) : null;
     });
     const [isInitializing, setIsInitializing] = useState(true);
@@ -43,36 +43,35 @@ export const AuthProvider = ({ children }) => {
     const refreshAccessToken = useCallback(async () => {
         try {
             const response = await authApi.refresh();
-            const accessToken = response.data.accessToken || response.data.access_token;
+            const accessToken = response.data?.accessToken || response.data?.access_token || response.data?.data?.accessToken;
             
             if (!accessToken) throw new Error('No access token returned');
             const newUser = extractUserFromToken(accessToken);
             if (newUser.user_role !== 'ADMIN') {
                 clearAccessToken();
                 setUser(null);
-                localStorage.removeItem('user');
+                sessionStorage.removeItem('user');
                 return false;
             }
 
             setAccessToken(accessToken);
             setUser(newUser);
-            localStorage.setItem('user', JSON.stringify(newUser));
+            sessionStorage.setItem('user', JSON.stringify(newUser));
             
             return true;
         } catch (error) {
-            if (error.response?.status === 401) {
-                clearAccessToken();
-                setUser(null);
-                localStorage.removeItem('user');
-                return false;
-            }
-            return true; 
+            clearAccessToken();
+            setUser(null);
+            sessionStorage.removeItem('user');
+            return false;
         }
     }, []);
 
     useEffect(() => {
         const initAuth = async () => {
-            await refreshAccessToken();
+            if (sessionStorage.getItem('user')) {
+                await refreshAccessToken();
+            }
             setIsInitializing(false);
         };
         initAuth();
@@ -80,7 +79,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const response = await authApi.login({ username: email, password });
-        const accessToken = response.data.accessToken || response.data.access_token;
+        const accessToken = response.data?.accessToken || response.data?.access_token || response.data?.data?.accessToken;
         
         const newUser = extractUserFromToken(accessToken);
         
@@ -90,7 +89,7 @@ export const AuthProvider = ({ children }) => {
 
         setAccessToken(accessToken);
         setUser(newUser);
-        localStorage.setItem('user', JSON.stringify(newUser));
+        sessionStorage.setItem('user', JSON.stringify(newUser));
         
         return newUser;
     };
@@ -102,7 +101,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setUser(null);
             clearAccessToken();
-            localStorage.removeItem('user');
+            sessionStorage.removeItem('user');
         }
     };
 

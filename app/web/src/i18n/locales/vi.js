@@ -59,6 +59,7 @@ export default {
     makeup_lips: "Trang điểm môi",
     makeup_eyes: "Trang điểm mắt",
     gift_sets: "Bộ Quà Tặng",
+    beauty_tools: "Dụng cụ làm đẹp",
 
     login: "Đăng Nhập",
     login_subtitle: "Đăng nhập hệ thống quản trị",

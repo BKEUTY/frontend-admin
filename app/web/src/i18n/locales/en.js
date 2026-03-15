@@ -59,6 +59,7 @@ export default {
     makeup_lips: "Lips Makeup",
     makeup_eyes: "Eyes Makeup",
     gift_sets: "Gift Sets",
+    beauty_tools: "Beauty Tools",
 
     login: "Login",
     login_subtitle: "Admin Panel Login",
