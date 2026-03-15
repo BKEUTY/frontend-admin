@@ -345,7 +345,7 @@ const ProductCreate = () => {
                                     {form.getFieldValue('name') || t('admin_placeholder_product_name')}
                                 </h1>
                                 <div className="detail-price" style={{ margin: '20px 0', fontSize: '1.6rem', fontWeight: 700, color: 'var(--color_main_title)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                                    {(currentVariant ? currentVariant.price : 0).toLocaleString("vi-VN")}đ
+                                    {(0).toLocaleString("vi-VN")}đ
                                     <span className="vat-tag" style={{ color: '#999', fontSize: '0.85rem', fontWeight: 400 }}>{t('vat_included')}</span>
                                 </div>
                                 <div className="actions" style={{ marginTop: 25 }}>
