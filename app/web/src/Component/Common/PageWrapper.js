@@ -1,8 +1,8 @@
 import React from 'react';
-import { Typography, Space, Card } from 'antd';
+import { Typography, Card } from 'antd';
 import './PageWrapper.css';
 
-const { Title, Text } = Typography;
+const {  } = Typography;
 
 const PageWrapper = ({
     title,

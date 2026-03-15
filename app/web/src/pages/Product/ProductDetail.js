@@ -8,13 +8,10 @@ import {
     StarFilled,
     CheckCircleFilled,
     HeartOutlined,
-    MessageOutlined,
-    ShoppingOutlined
+    MessageOutlined
 } from '@ant-design/icons';
-import { CButton } from '../../Component/Common';
 import best_selling_image from "../../Assets/Images/Products/product_placeholder.svg";
 import Pagination from "../../Component/Common/Pagination";
-import ProductCard from "../../Component/Common/ProductCard";
 import Skeleton from "../../Component/Common/Skeleton";
 import productApi from '../../api/productApi';
 import { getImageUrl } from '../../api/axiosClient';
@@ -23,7 +20,6 @@ import NotFound from '../../Component/ErrorPages/NotFound';
 export default function ProductDetail({ previewProduct }) {
     const { id } = useParams();
     const { t, language } = useLanguage();
-    const notify = useNotification();
 
     const categoryName = t('admin_home_products_title');
     const categoryLink = '/admin/products';
@@ -210,8 +206,6 @@ export default function ProductDetail({ previewProduct }) {
         { id: 'ingredients', label: t('ingredients') },
         { id: 'reviews', label: `${t('reviews')} (${productData.reviews_count})` },
     ];
-    
-    const isOutOfStock = currentVariant ? currentVariant.stockQuantity <= 0 : false;
 
     return (
         <div className="product-detail-page">

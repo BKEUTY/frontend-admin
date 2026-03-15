@@ -1,4 +1,4 @@
-export default {
+const vi = {
     home: "Trang Chủ",
     search: "Tìm Kiếm",
     all: "Tất Cả",
@@ -293,3 +293,5 @@ export default {
     brand_story: "Hành trình mang đến vẻ đẹp thuần khiết",
     brand_desc: "Bkeuty tự hào là người bạn đồng hành tin cậy, thấu hiểu và nâng tầm làn da Việt."
 };
+
+export default vi;

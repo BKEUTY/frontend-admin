@@ -6,9 +6,7 @@ import {
     TransactionOutlined,
     ShoppingOutlined,
     UserOutlined,
-    ScheduleOutlined,
-    ArrowUpOutlined,
-    ArrowDownOutlined
+    ScheduleOutlined
 } from '@ant-design/icons';
 import {
     AreaChart,

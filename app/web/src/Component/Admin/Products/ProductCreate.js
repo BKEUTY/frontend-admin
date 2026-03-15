@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Steps, Form, Input, Button, Select, Upload, notification,
-    InputNumber, Row, Col, Typography
+    InputNumber, Row, Col
 } from 'antd';
 import {
     PlusOutlined, DeleteOutlined,
@@ -36,8 +36,6 @@ const ProductCreate = () => {
     ]);
 
     const [variants, setVariants] = useState([]);
-    const [selectedOptions, setSelectedOptions] = useState({});
-    const [currentVariant, setCurrentVariant] = useState(null);
 
     const imageField = Form.useWatch('image', form);
     const previewImage = imageField?.file?.originFileObj ? URL.createObjectURL(imageField.file.originFileObj) : product_placeholder;
@@ -57,7 +55,7 @@ const ProductCreate = () => {
             }
         };
         fetchCategories();
-    }, []);
+    }, [t]);
 
     const handleCreateProduct = async (values) => {
         setLoading(true);

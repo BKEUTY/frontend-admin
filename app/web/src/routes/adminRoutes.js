@@ -1,5 +1,4 @@
 import React, { lazy } from 'react';
-import { Navigate } from "react-router-dom";
 
 const Dashboard = lazy(() => import('../Component/Admin/Dashboard/Dashboard'));
 const ProductList = lazy(() => import('../Component/Admin/Products/ProductList'));

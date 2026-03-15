@@ -5,7 +5,6 @@ import placeHolderImg from '../../Assets/Images/Products/product_placeholder.svg
 import { getImageUrl } from '../../api/axiosClient';
 import './ProductCard.css';
 
-const { Meta } = Card;
 const { Text, Title } = Typography;
 
 const ProductCard = ({ product, t, language, onClickData }) => {

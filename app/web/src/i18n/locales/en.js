@@ -1,4 +1,4 @@
-export default {
+const en = {
     home: "Home",
     search: "Search",
     all: "All",
@@ -293,3 +293,5 @@ export default {
     brand_story: "The journey to pure beauty",
     brand_desc: "Bkeuty is proud to be a trusted companion, understanding and elevating Vietnamese skin."
 };
+
+export default en;

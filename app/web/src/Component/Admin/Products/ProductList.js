@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Table, Button, notification, Typography, Tooltip, Tag, Space, Modal } from 'antd';
 import {
     PlusOutlined, SyncOutlined,
-    FormOutlined, DeleteOutlined,
-    ShoppingOutlined, EyeOutlined
+    FormOutlined, DeleteOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
@@ -21,7 +20,7 @@ const ProductList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
 
-    const { user, isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { pagination, setTotal, setCurrent } = usePagination();
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -45,7 +44,7 @@ const ProductList = () => {
         if (isAuthenticated) {
             fetchProducts(pagination.current, pagination.pageSize);
         }
-    }, [fetchProducts, pagination.current, pagination.pageSize, isAuthenticated]);
+    }, [fetchProducts, pagination, isAuthenticated]);
 
     const handleTableChange = (newPagination) => {
         fetchProducts(newPagination.current, newPagination.pageSize);
@@ -150,7 +149,6 @@ const ProductList = () => {
             fixed: 'right',
             responsive: ['md'],
             render: (_, record) => {
-                const id = record.productId || record.id;
                 return (
                     <Space size="middle">
                         <Tooltip title={t('edit')}>

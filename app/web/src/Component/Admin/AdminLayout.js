@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Avatar, Dropdown, Modal, Input } from 'antd';
+import { Layout, Avatar, Dropdown, Modal, Input } from 'antd';
 import {
     ControlOutlined,
     UsergroupAddOutlined,
@@ -9,9 +9,7 @@ import {
     ScheduleOutlined,
     PieChartOutlined,
     LogoutOutlined,
-    GlobalOutlined,
     HomeOutlined,
-    CloseOutlined,
     ArrowRightOutlined,
     SearchOutlined
 } from '@ant-design/icons';
@@ -23,16 +21,15 @@ import LanguageToggle from '../Common/LanguageToggle';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import './Admin.css';
 
-const { Header, Sider, Content } = Layout;
+const { Header, Content } = Layout;
 
 const AdminLayout = () => {
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuth();
-    const { t, language, changeLanguage } = useLanguage();
+    const { t } = useLanguage();
 
     React.useEffect(() => {
         const handleKeyDown = (e) => {
@@ -48,8 +45,6 @@ const AdminLayout = () => {
 
     React.useEffect(() => {
         const handleResize = () => {
-            const mobile = window.innerWidth <= 768;
-            setIsMobile(mobile);
         };
 
         window.addEventListener('resize', handleResize);
