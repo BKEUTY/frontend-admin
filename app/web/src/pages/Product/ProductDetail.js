@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { useNotification } from '../../Context/NotificationContext';
 
 import './ProductDetail.css';
 import {

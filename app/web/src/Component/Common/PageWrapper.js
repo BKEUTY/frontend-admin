@@ -2,8 +2,6 @@ import React from 'react';
 import { Typography, Card } from 'antd';
 import './PageWrapper.css';
 
-const {  } = Typography;
-
 const PageWrapper = ({
     title,
     subtitle,
