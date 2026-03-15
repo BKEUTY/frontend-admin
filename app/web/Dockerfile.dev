@@ -1,0 +1,26 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV WATCHPACK_POLLING=true
+ENV CHOKIDAR_USEPOLLING=true
+
+EXPOSE 3100
+
+# Start application in development mode
+# Note: port 3100 will be handled by compose mapping or inside the app.
+# Create React App usually defaults to 3000, we might need to specify PORT
+ENV PORT=3100
+
+CMD ["npm", "start"]

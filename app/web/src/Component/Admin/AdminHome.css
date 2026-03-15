@@ -1,0 +1,117 @@
+.admin-home-grid {
+    padding: 20px 0;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-home-header {
+    margin-bottom: 50px;
+    text-align: left;
+}
+
+.admin-home-header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--admin-text-main);
+    margin-bottom: 8px;
+    letter-spacing: -0.03em;
+}
+
+.admin-home-header p {
+    font-size: 18px;
+    color: var(--admin-text-sub);
+}
+
+.app-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-card:hover {
+    border-color: var(--admin-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.app-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+    background: #f8fafc;
+    color: #475569;
+    transition: all 0.2s ease;
+}
+
+.app-card:hover .app-icon-wrapper {
+    background: var(--admin-primary);
+    color: white;
+}
+
+.app-info h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--admin-text-main);
+    margin-bottom: 8px;
+}
+
+.app-info p {
+    font-size: 14px;
+    color: var(--admin-text-sub);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.app-arrow {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    font-size: 20px;
+    color: var(--admin-primary);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s;
+}
+
+.app-card:hover .app-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+    .admin-home-header h1 {
+        font-size: 28px;
+    }
+
+    .admin-home-header p {
+        font-size: 16px;
+    }
+
+    .app-card {
+        padding: 24px;
+    }
+}

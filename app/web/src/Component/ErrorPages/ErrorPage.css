@@ -1,0 +1,118 @@
+.error-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+    font-family: var(--inter_font), sans-serif;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: 900;
+    color: var(--color_main_title);
+    margin: 0;
+    line-height: 1;
+    opacity: 0.1;
+    position: absolute;
+    z-index: 0;
+    transform: translateY(-50px);
+}
+
+.error-content {
+    position: relative;
+    z-index: 1;
+    background: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    max-width: 500px;
+    width: 100%;
+}
+
+.error-icon {
+    font-size: 60px;
+    color: var(--color_main_title);
+    margin: 0 auto 20px auto;
+    display: block;
+}
+
+.error-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.error-desc {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.error-btn {
+    display: inline-block;
+    background-color: var(--color_main_title);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(163, 2, 81, 0.3);
+}
+
+.error-btn:hover {
+    background-color: #880e4f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(163, 2, 81, 0.4);
+    color: white;
+}
+
+.error-page-500 .error-code {
+    opacity: 0.05;
+}
+
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 80px;
+    }
+
+    .error-content {
+        padding: 40px 20px;
+        width: 90%;
+    }
+
+    .error-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-code {
+        font-size: 60px;
+        transform: translateY(-30px);
+    }
+
+    .error-content {
+        padding: 30px 20px;
+        border-radius: 15px;
+    }
+
+    .error-icon {
+        font-size: 50px;
+        margin-bottom: 15px;
+    }
+
+    .error-title {
+        font-size: 20px;
+    }
+
+    .error-desc {
+        font-size: 14px;
+    }
+}

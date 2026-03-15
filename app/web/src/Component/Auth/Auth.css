@@ -1,0 +1,411 @@
+@import url('https://fonts.googleapis.com/css2?family=Oleo+Script:wght@700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+.auth-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #fff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.auth-lang-switch {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 100;
+}
+
+.auth-lang-switch .ant-btn {
+    font-weight: 600;
+    color: #636e72;
+}
+
+.auth-lang-switch .ant-btn:hover {
+    color: var(--color_main_title);
+    background-color: rgba(163, 2, 81, 0.05);
+}
+
+.auth-mobile-logo {
+    display: none;
+    text-align: center;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.auth-mobile-logo h1 {
+    font-family: 'Oleo Script', cursive;
+    font-size: 3.5rem;
+    color: #c2185b;
+    margin: 0;
+    line-height: 1.2;
+    background: linear-gradient(to right, #c2185b, #e91e63);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-mobile-logo p {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 1rem;
+    color: #636e72;
+    margin: 0;
+}
+
+.auth-image-side {
+    flex: 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    display: none;
+    overflow: hidden;
+}
+
+.auth-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+            rgba(233, 30, 99, 0.85) 0%,
+            rgba(194, 24, 91, 0.75) 50%,
+            rgba(233, 30, 99, 0.85) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.auth-brand-section {
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.auth-brand-logo {
+    font-size: 5rem;
+    color: #ffffff;
+    font-family: 'Oleo Script', cursive;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    letter-spacing: 2px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+.auth-brand-tagline {
+    font-size: 1.6rem;
+    color: rgba(255, 255, 255, 1);
+    font-weight: 500;
+    margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+@media (min-width: 992px) {
+    .auth-image-side {
+        display: block;
+        width: 50%;
+    }
+
+    .auth-form-side {
+        width: 50%;
+    }
+}
+
+.auth-form-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf9f6 0%, #ffffff 100%);
+    position: relative;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.auth-form-side::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(233, 30, 99, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.auth-form-container {
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 1;
+    animation: slideInRight 0.6s ease-out;
+    margin-top: 20px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-title {
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 8px !important;
+    color: #2c3e50 !important;
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+    font-size: 0.95rem;
+    color: #636e72;
+    font-weight: 400;
+}
+
+.admin-badge {
+    display: inline-block;
+    background: #2c3e50;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-container.admin-mode .auth-image-overlay {
+    background: linear-gradient(135deg,
+            rgba(44, 62, 80, 0.9) 0%,
+            rgba(52, 73, 94, 0.8) 50%,
+            rgba(44, 62, 80, 0.9) 100%);
+}
+
+.auth-container.admin-mode .auth-submit-btn {
+    background-color: #2c3e50 !important;
+    border-color: #2c3e50 !important;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+}
+
+.auth-container.admin-mode .auth-submit-btn:hover {
+    background-color: #34495e !important;
+    border-color: #34495e !important;
+}
+
+.auth-container.admin-mode .auth-link {
+    color: #2c3e50 !important;
+}
+
+.auth-container.admin-mode .auth-link:hover {
+    color: #34495e !important;
+}
+
+.auth-form {
+    width: 100%;
+}
+
+.auth-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.auth-submit-btn {
+    height: 50px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(233, 30, 99, 0.3);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.95rem;
+    color: #555;
+    padding-bottom: 20px;
+}
+
+.auth-link {
+    color: var(--color_main_title) !important;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-link:hover {
+    color: #d81b60 !important;
+    text-decoration: underline;
+}
+
+.auth-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #636e72;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.auth-back-link:hover {
+    color: var(--color_main_title);
+}
+
+.auth-back-link .anticon {
+    font-size: 14px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 991px) {
+    .auth-container {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+    }
+
+    .auth-image-side {
+        display: none;
+    }
+
+    .auth-form-side {
+        padding: 60px 24px 24px;
+        min-height: 100vh;
+        height: auto;
+        overflow-y: visible;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-mobile-logo {
+        display: block;
+        margin-top: 20px;
+    }
+
+    .auth-lang-switch {
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .auth-form-container {
+        margin-top: 10px;
+    }
+
+    .auth-title {
+        font-size: 1.6rem !important;
+    }
+
+    .auth-options {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-form-side {
+        padding: 40px 16px 20px;
+        min-height: 100dvh;
+        justify-content: flex-start;
+    }
+
+    .auth-form-container {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .auth-mobile-logo h1 {
+        font-size: 2.8rem;
+    }
+
+    .auth-options {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.auth-form .ant-input:focus,
+.auth-form .ant-input-focused,
+.auth-form .ant-input-password:focus,
+.auth-form .ant-input-password-focused {
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1) !important;
+    border-color: var(--color_main_title) !important;
+}
+
+.auth-form .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.auth-form .ant-checkbox:hover .ant-checkbox-inner,
+.auth-form .ant-checkbox-input:focus+.ant-checkbox-inner {
+    border-color: #a30251 !important;
+}
+
+.auth-form .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--color_main_title) !important;
+    border-color: var(--color_main_title) !important;
+}
+
+.auth-submit-btn.ant-btn-loading {
+    opacity: 0.8;
+}
+
+.auth-agreement {
+    text-align: left !important;
+    margin-bottom: 24px;
+}
+
+.auth-agreement .ant-form-item-control-input-content {
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+@media print {
+
+    .auth-image-side,
+    .auth-lang-switch {
+        display: none !important;
+    }
+}
