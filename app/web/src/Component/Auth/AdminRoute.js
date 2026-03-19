@@ -10,7 +10,7 @@ const AdminRoute = ({ children }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    if (user_role !== 'ADMIN') {
+    if (!user_role || user_role.toUpperCase() !== 'ADMIN') {
         return <Navigate to="/login" replace />;
     }
 

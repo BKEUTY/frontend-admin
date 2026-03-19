@@ -471,7 +471,6 @@
 .admin-layout-container .admin-select-large.ant-select-focused .ant-select-selector {
     border-color: var(--admin-primary);
     box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.08);
-    /* Improved brand glow */
     outline: none;
 }
 

@@ -31,6 +31,14 @@ class AdminApi extends BaseApi {
         return this.client.get(`/api/admin/product?page=${page}&size=${size}`, config);
     }
 
+    getAllOrders(page = 0, size = 10, config = {}) {
+        return this.client.get(`/api/admin/order?page=${page}&size=${size}`, config);
+    }
+
+    getAllCategories(config = {}) {
+        return this.client.get('/api/admin/category', config);
+    }
+
     createProduct(data, config = {}) {
         return this.client.post('/api/admin/product', data, config);
     }

@@ -10,6 +10,7 @@ import OrderDetailScreen from '../Account/OrderDetailScreen';
 import { COLORS } from '../constants/Theme';
 import { useLanguage } from '../i18n/LanguageContext';
 import AdminDashboard from '../Admin/DashboardScreen';
+import AdminProductList from '../Admin/ProductListScreen';
 import AdminProductCreate from '../Admin/ProductCreateScreen';
 
 import NotFoundScreen from '../Component/ErrorPages/NotFoundScreen';
@@ -44,7 +45,7 @@ function TabNavigator() {
             })}
         >
             <Tab.Screen name="AdminDashboard" component={AdminDashboard} options={{ title: t('dashboard') }} />
-            <Tab.Screen name="AdminProducts" component={AdminProductCreate} options={{ title: t('products') }} />
+            <Tab.Screen name="AdminProducts" component={AdminProductList} options={{ title: t('products') }} />
             <Tab.Screen name="Account" component={AccountScreen} options={{ title: t('account') }} />
         </Tab.Navigator >
     );

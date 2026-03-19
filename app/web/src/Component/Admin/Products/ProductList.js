@@ -9,51 +9,81 @@ import adminApi from '../../../api/adminApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAuth } from '../../../Context/AuthContext';
-import usePagination from '../../../hooks/usePagination';
 import { EmptyState, PageWrapper, CButton } from '../../Common';
-import './ProductList.css';
+import { generateSlug } from '../../../utils/helpers';
 import productPlaceholder from '../../../Assets/Images/Products/product_placeholder.svg';
+import './ProductList.css';
 
 const { Text } = Typography;
 
 const ProductList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
-
     const { isAuthenticated } = useAuth();
-    const { pagination, setTotal, setCurrent } = usePagination();
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
 
-    const fetchProducts = useCallback(async (page = 1, size = 10) => {
+    const fetchProducts = useCallback(async () => {
         if (!isAuthenticated) return;
         setLoading(true);
         try {
-            const response = await adminApi.getAllProducts(page - 1, size);
-            setData(response.data.content || []);
-            setTotal(response.data.totalElements || 0);
-            setCurrent(page, size);
+            const response = await adminApi.getAllProducts(0, 1000);
+            const parentProducts = response.data.content || [];
+
+            const variantsPromises = parentProducts.map(p => adminApi.getVariants(p.id || p.productId).catch(() => ({ data: [] })));
+            const variantsResponses = await Promise.all(variantsPromises);
+
+            const flattenedVariants = [];
+            parentProducts.forEach((parent, index) => {
+                const pid = parent.id || parent.productId;
+                const variants = variantsResponses[index].data || [];
+                
+                if (variants.length > 0) {
+                    variants.forEach(v => {
+                        const displayName = v.productVariantName || parent.name;
+                        flattenedVariants.push({
+                            ...v,
+                            id: generateSlug(displayName, pid, v.id),
+                            originalVariantId: v.id,
+                            parentId: pid,
+                            productVariantName: displayName,
+                            categories: parent.categories
+                        });
+                    });
+                } else {
+                    flattenedVariants.push({
+                        id: generateSlug(parent.name, pid, 0),
+                        originalVariantId: 0,
+                        parentId: pid,
+                        productVariantName: parent.name,
+                        productImageUrl: parent.image,
+                        price: parent.minPrice !== undefined ? parent.minPrice : (parent.price || 0),
+                        stockQuantity: parent.stockQuantity || parent.totalStock || 0,
+                        categories: parent.categories,
+                        isParentOnly: true
+                    });
+                }
+            });
+
+            setData(flattenedVariants);
         } catch (error) {
-            console.error('Failed to fetch products', error);
+            notification.error({
+                message: t('error'),
+                description: t('api_error_fetch')
+            });
         } finally {
             setLoading(false);
         }
-    }, [setTotal, setCurrent, isAuthenticated]);
+    }, [isAuthenticated, t]);
 
     useEffect(() => {
         if (isAuthenticated) {
-            fetchProducts(pagination.current, pagination.pageSize);
+            fetchProducts();
         }
-    }, [fetchProducts, pagination, isAuthenticated]);
-
-    const handleTableChange = (newPagination) => {
-        fetchProducts(newPagination.current, newPagination.pageSize);
-    };
-
+    }, [fetchProducts, isAuthenticated]);
 
     const handlePreview = (record) => {
-        const id = record.productId || record.id;
-        navigate(`/admin/products/${id}`);
+        navigate(`/admin/products/${record.id}`);
     };
 
     const touchTimer = useRef(null);
@@ -67,7 +97,7 @@ const ProductList = () => {
             isLongPressing.current = true;
             setSelectedRecord(record);
             setActionModalVisible(true);
-        }, 500); // 500ms long press
+        }, 500);
     };
 
     const handleTouchEnd = () => {
@@ -82,36 +112,43 @@ const ProductList = () => {
         }
     };
 
-    const handleEdit = (record) => {
-        notification.info({ message: 'Info', description: 'Coming soon', key: 'coming_soon' });
+    const handleEdit = () => {
+        notification.info({ message: 'Info', description: 'Coming soon' });
         setActionModalVisible(false);
     };
 
-    const handleDelete = (record) => {
-        notification.info({ message: 'Info', description: 'Coming soon', key: 'coming_soon' });
+    const handleDelete = () => {
+        notification.info({ message: 'Info', description: 'Coming soon' });
         setActionModalVisible(false);
     };
+
+    const categoryFilters = Array.from(
+        new Set(data.flatMap(item => item.categories?.map(c => typeof c === 'object' ? c.categoryName : c) || []))
+    ).map(cat => ({ text: cat, value: cat }));
 
     const columns = [
         {
-            title: 'ID',
-            dataIndex: 'productId',
-            key: 'id',
-            width: 80,
+            title: 'Variant ID',
+            key: 'originalVariantId',
+            width: 100,
             align: 'center',
-            render: (id) => <span className="admin-table-id">#{id}</span>
+            render: (_, record) => (
+                <span className="admin-table-id">
+                    #{record.originalVariantId || record.parentId}
+                </span>
+            )
         },
         {
             title: t('admin_product_image'),
-            dataIndex: 'image',
+            dataIndex: 'productImageUrl',
             key: 'image',
-            width: 120,
+            width: 100,
             align: 'center',
             render: (src) => (
                 <div className="admin-table-image-wrapper">
                     <img 
                         src={src ? getImageUrl(src) : productPlaceholder} 
-                        alt="p" 
+                        alt="product" 
                         className="admin-table-image" 
                         onError={(e) => { e.target.src = productPlaceholder }}
                     />
@@ -120,9 +157,9 @@ const ProductList = () => {
         },
         {
             title: t('admin_product_name'),
-            dataIndex: 'name',
+            dataIndex: 'productVariantName',
             key: 'name',
-            width: 280,
+            width: 300,
             render: (text) => <span className="admin-table-product-name">{text}</span>
         },
         {
@@ -131,15 +168,37 @@ const ProductList = () => {
             key: 'categories',
             width: 200,
             responsive: ['md'],
+            filters: categoryFilters,
+            onFilter: (value, record) => {
+                const cats = record.categories?.map(c => typeof c === 'object' ? c.categoryName : c) || [];
+                return cats.includes(value);
+            },
             render: (cats) => (
                 <Space size={[0, 4]} wrap>
                     {Array.isArray(cats) && cats.map((c, i) => (
                         <Tag key={i} className="admin-table-tag">
-                            {c}
+                            {typeof c === 'object' ? c.categoryName : c}
                         </Tag>
                     ))}
                 </Space>
             )
+        },
+        {
+            title: t('admin_label_price'),
+            dataIndex: 'price',
+            key: 'price',
+            width: 120,
+            sorter: (a, b) => (a.price || 0) - (b.price || 0),
+            render: (price) => <Text strong>{price?.toLocaleString("vi-VN")}đ</Text>
+        },
+        {
+            title: t('admin_label_stock'),
+            dataIndex: 'stockQuantity',
+            key: 'stock',
+            width: 100,
+            align: 'center',
+            sorter: (a, b) => (a.stockQuantity || 0) - (b.stockQuantity || 0),
+            render: (stock) => <Tag color={stock > 0 ? 'green' : 'red'}>{stock}</Tag>
         },
         {
             title: t('admin_product_action'),
@@ -156,7 +215,7 @@ const ProductList = () => {
                                 type="text"
                                 className="admin-action-btn edit-btn"
                                 icon={<FormOutlined />}
-                                onClick={() => notification.info({ message: 'Info', description: 'Coming soon', key: 'coming_soon' })}
+                                onClick={(e) => { e.stopPropagation(); setSelectedRecord(record); handleEdit(); }}
                             />
                         </Tooltip>
                         <Tooltip title={t('delete')}>
@@ -165,7 +224,7 @@ const ProductList = () => {
                                 className="admin-action-btn delete-btn"
                                 danger
                                 icon={<DeleteOutlined />}
-                                onClick={() => notification.info({ message: 'Info', description: 'Coming soon', key: 'coming_soon' })}
+                                onClick={(e) => { e.stopPropagation(); setSelectedRecord(record); handleDelete(); }}
                             />
                         </Tooltip>
                     </Space>
@@ -180,15 +239,15 @@ const ProductList = () => {
                 title={t('admin_product_list')}
                 subtitle={
                     <>
-                        {t('available')} • <Text strong className="admin-subtitle-count">{pagination.total}</Text> {t('items')}
+                        {t('available')} • <Text strong className="admin-subtitle-count">{data.length}</Text> {t('items')}
                     </>
                 }
                 extra={
-                    <Space size="large" wrap>
+                    <Space size="large" wrap className="admin-space-btn">
                         <CButton
                             type="secondary"
                             icon={<SyncOutlined />}
-                            onClick={() => fetchProducts(pagination.current, pagination.pageSize)}
+                            onClick={fetchProducts}
                             loading={loading}
                             className="admin-btn-responsive"
                         >
@@ -208,24 +267,19 @@ const ProductList = () => {
                 <Table
                     columns={columns}
                     dataSource={data}
-                    rowKey="productId"
+                    rowKey="id"
                     className="beauty-table"
                     pagination={{
-                        ...pagination,
                         showTotal: (total) => `${t('total')} ${total} ${t('items')}`,
                         showSizeChanger: true,
                         pageSizeOptions: ['10', '20', '50'],
+                        defaultPageSize: 10,
                         locale: { items_per_page: `/ ${t('page')}` }
                     }}
                     loading={loading}
-                    onChange={handleTableChange}
                     scroll={{ x: 'max-content' }}
                     locale={{
-                        emptyText: (
-                            <EmptyState
-                                description={t('no_products_found')}
-                            />
-                        )
+                        emptyText: <EmptyState description={t('no_products_found')} />
                     }}
                     onRow={(record) => ({
                         onClick: () => handleClickRow(record),
@@ -233,7 +287,7 @@ const ProductList = () => {
                         onTouchEnd: handleTouchEnd,
                         onTouchMove: handleTouchEnd,
                         onTouchCancel: handleTouchEnd,
-                        style: { cursor: 'pointer' }
+                        className: "admin-table-row-pointer"
                     })}
                 />
             </PageWrapper>
@@ -242,15 +296,15 @@ const ProductList = () => {
                 open={actionModalVisible}
                 onCancel={() => setActionModalVisible(false)}
                 footer={null}
-                title={selectedRecord ? `#${selectedRecord.productId || selectedRecord.id} - ${selectedRecord.name}` : t('admin_product_action')}
+                title={selectedRecord ? `#${selectedRecord.originalVariantId || selectedRecord.parentId} - ${selectedRecord.productVariantName}` : t('admin_product_action')}
                 centered
                 width={320}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: 20 }}>
-                    <Button type="primary" size="large" icon={<FormOutlined />} onClick={() => handleEdit(selectedRecord)}>
+                <div className="admin-modal-action-wrap">
+                    <Button type="primary" size="large" icon={<FormOutlined />} onClick={handleEdit}>
                         {t('edit')}
                     </Button>
-                    <Button danger size="large" icon={<DeleteOutlined />} onClick={() => handleDelete(selectedRecord)}>
+                    <Button danger size="large" icon={<DeleteOutlined />} onClick={handleDelete}>
                         {t('delete')}
                     </Button>
                 </div>

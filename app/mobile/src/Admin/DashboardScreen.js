@@ -1,18 +1,64 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform, useWindowDimensions, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform, useWindowDimensions, Modal, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { COLORS } from '../../constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import adminApi from '../../api/adminApi';
+import { useFocusEffect } from '@react-navigation/native';
 
-const DashboardScreen = () => {
+const DashboardScreen = ({ navigation }) => {
     const { t } = useLanguage();
     const { width } = useWindowDimensions();
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [statsData, setStatsData] = useState({
+        products: 0,
+        users: 0,
+        orders: 0,
+        revenue: '0 đ'
+    });
+    const [topProducts, setTopProducts] = useState([]);
+
+    const fetchStats = async () => {
+        setIsLoading(true);
+        try {
+            const [stats, prodRes] = await Promise.all([
+                adminApi.getStats(),
+                adminApi.getAllProducts(0, 5)
+            ]);
+            
+            setStatsData({
+                ...stats,
+                revenue: '40,689,000 đ' // Still mock revenue as backend doesn't support it yet
+            });
+
+            if (prodRes.data && prodRes.data.content) {
+                setTopProducts(prodRes.data.content.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    category: p.categoryName || 'Common',
+                    price: p.variants && p.variants.length > 0 ? `${p.variants[0].price.toLocaleString()} đ` : '0 đ',
+                    sold: Math.floor(Math.random() * 500) + 100 // Mock sold count for now
+                })));
+            }
+        } catch (error) {
+            console.error("Dashboard fetch error", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchStats();
+        }, [])
+    );
 
     const stats = [
         {
             title: t('admin_dashboard_sales'),
-            value: '40,689,000 đ',
+            value: statsData.revenue,
             icon: 'currency-usd',
             iconLib: MaterialCommunityIcons,
             trend: 8.5,
@@ -22,7 +68,7 @@ const DashboardScreen = () => {
         },
         {
             title: t('admin_dashboard_orders'),
-            value: '1,250',
+            value: statsData.orders.toString(),
             icon: 'shopping-bag',
             iconLib: FontAwesome5,
             trend: 5.2,
@@ -31,9 +77,9 @@ const DashboardScreen = () => {
             bgLight: '#dbeafe'
         },
         {
-            title: t('admin_dashboard_appointments'),
-            value: '600',
-            icon: 'calendar-check',
+            title: t('admin_dashboard_appointments') || 'Users',
+            value: statsData.users.toString(),
+            icon: 'account-group',
             iconLib: MaterialCommunityIcons,
             trend: 12,
             trendType: 'up',
@@ -41,23 +87,15 @@ const DashboardScreen = () => {
             bgLight: '#d1fae5'
         },
         {
-            title: t('admin_dashboard_users'),
-            value: '128',
-            icon: 'account-group',
+            title: t('admin_dashboard_products') || 'Products',
+            value: statsData.products.toString(),
+            icon: 'package-variant-closed',
             iconLib: MaterialCommunityIcons,
-            trend: 2.4,
-            trendType: 'down',
+            trend: 3.4,
+            trendType: 'up',
             colors: ['#d97706', '#f59e0b'],
             bgLight: '#fef3c7'
         }
-    ];
-
-    const products = [
-        { id: '1', name: 'Anti-Aging Cream', category: 'Skincare', price: '1,200,000 đ', sold: 342 },
-        { id: '2', name: 'Matte Lipstick', category: 'Makeup', price: '450,000 đ', sold: 215 },
-        { id: '3', name: 'Vitamin C Serum', category: 'Skincare', price: '890,000 đ', sold: 189 },
-        { id: '4', name: 'Rose Water Toner', category: 'Toner', price: '320,000 đ', sold: 156 },
-        { id: '5', name: 'Sunscreen SPF 50', category: 'Sunscreen', price: '550,000 đ', sold: 120 },
     ];
 
     const renderStatCard = (item, index) => {
@@ -161,15 +199,19 @@ const DashboardScreen = () => {
 
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>{t('admin_top_products')}</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('AdminProducts')}>
                         <Text style={styles.seeAllText}>{t('view_all')}</Text>
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.tableCard}>
-                    {products.length > 0 ? (
+                    {isLoading ? (
+                        <View style={{ padding: 40 }}>
+                             <ActivityIndicator size="small" color={COLORS.mainTitle} />
+                        </View>
+                    ) : topProducts.length > 0 ? (
                         <FlatList
-                            data={products}
+                            data={topProducts}
                             renderItem={renderProductItem}
                             keyExtractor={item => item.id}
                             scrollEnabled={false}

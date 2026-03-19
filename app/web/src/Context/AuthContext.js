@@ -1,6 +1,13 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import authApi from '../api/authApi';
-import { setAccessToken, clearAccessToken, getAccessToken } from '../api/tokenStorage';
+import { 
+    setAccessToken, 
+    clearAccessToken, 
+    getAccessToken, 
+    getUserSession, 
+    setUserSession, 
+    clearUserSession 
+} from '../api/tokenStorage';
 
 const AuthContext = createContext();
 
@@ -34,10 +41,7 @@ const extractUserFromToken = (accessToken) => {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => {
-        const storedUser = sessionStorage.getItem('user');
-        return storedUser ? JSON.parse(storedUser) : null;
-    });
+    const [user, setUser] = useState(() => getUserSession());
     const [isInitializing, setIsInitializing] = useState(true);
 
     const refreshAccessToken = useCallback(async () => {
@@ -46,30 +50,34 @@ export const AuthProvider = ({ children }) => {
             const accessToken = response.data?.accessToken || response.data?.access_token || response.data?.data?.accessToken;
             
             if (!accessToken) throw new Error('No access token returned');
+            
             const newUser = extractUserFromToken(accessToken);
             if (newUser.user_role !== 'ADMIN') {
                 clearAccessToken();
+                clearUserSession();
                 setUser(null);
-                sessionStorage.removeItem('user');
                 return false;
             }
 
             setAccessToken(accessToken);
+            setUserSession(newUser);
             setUser(newUser);
-            sessionStorage.setItem('user', JSON.stringify(newUser));
             
             return true;
         } catch (error) {
-            clearAccessToken();
-            setUser(null);
-            sessionStorage.removeItem('user');
-            return false;
+            if (error.response?.status === 401 || error.response?.status === 400) {
+                clearAccessToken();
+                clearUserSession();
+                setUser(null);
+                return false;
+            }
+            return true; 
         }
     }, []);
 
     useEffect(() => {
         const initAuth = async () => {
-            if (sessionStorage.getItem('user')) {
+            if (getUserSession() || getAccessToken()) {
                 await refreshAccessToken();
             }
             setIsInitializing(false);
@@ -88,8 +96,8 @@ export const AuthProvider = ({ children }) => {
         }
 
         setAccessToken(accessToken);
+        setUserSession(newUser);
         setUser(newUser);
-        sessionStorage.setItem('user', JSON.stringify(newUser));
         
         return newUser;
     };
@@ -101,7 +109,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setUser(null);
             clearAccessToken();
-            sessionStorage.removeItem('user');
+            clearUserSession();
         }
     };
 

@@ -1,6 +1,6 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Alert,
     Image,
@@ -9,14 +9,13 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Modal
 } from 'react-native';
 import { CButton, CInput } from '../../Component/Common';
 import adminApi from '../../api/adminApi';
 import { COLORS } from '../../constants/Theme';
 import { useLanguage } from '../../i18n/LanguageContext';
-
-
 
 const ProductCreateScreen = ({ navigation }) => {
     const { t } = useLanguage();
@@ -24,7 +23,9 @@ const ProductCreateScreen = ({ navigation }) => {
     const [isPreview, setIsPreview] = useState(false);
 
     const [name, setName] = useState('');
-    const [category, setCategory] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [categoryModalVisible, setCategoryModalVisible] = useState(false);
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
 
@@ -35,6 +36,21 @@ const ProductCreateScreen = ({ navigation }) => {
     const [activeOptionIndex, setActiveOptionIndex] = useState(null);
 
     const [variants, setVariants] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const selectedCategoryName = categories.find(c => c.id === selectedCategoryId)?.categoryName || t('admin_placeholder_categories');
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await adminApi.getAllCategories();
+                if (res.data) setCategories(res.data);
+            } catch (err) {
+                console.error("Fetch categories error:", err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -49,12 +65,14 @@ const ProductCreateScreen = ({ navigation }) => {
         }
     };
 
-    const [loading, setLoading] = useState(false);
-
     const handleNext = async () => {
         if (currentStep === 0) {
             if (!name) {
                 Alert.alert(t('error'), t('admin_error_name_required'));
+                return;
+            }
+            if (!selectedCategoryId) {
+                Alert.alert(t('error'), t('admin_error_category_required'));
                 return;
             }
             setCurrentStep(1);
@@ -80,20 +98,17 @@ const ProductCreateScreen = ({ navigation }) => {
     const saveProduct = async () => {
         setLoading(true);
         try {
-
             const productRes = await adminApi.createProduct({
                 name,
-                categoryName: category,
+                productCategories: selectedCategoryId ? [selectedCategoryId] : [],
                 description,
                 status: 'ACTIVE'
             });
             const productId = productRes.data.id;
 
-
             if (image) {
                 await adminApi.uploadProductImage(image, productId);
             }
-
 
             const validOptions = optionTypes.filter(o => o.name && o.values.length > 0);
             for (const opt of validOptions) {
@@ -104,10 +119,8 @@ const ProductCreateScreen = ({ navigation }) => {
                 });
             }
 
-
             const variantsRes = await adminApi.getVariants(productId);
             const backendVariants = variantsRes.data;
-
 
             const updates = backendVariants.map(bv => {
                 const userVar = variants.find(v => bv.productVariantName.includes(v.value));
@@ -209,13 +222,57 @@ const ProductCreateScreen = ({ navigation }) => {
                     value={name}
                     onChangeText={setName}
                 />
-                <CInput
-                    label={t('admin_label_category')}
-                    placeholder={t('admin_placeholder_categories')}
-                    value={category}
-                    onChangeText={setCategory}
-                    prefix={<Ionicons name="list" size={18} color="#94a3b8" />}
-                />
+                
+                <TouchableOpacity
+                    style={styles.categoryPickerTrigger}
+                    onPress={() => setCategoryModalVisible(true)}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.inputLabel}>{t('admin_label_category')}</Text>
+                    <View style={styles.pickerInner}>
+                        <Ionicons name="list" size={18} color={COLORS.mainTitle} style={{ marginRight: 10 }} />
+                        <Text style={[styles.pickerValue, !selectedCategoryId && { color: '#94a3b8' }]}>
+                            {selectedCategoryName}
+                        </Text>
+                        <Ionicons name="chevron-down" size={18} color="#94a3b8" />
+                    </View>
+                </TouchableOpacity>
+
+                <Modal
+                    visible={categoryModalVisible}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setCategoryModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.pickerModalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>{t('admin_label_category')}</Text>
+                                <TouchableOpacity onPress={() => setCategoryModalVisible(false)}>
+                                    <Ionicons name="close" size={24} color="#64748b" />
+                                </TouchableOpacity>
+                            </View>
+                            <ScrollView style={{ maxHeight: 400 }}>
+                                {categories.map(cat => (
+                                    <TouchableOpacity
+                                        key={cat.id}
+                                        style={styles.categoryItem}
+                                        onPress={() => {
+                                            setSelectedCategoryId(cat.id);
+                                            setCategoryModalVisible(false);
+                                        }}
+                                    >
+                                        <Text style={[styles.categoryItemText, selectedCategoryId === cat.id && styles.categoryItemTextActive]}>
+                                            {cat.categoryName}
+                                        </Text>
+                                        {selectedCategoryId === cat.id && <Ionicons name="checkmark" size={20} color={COLORS.mainTitle} />}
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    </View>
+                </Modal>
+
                 <CInput
                     label={t('admin_label_desc')}
                     placeholder={t('admin_placeholder_desc')}
@@ -321,45 +378,28 @@ const ProductCreateScreen = ({ navigation }) => {
                     </View>
                     <View style={styles.variantInfo}>
                         <Text style={styles.variantName}>{variant.name}</Text>
-                        {isPreview ? (
-                            <View style={{ marginTop: 10, gap: 8 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#fad1e6', borderStyle: 'dashed' }}>
-                                    <Text style={{ fontSize: 13, color: '#64748b', fontWeight: '500' }}>{t('admin_label_price')}:</Text>
-                                    <Text style={{ fontSize: 16, color: COLORS.mainTitle || '#c2185b', fontWeight: '700' }}>
-                                        {variant.price ? `${variant.price}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'}₫
-                                    </Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#e2e8f0', borderStyle: 'dashed' }}>
-                                    <Text style={{ fontSize: 13, color: '#64748b', fontWeight: '500' }}>{t('admin_label_stock')}:</Text>
-                                    <Text style={{ fontSize: 16, color: '#334155', fontWeight: '700' }}>
-                                        {variant.stock || 0}
-                                    </Text>
-                                </View>
+                        <View style={styles.variantRow}>
+                            <View style={{ flex: 1 }}>
+                                <CInput
+                                    label={t('admin_label_price')}
+                                    placeholder={t('admin_placeholder_price')}
+                                    prefix={<Text style={styles.inputPrefix}>₫</Text>}
+                                    keyboardType="numeric"
+                                    value={variant.price}
+                                    onChangeText={(val) => handleVariantChange(variant.id, 'price', val)}
+                                />
                             </View>
-                        ) : (
-                            <View style={styles.variantRow}>
-                                <View style={{ flex: 1 }}>
-                                    <CInput
-                                        label={t('admin_label_price')}
-                                        placeholder={t('admin_placeholder_price')}
-                                        prefix={<Text style={styles.inputPrefix}>₫</Text>}
-                                        keyboardType="numeric"
-                                        value={variant.price}
-                                        onChangeText={(val) => handleVariantChange(variant.id, 'price', val)}
-                                    />
-                                </View>
-                                <View style={{ width: 12 }} />
-                                <View style={{ flex: 1 }}>
-                                    <CInput
-                                        label={t('admin_label_stock')}
-                                        placeholder={t('admin_placeholder_stock')}
-                                        keyboardType="numeric"
-                                        value={variant.stock}
-                                        onChangeText={(val) => handleVariantChange(variant.id, 'stock', val)}
-                                    />
-                                </View>
+                            <View style={{ width: 12 }} />
+                            <View style={{ flex: 1 }}>
+                                <CInput
+                                    label={t('admin_label_stock')}
+                                    placeholder={t('admin_placeholder_stock')}
+                                    keyboardType="numeric"
+                                    value={variant.stock}
+                                    onChangeText={(val) => handleVariantChange(variant.id, 'stock', val)}
+                                />
                             </View>
-                        )}
+                        </View>
                     </View>
                 </View>
             ))}
@@ -438,6 +478,7 @@ const ProductCreateScreen = ({ navigation }) => {
                     type="primary"
                     title={currentStep === 3 ? t('admin_btn_save_finish') : t('continue')}
                     onPress={handleNext}
+                    loading={loading}
                     icon={<Ionicons name={currentStep === 3 ? "checkmark-circle" : "arrow-forward"} size={22} color="white" />}
                     style={styles.premiumBtnPrimary}
                 />
@@ -605,30 +646,69 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         lineHeight: 20,
     },
-    inputContainer: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        borderWidth: 1.5,
-        borderColor: '#f1f5f9',
-        paddingHorizontal: 16,
-        height: 56,
-        justifyContent: 'center',
-        marginBottom: 24,
+    categoryPickerTrigger: {
+        marginBottom: 20,
     },
-    input: {
+    inputLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#475569',
+        marginBottom: 8,
+    },
+    pickerInner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f8fafc',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+    },
+    pickerValue: {
+        flex: 1,
         fontSize: 15,
-        color: '#0f172a',
-        height: '100%',
+        color: '#1e293b',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'flex-end',
+    },
+    pickerModalContent: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        padding: 24,
+        paddingBottom: 40,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
+    },
+    categoryItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    categoryItemText: {
+        fontSize: 16,
+        color: '#475569',
         fontWeight: '500',
     },
-    textAreaContainer: {
-        height: 120,
-        paddingVertical: 12,
-        justifyContent: 'flex-start',
-    },
-    textArea: {
-        textAlignVertical: 'top',
-        lineHeight: 22,
+    categoryItemTextActive: {
+        color: COLORS.mainTitle,
+        fontWeight: '700',
     },
     uploadBox: {
         height: 160,
@@ -702,20 +782,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 8,
     },
-    addBtnSmall: {
-        width: 48,
-        height: 48,
-        backgroundColor: COLORS.mainTitle || '#c2185b',
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
-        shadowColor: COLORS.mainTitle || '#c2185b',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 6,
-        elevation: 3,
-    },
     dashedBtn: {
         height: 56,
         borderWidth: 1.5,
@@ -771,18 +837,7 @@ const styles = StyleSheet.create({
     },
     variantRow: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        rowGap: 8,
-        columnGap: 12,
-    },
-    smallInput: {
-        flex: 1,
-        height: 44,
-        marginBottom: 0,
-        flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 10,
     },
     inputPrefix: {
         color: '#94a3b8',
@@ -808,13 +863,11 @@ const styles = StyleSheet.create({
         flex: 2,
         height: 58,
         borderRadius: 16,
-        paddingVertical: 16,
     },
     premiumBtnSecondary: {
         flex: 1,
         height: 58,
         borderRadius: 16,
-        paddingVertical: 16,
     }
 });
 

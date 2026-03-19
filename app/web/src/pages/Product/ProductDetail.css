@@ -346,7 +346,6 @@
     gap: 20px;
 }
 
-/* Review Section */
 .review-dashboard {
     display: flex;
     align-items: center;
@@ -479,7 +478,6 @@
 .action-btn { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 20px; cursor: pointer; color: #64748b; font-weight: 500; display: flex; gap: 6px; align-items: center; transition: 0.2s; }
 .action-btn:hover { color: var(--color_main_title); background: #fff0f6; border-color: #ffd1dc; }
 
-/* Responsive Mobile */
 @media (max-width: 1024px) {
     .product-gallery { flex: 0 0 50%; }
 }

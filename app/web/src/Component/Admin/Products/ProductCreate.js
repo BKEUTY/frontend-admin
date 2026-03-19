@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { Steps, Form, Input, Select, Upload, notification, InputNumber, Row, Col, Button, Space } from 'antd';
 import {
-    Steps, Form, Input, Button, Select, Upload, notification,
-    InputNumber, Row, Col
-} from 'antd';
-import {
-    PlusOutlined, DeleteOutlined,
-    ArrowRightOutlined, CheckCircleOutlined,
-    CloudUploadOutlined, FileImageOutlined, 
-    LoadingOutlined, EyeOutlined, EditOutlined
+    PlusOutlined, DeleteOutlined, ArrowRightOutlined, CheckCircleOutlined,
+    CloudUploadOutlined, FileImageOutlined, LoadingOutlined, EyeOutlined, EditOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import product_placeholder from '../../../Assets/Images/Products/product_placeholder.svg';
-import '../../../pages/Product/ProductDetail.css';
 import { CButton } from '../../Common';
+import { generateSlug } from '../../../utils/helpers';
 import './ProductCreate.css';
 
 const { Option } = Select;
@@ -30,13 +25,12 @@ const ProductCreate = () => {
     const [loading, setLoading] = useState(false);
     const [isPreview, setIsPreview] = useState(false);
     const [categories, setCategories] = useState([]);
-
-    const [optionTypes, setOptionTypes] = useState([
-        { name: t('admin_product_color'), values: [] }
-    ]);
-
+    const [optionTypes, setOptionTypes] = useState([{ name: '', values: [] }]);
     const [variants, setVariants] = useState([]);
 
+    const formName = Form.useWatch('name', form);
+    const formDescription = Form.useWatch('description', form);
+    const formCategories = Form.useWatch('categories', form);
     const imageField = Form.useWatch('image', form);
     const previewImage = imageField?.file?.originFileObj ? URL.createObjectURL(imageField.file.originFileObj) : product_placeholder;
 
@@ -44,14 +38,16 @@ const ProductCreate = () => {
         const fetchCategories = async () => {
             try {
                 const res = await adminApi.getAllCategories();
-                if (res.data) {
+                if (res.data && Array.isArray(res.data)) {
                     setCategories(res.data);
+                } else if (res.data && Array.isArray(res.data.content)) {
+                    setCategories(res.data.content);
+                } else {
+                    setCategories([]);
                 }
             } catch (error) {
-                notification.error({
-                    message: t('error'),
-                    description: t('api_error_fetch_categories') || 'Failed to fetch categories'
-                });
+                notification.error({ message: t('error'), description: t('api_error_fetch_categories') });
+                setCategories([]);
             }
         };
         fetchCategories();
@@ -66,24 +62,15 @@ const ProductCreate = () => {
                 productCategories: values.categories ? values.categories.map(Number) : [],
                 image: ''
             };
-
             const res = await adminApi.createProduct(payload);
             if (res.status === 201 || res.status === 200) {
                 const newProduct = res.data;
                 setCreatedProductId(newProduct.id || newProduct.productId);
-                notification.success({
-                    message: t('success'),
-                    description: t('admin_msg_create_success'),
-                    key: 'admin_msg_create_success'
-                });
+                notification.success({ message: t('success'), description: t('admin_msg_create_success') });
                 setCurrentStep(1);
             }
         } catch (error) {
-            notification.error({
-                message: t('error'),
-                description: t('admin_error_create'),
-                key: 'admin_error_create'
-            });
+            notification.error({ message: t('error'), description: t('admin_error_create') });
         } finally {
             setLoading(false);
         }
@@ -95,7 +82,6 @@ const ProductCreate = () => {
             setCurrentStep(2);
             return;
         }
-
         setLoading(true);
         try {
             const uploadRes = await adminApi.uploadProductImage(imageField.file.originFileObj, pid);
@@ -104,43 +90,30 @@ const ProductCreate = () => {
                 await adminApi.updateProduct({
                     id: pid,
                     name: form.getFieldValue('name'),
-                    image: imageUrl
+                    image: imageUrl,
+                    description: form.getFieldValue('description')
                 });
-
-                notification.success({
-                    message: t('success'),
-                    description: t('admin_msg_upload_success'),
-                    key: 'admin_msg_upload_success'
-                });
+                notification.success({ message: t('success'), description: t('admin_msg_upload_success') });
                 setCurrentStep(2);
             }
         } catch (error) {
-            notification.error({
-                message: t('error'),
-                description: t('admin_error_upload_img'),
-                key: 'admin_error_upload_img'
-            });
+            notification.error({ message: t('error'), description: t('admin_error_upload_img') });
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAddOptionType = () => {
-        setOptionTypes([...optionTypes, { name: '', values: [] }]);
-    };
-
+    const handleAddOptionType = () => setOptionTypes([...optionTypes, { name: '', values: [] }]);
     const handleRemoveOptionType = (index) => {
         const newTypes = [...optionTypes];
         newTypes.splice(index, 1);
         setOptionTypes(newTypes);
     };
-
     const handleOptionNameChange = (index, val) => {
         const newTypes = [...optionTypes];
         newTypes[index].name = val;
         setOptionTypes(newTypes);
     };
-
     const handleOptionValuesChange = (index, val) => {
         const newTypes = [...optionTypes];
         newTypes[index].values = val;
@@ -149,15 +122,10 @@ const ProductCreate = () => {
 
     const handleSubmitOptions = async () => {
         if (!createdProductId) return;
-
         const validOptions = optionTypes.filter(o => o.name && o.name.trim() !== '' && o.values && o.values.length > 0);
         
         if (validOptions.length === 0) {
-            notification.error({
-                message: t('error'),
-                description: t("admin_error_at_least_one_option"),
-                key: 'admin_error_at_least_one_option'
-            });
+            setCurrentStep(3);
             return;
         }
 
@@ -172,7 +140,6 @@ const ProductCreate = () => {
             });
 
             if (res.data) {
-                setVariants([]);
                 const fetchedVariants = res.data;
                 const suffixes = [];
                 const generateCombinations = (opts, index = 0, currentCombo = []) => {
@@ -186,29 +153,20 @@ const ProductCreate = () => {
                 };
                 generateCombinations(validOptions);
 
-                const mappedVariants = fetchedVariants.map((v, idx) => {
-                    const shortName = suffixes[idx] || v.productVariantName || '';
-                    return {
-                        ...v,
-                        displayVariantName: shortName,
-                        optionValues: suffixes[idx] ? suffixes[idx].split(' - ') : [],
-                    };
-                });
+                const mappedVariants = fetchedVariants.map((v, idx) => ({
+                    ...v,
+                    displayVariantName: suffixes[idx] || v.productVariantName || '',
+                    optionValues: suffixes[idx] ? suffixes[idx].split(' - ') : [],
+                    price: 0,
+                    stockQuantity: 0,
+                    image: ''
+                }));
                 setVariants(mappedVariants);
             }
-
-            notification.success({
-                message: t('success'),
-                description: t('admin_msg_options_success'),
-                key: 'admin_msg_options_success'
-            });
+            notification.success({ message: t('success'), description: t('admin_msg_options_success') });
             setCurrentStep(3);
         } catch (error) {
-            notification.error({
-                message: t('error'),
-                description: t('admin_error_options_save'),
-                key: 'admin_error_options_save'
-            });
+            notification.error({ message: t('error'), description: t('admin_error_options_save') });
         } finally {
             setLoading(false);
         }
@@ -224,69 +182,97 @@ const ProductCreate = () => {
                 message: t('loading'),
                 description: t('loading'),
                 key: 'skuUpload',
-                icon: <LoadingOutlined style={{ color: '#1890ff' }} />,
+                icon: <LoadingOutlined className="pc-loading-icon" />,
                 duration: 0
             });
             const res = await adminApi.uploadSkuImage(file, `variant-${id}`);
-            const url = res.data.url;
-            handleVariantChange(id, 'image', url);
-            handleVariantChange(id, 'productImageUrl', url);
-            notification.success({
-                message: t('success'),
-                description: t('success'),
-                key: 'skuUpload'
-            });
+            handleVariantChange(id, 'image', res.data.url);
+            handleVariantChange(id, 'productImageUrl', res.data.url);
+            notification.success({ message: t('success'), description: t('success'), key: 'skuUpload' });
             return false;
         } catch (error) {
             notification.destroy('skuUpload');
+            notification.error({ message: t('error'), description: t('admin_error_upload_img') });
             return false;
         }
     };
 
     const handleSaveVariants = async () => {
+        if (!createdProductId) return;
+        
         setLoading(true);
         try {
-            await Promise.all(variants.map(v =>
-                adminApi.updateVariant({
-                    id: v.id,
-                    productVariantName: `${form.getFieldValue('name') || v.productName} - ${v.displayVariantName || v.productVariantName}`,
-                    price: v.price || 0,
-                    stockQuantity: v.stockQuantity || 0,
-                    status: 'ACTIVE',
-                    productImageUrl: v.image || v.productImageUrl
-                })
-            ));
+            const productName = form.getFieldValue('name');
+            let newProductSlug = generateSlug(productName, createdProductId, 0);
 
-            notification.success({
-                message: t('success'),
-                description: t('admin_msg_variants_success'),
-                key: 'admin_msg_variants_success'
-            });
-            navigate(`/admin/products/${createdProductId}`);
+            if (variants.length > 0) {
+                await Promise.all(variants.map(v =>
+                    adminApi.updateVariant({
+                        id: v.id,
+                        productVariantName: v.displayVariantName ? `${productName} - ${v.displayVariantName}` : v.productVariantName,
+                        price: v.price || 0,
+                        stockQuantity: v.stockQuantity || 0,
+                        status: 'ACTIVE',
+                        productImageUrl: v.image || v.productImageUrl,
+                        description: form.getFieldValue('description')
+                    })
+                ));
+                const firstVariant = variants[0];
+                const variantCombinedName = firstVariant.displayVariantName ? `${productName} - ${firstVariant.displayVariantName}` : productName;
+                newProductSlug = generateSlug(variantCombinedName, createdProductId, firstVariant.id);
+            }
+
+            notification.success({ message: t('success'), description: t('admin_msg_variants_success') });
+            navigate(`/admin/products/${newProductSlug}`);
+            
         } catch (error) {
+            notification.error({ message: t('error'), description: t('admin_error_options_save') });
         } finally {
             setLoading(false);
         }
     };
 
+    const minPrice = variants.length > 0 ? Math.min(...variants.map(v => v.price || 0)) : 0;
+
+    const renderPreviewOptions = () => {
+        const validOptions = optionTypes.filter(o => o.name && o.name.trim() !== '' && o.values && o.values.length > 0);
+        if (validOptions.length === 0) return null;
+
+        return (
+            <div className="pc-preview-options">
+                {validOptions.map((opt, idx) => (
+                    <div key={idx} className="pc-option-preview-group">
+                        <span className="pc-option-preview-label">{opt.name.toUpperCase()}:</span>
+                        <div className="pc-size-options">
+                            {opt.values.map(val => (
+                                <button key={val} className="pc-size-btn preview-mode">
+                                    {val}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
-        <div className="product-create-container" style={{ paddingBottom: 60 }}>
-            <div className="product-header-section">
-                <div className="admin-back-btn" onClick={() => navigate('/admin/products')}>
-                    <ArrowRightOutlined style={{ transform: 'rotate(180deg)' }} />
+        <div className="pc-create-container">
+            <div className="pc-header-section">
+                <div className="pc-back-btn" onClick={() => navigate('/admin/products')}>
+                    <ArrowRightOutlined className="pc-back-icon" />
                 </div>
-                <div className="product-header-info">
+                <div className="pc-header-info">
                     <h2>{t('admin_product_create')}</h2>
                     <p>{t('admin_create_desc')}</p>
                 </div>
             </div>
 
-            <div className="steps-wrapper" style={{ marginBottom: 40 }}>
+            <div className="pc-steps-wrapper">
                 <Steps
                     current={currentStep}
-                    className="modern-steps"
+                    className="pc-modern-steps"
                     responsive={false}
-                    direction="horizontal"
                     items={[
                         { title: t('admin_step_1') },
                         { title: t('admin_step_2') },
@@ -296,74 +282,84 @@ const ProductCreate = () => {
                 />
             </div>
 
-            <div className="product-detail-page admin-product-create-preview" style={{ padding: 0, background: 'transparent' }}>
-                <div className="product-top-section" style={{ boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)', borderRadius: '8px' }}>
-                    <div className="product-gallery">
-                        <div className="thumbnail-list">
-                            <div className="thumb-item active"><img src={previewImage} alt="thumb" /></div>
-                            <div className="thumb-item"><img src={product_placeholder} alt="thumb" /></div>
-                            <div className="thumb-item"><img src={product_placeholder} alt="thumb" /></div>
+            <div className="pc-product-preview-wrap">
+                <div className="pc-product-top-section">
+                    <div className="pc-product-gallery">
+                        <div className="pc-thumbnail-list">
+                            <div className="pc-thumb-item active"><img src={previewImage} alt="thumb" /></div>
                         </div>
-                        <div className="main-image" style={{ padding: 0, border: '1px solid #f9f9f9', background: '#fff', overflow: 'hidden', borderRadius: '8px' }}>
+                        <div className="pc-main-image">
                             {currentStep === 1 ? (
-                                <Form.Item name="image" style={{ margin: 0, width: '100%', height: '100%' }} form={form}>
-                                    <Upload.Dragger maxCount={1} beforeUpload={() => false} showUploadList={false} className="admin-upload-dragger" style={{ minHeight: '100%', border: 'none', background: 'transparent' }}>
+                                <Form.Item name="image" className="pc-image-form-item" form={form}>
+                                    <Upload.Dragger maxCount={1} beforeUpload={() => false} showUploadList={false} className="pc-upload-dragger">
                                         {imageField ? (
-                                            <img src={previewImage} alt="product" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                            <img src={previewImage} alt="product" className="pc-main-img-fit" />
                                         ) : (
-                                            <div style={{ padding: '80px 20px', textAlign: 'center' }}>
-                                                <CloudUploadOutlined style={{ color: 'var(--admin-primary)', fontSize: 48, marginBottom: 16 }} />
-                                                <p style={{ fontSize: 16, fontWeight: 700, color: '#334155' }}>{t('admin_btn_upload')}</p>
-                                                <p style={{ color: '#94a3b8' }}>JPG, PNG, WEBP</p>
+                                            <div className="pc-upload-placeholder">
+                                                <CloudUploadOutlined className="pc-upload-icon" />
+                                                <p className="pc-upload-text">{t('admin_btn_upload')}</p>
+                                                <p className="pc-upload-subtext">JPG, PNG, WEBP</p>
                                             </div>
                                         )}
                                     </Upload.Dragger>
                                 </Form.Item>
                             ) : (
-                                <img src={previewImage} alt="product" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                <img src={previewImage} alt="product" className="pc-main-img-fit" onError={(e) => { e.target.src = product_placeholder }} />
                             )}
                         </div>
                     </div>
 
-                    <div className="product-info-side">
-                        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-                            <div className="brand-label" style={{ marginBottom: 0 }}>BKEUTY</div>
-                            <CButton
-                                type={isPreview ? "primary" : "outline"}
-                                icon={isPreview ? <EditOutlined /> : <EyeOutlined />}
-                                onClick={() => setIsPreview(!isPreview)}
-                                size="small"
-                                style={{ borderRadius: '6px', fontSize: '0.85rem', height: 34, minWidth: 100 }}
-                            >
+                    <div className="pc-product-info-side">
+                        <div className="pc-info-header">
+                            <div className="pc-brand-label">BKEUTY</div>
+                            <CButton type={isPreview ? "primary" : "outline"} icon={isPreview ? <EditOutlined /> : <EyeOutlined />} onClick={() => setIsPreview(!isPreview)} size="small" className="pc-preview-btn">
                                 {isPreview ? t('admin_btn_edit_mode') : t('admin_btn_preview')}
                             </CButton>
                         </div>
 
                         {isPreview ? (
-                            <div className="preview-content-wrapper" style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                                <h1 className="detail-title" style={{ fontSize: '1.75rem', marginBottom: 12, fontWeight: 700 }}>
-                                    {form.getFieldValue('name') || t('admin_placeholder_product_name')}
-                                </h1>
-                                <div className="detail-price" style={{ margin: '20px 0', fontSize: '1.6rem', fontWeight: 700, color: 'var(--color_main_title)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                                    {(0).toLocaleString("vi-VN")}đ
-                                    <span className="vat-tag" style={{ color: '#999', fontSize: '0.85rem', fontWeight: 400 }}>{t('vat_included')}</span>
+                            <div className="pc-preview-content">
+                                <h1 className="pc-detail-title">{formName || t('admin_placeholder_product_name')}</h1>
+                                
+                                {formCategories && formCategories.length > 0 && (
+                                    <div className="pc-detail-categories">
+                                        <span className="pc-categories-label">{t('categories')}: </span>
+                                        <Space wrap>
+                                            {formCategories.map(catId => {
+                                                const cat = categories.find(c => c.id === catId);
+                                                return cat ? (
+                                                    <span key={catId} className="pc-category-tag">
+                                                        {cat.categoryName}
+                                                    </span>
+                                                ) : null;
+                                            })}
+                                        </Space>
+                                    </div>
+                                )}
+
+                                <div className="pc-detail-price">
+                                    {minPrice.toLocaleString("vi-VN")}đ
+                                    <span className="pc-vat-tag">(đã bao gồm VAT)</span>
                                 </div>
-                                <div className="actions" style={{ marginTop: 25 }}>
-                                    <CButton type="primary" block size="large" disabled>{t('add_to_cart')}</CButton>
+
+                                {renderPreviewOptions()}
+
+                                <div className="pc-actions-top">
+                                    <CButton type="primary" block size="large" disabled className="pc-buy-btn">{t('add_to_cart')}</CButton>
                                 </div>
                             </div>
                         ) : (
-                            <div className="edit-content-wrapper" style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                            <div className="pc-edit-content">
                                 {currentStep === 0 && (
-                                    <Form form={form} layout="vertical" onFinish={handleCreateProduct} requiredMark={false} style={{ width: '100%' }}>
-                                        <Form.Item name="name" rules={[{ required: true, message: t('admin_error_name_required') }]} style={{ marginBottom: 16 }}>
-                                            <Input className="preview-title-input" placeholder={t('admin_placeholder_product_name')} style={{ fontSize: '1.75rem', fontWeight: 700, padding: 0, border: 'none', background: 'transparent', boxShadow: 'none' }} />
+                                    <Form form={form} layout="vertical" onFinish={handleCreateProduct} requiredMark={false} className="pc-form-full">
+                                        <Form.Item name="name" rules={[{ required: true, message: t('admin_error_name_required') }]} className="pc-mb-16">
+                                            <Input className="pc-preview-title-input" placeholder={t('admin_placeholder_product_name')} />
                                         </Form.Item>
-                                        <Row gutter={24} style={{ marginBottom: 20 }}>
+                                        <Row gutter={24} className="pc-mb-20">
                                             <Col span={24}>
-                                                <div style={{ fontWeight: 600, marginBottom: 10, fontSize: '0.95rem' }}>{t('admin_label_category')}</div>
-                                                <Form.Item name="categories" rules={[{ required: true, message: t('admin_error_category_required') }]} style={{ marginBottom: 0 }}>
-                                                    <Select mode="multiple" className="admin-select-large" placeholder={t('admin_placeholder_categories')} style={{ width: '100%', border: '1px solid #ddd' }}>
+                                                <div className="pc-input-label">{t('admin_label_category')}</div>
+                                                <Form.Item name="categories" rules={[{ required: true, message: t('admin_error_category_required') }]} className="pc-mb-0">
+                                                    <Select mode="multiple" className="pc-select-large" placeholder={t('admin_placeholder_categories')}>
                                                         {categories.map(cat => (
                                                             <Option key={cat.id} value={cat.id}>{cat.categoryName}</Option>
                                                         ))}
@@ -371,51 +367,49 @@ const ProductCreate = () => {
                                                 </Form.Item>
                                             </Col>
                                         </Row>
-                                        <div style={{ fontWeight: 600, marginBottom: 10, fontSize: '0.95rem' }}>{t('admin_label_desc')}</div>
-                                        <Form.Item name="description" style={{ marginBottom: 30 }}>
-                                            <TextArea className="admin-input-textarea" rows={4} placeholder={t('admin_placeholder_desc')} style={{ border: '1px solid #ddd', borderRadius: '4px', boxShadow: 'none' }} />
+                                        <div className="pc-input-label">{t('admin_label_desc')}</div>
+                                        <Form.Item name="description" className="pc-mb-30">
+                                            <TextArea className="pc-input-textarea" rows={4} placeholder={t('admin_placeholder_desc')} />
                                         </Form.Item>
-                                        <div className="actions" style={{ marginTop: 'auto' }}>
-                                             <CButton type="primary" htmlType="submit" loading={loading} block size="large" className="admin-btn">
-                                                 {t('admin_btn_create_continue')} <ArrowRightOutlined style={{ marginLeft: 8 }} />
-                                             </CButton>
-                                         </div>
+                                        <div className="pc-actions-bottom">
+                                            <CButton type="primary" htmlType="submit" loading={loading} block size="large" className="pc-admin-btn">
+                                                {t('admin_btn_create_continue')} <ArrowRightOutlined className="pc-icon-ml-8" />
+                                            </CButton>
+                                        </div>
                                     </Form>
                                 )}
 
                                 {currentStep === 1 && (
-                                    <div className="image-upload-step">
-                                        <h3 style={{ marginBottom: 20, fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>{t('admin_step_2')}</h3>
-                                        <p style={{ color: '#64748b', marginBottom: 25 }}>{t('admin_label_image')}</p>
-                                        <div className="actions" style={{ display: 'flex', gap: 15, width: '100%' }}>
-                                            <CButton type="secondary" onClick={() => setCurrentStep(0)} style={{ flex: 1 }}>{t('back')}</CButton>
-                                            <CButton type="primary" onClick={handleUploadProductImage} loading={loading} style={{ flex: 2 }} className="admin-btn">
-                                                 {t('admin_btn_upload_continue')} <ArrowRightOutlined style={{ marginLeft: 8 }} />
-                                             </CButton>
+                                    <div className="pc-image-upload-step">
+                                        <h3 className="pc-step-title">{t('admin_step_2')}</h3>
+                                        <p className="pc-step-desc">{t('admin_label_image')}</p>
+                                        <div className="pc-actions-flex">
+                                            <CButton type="secondary" onClick={() => setCurrentStep(0)} className="pc-flex-1">{t('back')}</CButton>
+                                            <CButton type="primary" onClick={handleUploadProductImage} loading={loading} className="pc-admin-btn pc-flex-2">
+                                                {t('admin_btn_upload_continue')} <ArrowRightOutlined className="pc-icon-ml-8" />
+                                            </CButton>
                                         </div>
                                     </div>
                                 )}
 
                                 {currentStep === 2 && (
-                                    <div className="product-options-section" style={{ marginTop: 10 }}>
-                                        <h3 style={{ marginBottom: 20, fontSize: '1.05rem', fontWeight: 600, color: '#333' }}>{t('admin_step_3')}</h3>
+                                    <div className="pc-product-options-section">
+                                        <h3 className="pc-step-title">{t('admin_step_3')}</h3>
                                         {optionTypes.map((opt, index) => (
-                                            <div key={index} className="option-group">
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, alignItems: 'center', width: '100%' }}>
+                                            <div key={index} className="pc-option-group">
+                                                <div className="pc-option-header">
                                                     <Input
                                                         value={opt.name}
                                                         onChange={(e) => handleOptionNameChange(index, e.target.value)}
                                                         placeholder={t('admin_placeholder_option_name')}
-                                                        className="preview-title-input"
-                                                        style={{ width: '60%', fontWeight: 700, fontSize: '1rem', padding: 0 }}
+                                                        className="pc-preview-title-input pc-w-60"
                                                     />
                                                     {index > 0 && <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleRemoveOptionType(index)} />}
                                                 </div>
                                                 <Select
                                                     mode="tags"
-                                                    className="admin-select-large"
+                                                    className="pc-select-large pc-w-100"
                                                     placeholder={t('admin_placeholder_option_values_short')}
-                                                    style={{ width: '100%' }}
                                                     value={opt.values}
                                                     onChange={(val) => handleOptionValuesChange(index, val)}
                                                     tokenSeparators={[',']}
@@ -423,56 +417,76 @@ const ProductCreate = () => {
                                                 />
                                             </div>
                                         ))}
-                                        <CButton type="dashed" onClick={handleAddOptionType} icon={<PlusOutlined />} style={{ width: '100%', marginTop: 24, marginBottom: 8 }}>
+                                        <CButton type="dashed" onClick={handleAddOptionType} icon={<PlusOutlined />} className="pc-add-option-btn">
                                             {t('admin_btn_add_option')}
                                         </CButton>
-                                        <div className="actions" style={{ display: 'flex', gap: 15, width: '100%', marginTop: 48 }}>
-                                            <CButton type="secondary" onClick={() => setCurrentStep(1)} style={{ flex: 1 }}>{t('back')}</CButton>
-                                            <CButton type="primary" onClick={handleSubmitOptions} loading={loading} style={{ flex: 2 }} className="admin-btn">
-                                                 {t('admin_btn_gen_variants')} <ArrowRightOutlined style={{ marginLeft: 8 }} />
-                                             </CButton>
+                                        <div className="pc-actions-flex pc-mt-48">
+                                            <CButton type="secondary" onClick={() => setCurrentStep(1)} className="pc-flex-1">{t('back')}</CButton>
+                                            <CButton type="primary" onClick={handleSubmitOptions} loading={loading} className="pc-admin-btn pc-flex-2">
+                                                {t('admin_btn_gen_variants')} <ArrowRightOutlined className="pc-icon-ml-8" />
+                                            </CButton>
                                         </div>
                                     </div>
                                 )}
 
                                 {currentStep === 3 && (
-                                    <div className="product-variants-edit-section">
-                                        <div className="product-variants-section" style={{ marginTop: 24, background: '#ffffff', borderRadius: '20px', padding: '20px', border: '1px solid #f1f5f9' }}>
-                                            <h3 style={{ marginBottom: 20, fontSize: '1.05rem', fontWeight: 700, color: '#1e293b' }}>{t('admin_step_4')}</h3>
-                                            <div className="custom-scrollbar" style={{ maxHeight: '460px', overflowY: 'auto', paddingRight: 8 }}>
+                                    <div className="pc-product-variants-edit">
+                                        <div className="pc-variants-container">
+                                            <h3 className="pc-step-title">{t('admin_step_4')}</h3>
+                                            <div className="pc-custom-scrollbar">
                                                 {variants.map(record => (
-                                                    <div key={record.id} className="variant-row" style={{ display: 'flex', alignItems: 'center', gap: 16, border: '1px solid #f1f5f9', borderRadius: '12px', padding: '12px 16px', marginBottom: 12 }}>
-                                                        <div className="variant-image-upload" style={{ width: 64, height: 64, borderRadius: 12, border: '1px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                                                            <Upload showUploadList={false} beforeUpload={(file) => handleVariantImageUpload(record.id, file)}>
+                                                    <div key={record.id} className="pc-variant-row">
+                                                        <div className="pc-variant-img-upload">
+                                                            <Upload
+                                                                showUploadList={false}
+                                                                beforeUpload={(file) => handleVariantImageUpload(record.id, file)}
+                                                            >
                                                                 {(record.image || record.productImageUrl) ? (
-                                                                    <img src={getImageUrl(record.image || record.productImageUrl)} alt="v" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                    <img src={getImageUrl(record.image || record.productImageUrl)} alt="v" className="pc-variant-img" />
                                                                 ) : (
-                                                                    <div style={{ textAlign: 'center', color: '#cbd5e1' }}><FileImageOutlined style={{ fontSize: 20 }} /></div>
+                                                                    <div className="pc-variant-img-placeholder"><FileImageOutlined className="pc-variant-icon" /></div>
                                                                 )}
                                                             </Upload>
                                                         </div>
-                                                        <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                                            <div style={{ fontWeight: 600, color: '#333', fontSize: '0.9rem' }}>{record.displayVariantName || record.productVariantName}</div>
-                                                            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                                                                <div style={{ flex: '1 1 120px' }}>
-                                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: 4 }}>{t('admin_label_price')}</div>
-                                                                    <InputNumber placeholder={t('admin_placeholder_price')} value={record.price} min={0} style={{ width: '100%', borderRadius: '8px' }} formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={value => value.replace(/\$\s?|(,*)/g, '')} onChange={(val) => handleVariantChange(record.id, 'price', val)} />
+                                                        <div className="pc-variant-info-col">
+                                                            <div className="pc-variant-name">{record.displayVariantName || record.productVariantName}</div>
+                                                            <div className="pc-variant-inputs-row">
+                                                                <div className="pc-variant-input-col">
+                                                                    <div className="pc-variant-input-label">{t('admin_label_price')}</div>
+                                                                    <InputNumber
+                                                                        placeholder={t('admin_placeholder_price')}
+                                                                        value={record.price}
+                                                                        min={0}
+                                                                        className="pc-input-number"
+                                                                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                                        parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                                                                        onChange={(val) => handleVariantChange(record.id, 'price', val)}
+                                                                    />
                                                                 </div>
-                                                                <div style={{ flex: '1 1 100px' }}>
-                                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: 4 }}>{t('admin_label_stock')}</div>
-                                                                    <InputNumber placeholder={t('admin_placeholder_stock')} value={record.stockQuantity} min={0} style={{ width: '100%', borderRadius: '8px' }} onChange={(val) => handleVariantChange(record.id, 'stockQuantity', val)} />
+                                                                <div className="pc-variant-input-col">
+                                                                    <div className="pc-variant-input-label">{t('admin_label_stock')}</div>
+                                                                    <InputNumber
+                                                                        placeholder={t('admin_placeholder_stock')}
+                                                                        value={record.stockQuantity}
+                                                                        min={0}
+                                                                        className="pc-input-number"
+                                                                        onChange={(val) => handleVariantChange(record.id, 'stockQuantity', val)}
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 ))}
+                                                {variants.length === 0 && (
+                                                    <div className="pc-no-variants">{t('admin_step_4')}</div>
+                                                )}
                                             </div>
                                         </div>
-                                        <div className="actions" style={{ display: 'flex', gap: 15, width: '100%', paddingTop: 20, marginTop: 48 }}>
-                                            <CButton type="secondary" onClick={() => setCurrentStep(2)} style={{ flex: 1 }}>{t('back')}</CButton>
-                                            <CButton type="primary" onClick={handleSaveVariants} loading={loading} style={{ flex: 2 }} className="admin-btn">
-                                                 <CheckCircleOutlined style={{ marginRight: 8 }} /> {t('admin_btn_save_finish')}
-                                             </CButton>
+                                        <div className="pc-actions-flex pc-mt-48 pc-pt-20">
+                                            <CButton type="secondary" onClick={() => setCurrentStep(2)} className="pc-flex-1">{t('back')}</CButton>
+                                            <CButton type="primary" onClick={handleSaveVariants} loading={loading} className="pc-admin-btn pc-flex-2">
+                                                <CheckCircleOutlined className="pc-icon-mr-8" /> {t('admin_btn_save_finish')}
+                                            </CButton>
                                         </div>
                                     </div>
                                 )}
@@ -480,6 +494,23 @@ const ProductCreate = () => {
                         )}
                     </div>
                 </div>
+
+                {!isPreview && (
+                    <div className="pc-product-description-bottom pc-mt-30">
+                        <div className="pc-tabs-style">
+                            <div className="pc-tab-header">{t('product_details')}</div>
+                            <div className="pc-tab-content">
+                                <TextArea 
+                                    value={formDescription} 
+                                    readOnly 
+                                    rows={6} 
+                                    placeholder={t('admin_placeholder_desc')}
+                                    className="pc-description-read-only"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

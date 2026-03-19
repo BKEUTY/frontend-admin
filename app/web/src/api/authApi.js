@@ -2,16 +2,13 @@ import axiosClient from "./axiosClient";
 
 const authApi = {
     login: (data) => {
-        const url = '/api/auth/login';
-        return axiosClient.post(url, data);
+        return axiosClient.post('/api/auth/login', data);
     },
     refresh: (data) => {
-        const url = '/api/auth/refresh';
-        return axiosClient.post(url, data || {}, { skipGlobalErrorHandler: true });
+        return axiosClient.post('/api/auth/refresh', data || {}, { skipGlobalErrorHandler: true });
     },
     logout: () => {
-        const url = '/api/auth/logout';
-        return axiosClient.post(url);
+        return axiosClient.post('/api/auth/logout');
     }
 };
 

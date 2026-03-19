@@ -25,7 +25,7 @@ export const adminRoutes = [
         element: <ProductCreate />
     },
     {
-        path: "products/:id",
+        path: "products/:slug",
         element: <AdminProductDetail />
     },
     {

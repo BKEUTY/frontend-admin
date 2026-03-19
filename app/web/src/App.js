@@ -1,4 +1,4 @@
-import "./App.css";
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { NotificationProvider } from "./Context/NotificationContext";
 import { LanguageProvider } from "./i18n/LanguageContext";
@@ -8,8 +8,8 @@ import AdminLayout from "./Component/Admin/AdminLayout";
 import { authRoutes, errorRoutes } from "./routes/authRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
 import ErrorBoundary from "./Component/ErrorBoundary/ErrorBoundary";
-import React, { Suspense } from 'react';
 import Skeleton from "./Component/Common/Skeleton";
+import "./App.css";
 
 function Layout() {
   const location = useLocation();

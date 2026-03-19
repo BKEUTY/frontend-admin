@@ -2,7 +2,7 @@ import axios from 'axios';
 import queryString from 'query-string';
 import { getTranslation } from '../i18n/translate';
 import { notifyError } from '../utils/NotificationService';
-import { getAccessToken, setAccessToken, clearAccessToken } from './tokenStorage';
+import { getAccessToken, setAccessToken, clearAccessToken, clearUserSession } from './tokenStorage';
 
 const SERVER_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
@@ -55,7 +55,9 @@ const createClient = (baseURL) => {
             const status = response ? response.status : null;
 
             if (status === 401 && !originalRequest._retry) {
-                if (originalRequest.url?.includes('/api/auth/refresh')) {
+                const currentToken = getAccessToken();
+
+                if (!currentToken || originalRequest.url?.includes('/api/auth/refresh')) {
                     return Promise.reject(error);
                 }
 
@@ -89,7 +91,7 @@ const createClient = (baseURL) => {
                     onTokenRefreshed(null, refreshError);
                     
                     clearAccessToken();
-                    sessionStorage.removeItem('user');
+                    clearUserSession();
 
                     if (!window.location.pathname.includes('/login')) {
                         const desc = getTranslation('error_session_expired') || 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
