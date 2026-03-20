@@ -1,7 +1,6 @@
 import React from 'react';
 import './Pagination.css';
 
-
 const Pagination = ({ page, totalPages, onPageChange }) => {
     if (totalPages <= 1) return null;
 

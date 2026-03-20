@@ -33,6 +33,16 @@ class AdminApi extends BaseApi {
         });
     }
 
+    getAllVariantsPaginated(page = 0, size = 10, categoryId = null, search = null, config = {}) {
+        const params = { page, size };
+        if (categoryId) params.categoryId = categoryId;
+        if (search) params.search = search;
+        return this.client.get(`${this.resource}/product/variants/page`, {
+            ...config,
+            params
+        });
+    }
+
     createProduct(data, config = {}) {
         return this.client.post(`${this.resource}/product`, data, config);
     }
@@ -89,16 +99,26 @@ class AdminApi extends BaseApi {
         return this.client.delete(`${this.resource}/category/${id}`, config);
     }
 
-    getAllUsers(config = {}) {
-        return new Promise((resolve) => {
-            setTimeout(() => resolve({ data: { content: [] } }), 500);
+    getAllUsers(page = 0, size = 10, config = {}) {
+        return this.client.get(`${this.resource}/user`, {
+            ...config,
+            params: { page, size }
         });
     }
 
-    getAllOrders(config = {}) {
-        return new Promise((resolve) => {
-            setTimeout(() => resolve({ data: { content: [] } }), 500);
+    getAllOrders(page = 0, size = 10, config = {}) {
+        return this.client.get(`${this.resource}/order`, {
+            ...config,
+            params: { page, size }
         });
+    }
+
+    updateOrderStatus(orderId, status, config = {}) {
+        return this.client.put(`${this.resource}/order/${orderId}/status`, { status }, config);
+    }
+
+    getOrderById(orderId, config = {}) {
+        return this.client.get(`${this.resource}/order/${orderId}`, config);
     }
 }
 

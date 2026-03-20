@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'bkeuty_admin_token';
+const REFRESH_TOKEN_KEY = 'bkeuty_admin_refresh_token';
 const USER_KEY = 'bkeuty_admin_user';
 
 export const setAccessToken = (token) => {
@@ -12,6 +13,19 @@ export const getAccessToken = () => {
 
 export const clearAccessToken = () => {
     sessionStorage.removeItem(TOKEN_KEY);
+};
+
+export const setRefreshToken = (token) => {
+    if (token) sessionStorage.setItem(REFRESH_TOKEN_KEY, token);
+    else sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+};
+
+export const getRefreshToken = () => {
+    return sessionStorage.getItem(REFRESH_TOKEN_KEY);
+};
+
+export const clearRefreshToken = () => {
+    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
 };
 
 export const setUserSession = (user) => {

@@ -4,6 +4,7 @@ const Dashboard = lazy(() => import('../Component/Admin/Dashboard/Dashboard'));
 const ProductList = lazy(() => import('../Component/Admin/Products/ProductList'));
 const ProductCreate = lazy(() => import('../Component/Admin/Products/ProductCreate'));
 const AdminProductDetail = lazy(() => import('../Component/Admin/Products/AdminProductDetail'));
+const OrderList = lazy(() => import('../Component/Admin/Orders/OrderList'));
 const AdminHome = lazy(() => import('../Component/Admin/AdminHome'));
 const DevelopingState = lazy(() => import('../Component/Common/DevelopingState'));
 
@@ -30,7 +31,7 @@ export const adminRoutes = [
     },
     {
         path: "orders",
-        element: <DevelopingState title="Orders Management" />
+        element: <OrderList />
     },
     {
         path: "services",
@@ -49,4 +50,3 @@ export const adminRoutes = [
         element: <DevelopingState title="Reports & Analytics" />
     }
 ];
-

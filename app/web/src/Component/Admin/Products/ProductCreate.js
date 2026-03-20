@@ -8,10 +8,18 @@ import { useNavigate } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import product_placeholder from '../../../Assets/Images/Products/product_placeholder.svg';
 import { CButton } from '../../Common';
 import { generateSlug } from '../../../utils/helpers';
 import './ProductCreate.css';
+
+import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
+import dummy2 from '../../../Assets/Images/Products/product_dummy_2.jpg';
+import dummy3 from '../../../Assets/Images/Products/product_dummy_3.jpg';
+import dummy4 from '../../../Assets/Images/Products/product_dummy_4.jpg';
+import dummy5 from '../../../Assets/Images/Products/product_dummy_5.svg';
+
+const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
+const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -27,12 +35,14 @@ const ProductCreate = () => {
     const [categories, setCategories] = useState([]);
     const [optionTypes, setOptionTypes] = useState([{ name: '', values: [] }]);
     const [variants, setVariants] = useState([]);
+    
+    const [fallbackImg] = useState(getRandomImage());
 
     const formName = Form.useWatch('name', form);
     const formDescription = Form.useWatch('description', form);
     const formCategories = Form.useWatch('categories', form);
     const imageField = Form.useWatch('image', form);
-    const previewImage = imageField?.file?.originFileObj ? URL.createObjectURL(imageField.file.originFileObj) : product_placeholder;
+    const previewImage = imageField?.file?.originFileObj ? URL.createObjectURL(imageField.file.originFileObj) : fallbackImg;
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -286,14 +296,14 @@ const ProductCreate = () => {
                 <div className="pc-product-top-section">
                     <div className="pc-product-gallery">
                         <div className="pc-thumbnail-list">
-                            <div className="pc-thumb-item active"><img src={previewImage} alt="thumb" /></div>
+                            <div className="pc-thumb-item active"><img src={previewImage} alt={t('admin_product_image')} /></div>
                         </div>
                         <div className="pc-main-image">
                             {currentStep === 1 ? (
                                 <Form.Item name="image" className="pc-image-form-item" form={form}>
                                     <Upload.Dragger maxCount={1} beforeUpload={() => false} showUploadList={false} className="pc-upload-dragger">
                                         {imageField ? (
-                                            <img src={previewImage} alt="product" className="pc-main-img-fit" />
+                                            <img src={previewImage} alt={t('product')} className="pc-main-img-fit" />
                                         ) : (
                                             <div className="pc-upload-placeholder">
                                                 <CloudUploadOutlined className="pc-upload-icon" />
@@ -304,7 +314,7 @@ const ProductCreate = () => {
                                     </Upload.Dragger>
                                 </Form.Item>
                             ) : (
-                                <img src={previewImage} alt="product" className="pc-main-img-fit" onError={(e) => { e.target.src = product_placeholder }} />
+                                <img src={previewImage} alt={t('product')} className="pc-main-img-fit" onError={(e) => { e.target.src = fallbackImg }} />
                             )}
                         </div>
                     </div>
@@ -339,7 +349,7 @@ const ProductCreate = () => {
 
                                 <div className="pc-detail-price">
                                     {minPrice.toLocaleString("vi-VN")}đ
-                                    <span className="pc-vat-tag">(đã bao gồm VAT)</span>
+                                    <span className="pc-vat-tag">({t('vat_included')})</span>
                                 </div>
 
                                 {renderPreviewOptions()}

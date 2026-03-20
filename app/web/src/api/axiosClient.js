@@ -2,13 +2,24 @@ import axios from 'axios';
 import queryString from 'query-string';
 import { getTranslation } from '../i18n/translate';
 import { notifyError } from '../utils/NotificationService';
-import { getAccessToken, setAccessToken, clearAccessToken, clearUserSession } from './tokenStorage';
+import { 
+    getAccessToken, 
+    setAccessToken, 
+    clearAccessToken, 
+    clearUserSession,
+    getRefreshToken,
+    setRefreshToken,
+    clearRefreshToken
+} from './tokenStorage';
 
 const SERVER_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 const authBaseClient = axios.create({
     baseURL: SERVER_URL,
     withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+    }
 });
 
 let isRefreshing = false;
@@ -38,11 +49,19 @@ const createClient = (baseURL) => {
         const isAuthUrl = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh'].some(url => config.url?.includes(url));
 
         if (!isAuthUrl && currentToken) {
-            config.headers.Authorization = `Bearer ${currentToken}`;
+            if (config.headers && typeof config.headers.set === 'function') {
+                config.headers.set('Authorization', `Bearer ${currentToken}`);
+            } else {
+                config.headers.Authorization = `Bearer ${currentToken}`;
+            }
         }
         
         if (config.data && !config.headers['Content-Type']) {
-            config.headers['Content-Type'] = 'application/json';
+            if (config.headers && typeof config.headers.set === 'function') {
+                config.headers.set('Content-Type', 'application/json');
+            } else {
+                config.headers['Content-Type'] = 'application/json';
+            }
         }
 
         return config;
@@ -65,7 +84,12 @@ const createClient = (baseURL) => {
                     return new Promise((resolve, reject) => {
                         subscribeTokenRefresh((token, err) => {
                             if (err) return reject(err);
-                            originalRequest.headers.Authorization = `Bearer ${token}`;
+                            originalRequest._retry = true;
+                            if (originalRequest.headers && typeof originalRequest.headers.set === 'function') {
+                                originalRequest.headers.set('Authorization', `Bearer ${token}`);
+                            } else {
+                                originalRequest.headers.Authorization = `Bearer ${token}`;
+                            }
                             resolve(client(originalRequest));
                         });
                     });
@@ -75,22 +99,42 @@ const createClient = (baseURL) => {
                 isRefreshing = true;
 
                 try {
-                    const res = await authBaseClient.post('/api/auth/refresh');
-                    const newToken = res.data?.accessToken || res.data?.access_token || res.data?.data?.accessToken;
+                    const currentRefreshToken = getRefreshToken();
+                    
+                    if (!currentRefreshToken) {
+                        throw new Error('No refresh token available');
+                    }
+
+                    const res = await authBaseClient.post('/api/auth/refresh', { refreshToken: currentRefreshToken });
+                    
+                    const newToken = res.data?.accessToken;
+                    const newRefreshToken = res.data?.refreshToken;
 
                     if (newToken) {
                         setAccessToken(newToken);
+                        if (newRefreshToken) {
+                            setRefreshToken(newRefreshToken);
+                        }
+                        
                         onTokenRefreshed(newToken);
                         isRefreshing = false;
 
-                        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        if (originalRequest.headers && typeof originalRequest.headers.set === 'function') {
+                            originalRequest.headers.set('Authorization', `Bearer ${newToken}`);
+                        } else {
+                            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        }
+                        
                         return client(originalRequest);
+                    } else {
+                        throw new Error('Token missing in response');
                     }
                 } catch (refreshError) {
                     isRefreshing = false;
                     onTokenRefreshed(null, refreshError);
                     
                     clearAccessToken();
+                    clearRefreshToken();
                     clearUserSession();
 
                     if (!window.location.pathname.includes('/login')) {
@@ -125,6 +169,8 @@ const createClient = (baseURL) => {
 
                 const titleKey = originalRequest.errorMessage || 'error';
                 notifyError(titleKey, description);
+
+                error.isGlobalHandled = true;
             }
 
             return Promise.reject(error);

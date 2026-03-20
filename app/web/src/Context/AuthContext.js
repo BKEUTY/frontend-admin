@@ -4,6 +4,9 @@ import {
     setAccessToken, 
     clearAccessToken, 
     getAccessToken, 
+    getRefreshToken,
+    setRefreshToken,
+    clearRefreshToken,
     getUserSession, 
     setUserSession, 
     clearUserSession 
@@ -46,38 +49,48 @@ export const AuthProvider = ({ children }) => {
 
     const refreshAccessToken = useCallback(async () => {
         try {
-            const response = await authApi.refresh();
-            const accessToken = response.data?.accessToken || response.data?.access_token || response.data?.data?.accessToken;
+            const currentRefreshToken = getRefreshToken();
+            if (!currentRefreshToken) {
+                throw new Error('No refresh token available');
+            }
+
+            const response = await authApi.refresh({ refreshToken: currentRefreshToken });
+            const accessToken = response.data?.accessToken;
+            const newRefreshToken = response.data?.refreshToken;
             
-            if (!accessToken) throw new Error('No access token returned');
+            if (!accessToken) {
+                throw new Error('No access token returned');
+            }
             
             const newUser = extractUserFromToken(accessToken);
             if (newUser.user_role !== 'ADMIN') {
                 clearAccessToken();
+                clearRefreshToken();
                 clearUserSession();
                 setUser(null);
                 return false;
             }
 
             setAccessToken(accessToken);
+            if (newRefreshToken) {
+                setRefreshToken(newRefreshToken);
+            }
             setUserSession(newUser);
             setUser(newUser);
             
             return true;
         } catch (error) {
-            if (error.response?.status === 401 || error.response?.status === 400) {
-                clearAccessToken();
-                clearUserSession();
-                setUser(null);
-                return false;
-            }
-            return true; 
+            clearAccessToken();
+            clearRefreshToken();
+            clearUserSession();
+            setUser(null);
+            return false;
         }
     }, []);
 
     useEffect(() => {
         const initAuth = async () => {
-            if (getUserSession() || getAccessToken()) {
+            if (getUserSession() && getRefreshToken()) {
                 await refreshAccessToken();
             }
             setIsInitializing(false);
@@ -87,7 +100,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const response = await authApi.login({ username: email, password });
-        const accessToken = response.data?.accessToken || response.data?.access_token || response.data?.data?.accessToken;
+        const accessToken = response.data?.accessToken;
+        const refreshToken = response.data?.refreshToken;
         
         const newUser = extractUserFromToken(accessToken);
         
@@ -96,6 +110,9 @@ export const AuthProvider = ({ children }) => {
         }
 
         setAccessToken(accessToken);
+        if (refreshToken) {
+            setRefreshToken(refreshToken);
+        }
         setUserSession(newUser);
         setUser(newUser);
         
@@ -109,6 +126,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setUser(null);
             clearAccessToken();
+            clearRefreshToken();
             clearUserSession();
         }
     };
