@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Table, Button, notification, Typography, Tag, Space, Modal, Select, Tooltip, Row, Col, Divider, Spin } from 'antd';
 import { SyncOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import adminApi from '../../../api/adminApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAuth } from '../../../Context/AuthContext';
-import usePagination from '../../../hooks/usePagination';
 import { EmptyState, PageWrapper, CButton } from '../../Common';
 import Pagination from '../../Common/Pagination';
 import './OrderList.css';
@@ -18,7 +17,6 @@ const { Option } = Select;
 const OrderList = () => {
     const { t } = useLanguage();
     const { isAuthenticated } = useAuth();
-    const { pagination, setTotal, setCurrent } = usePagination();
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
@@ -33,8 +31,6 @@ const OrderList = () => {
     const [viewModalVisible, setViewModalVisible] = useState(false);
     const [orderDetail, setOrderDetail] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
-
-    const hasFetched = useRef(false);
 
     const fetchOrders = useCallback(async () => {
         if (!isAuthenticated) return;
