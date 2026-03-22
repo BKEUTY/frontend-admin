@@ -6,7 +6,8 @@ import { View, Text } from 'react-native';
 
 import AccountScreen from '../Account/AccountScreen';
 import ProfileScreen from '../Account/ProfileScreen';
-import OrderDetailScreen from '../Account/OrderDetailScreen';
+import OrderDetailScreen from '../Admin/OrderDetailScreen';
+import OrderListScreen from '../Admin/OrderListScreen';
 import { COLORS } from '../constants/Theme';
 import { useLanguage } from '../i18n/LanguageContext';
 import AdminDashboard from '../Admin/DashboardScreen';
@@ -46,6 +47,7 @@ function TabNavigator() {
         >
             <Tab.Screen name="AdminDashboard" component={AdminDashboard} options={{ title: t('dashboard') }} />
             <Tab.Screen name="AdminProducts" component={AdminProductList} options={{ title: t('products') }} />
+            <Tab.Screen name="AdminOrders" component={OrderListScreen} options={{ title: t('orders') || 'Orders' }} />
             <Tab.Screen name="Account" component={AccountScreen} options={{ title: t('account') }} />
         </Tab.Navigator >
     );

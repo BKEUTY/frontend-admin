@@ -28,11 +28,7 @@
     color: var(--admin-primary);
     border-color: var(--admin-primary);
     background-color: #fff1f6;
-    transform: translateX(-3px);
-}
-
-.pc-back-icon {
-    transform: rotate(180deg);
+    transform: scale(1.05);
 }
 
 .pc-header-info h2 {
@@ -429,14 +425,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.pc-icon-ml-8 {
-    margin-left: 8px;
-}
-
-.pc-icon-mr-8 {
-    margin-right: 8px;
 }
 
 .pc-image-upload-step {

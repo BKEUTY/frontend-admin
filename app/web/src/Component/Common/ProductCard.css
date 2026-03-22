@@ -61,8 +61,6 @@
     z-index: 2;
 }
 
-
-
 .card-info {
     padding: 16px;
     display: flex;
@@ -71,12 +69,30 @@
     text-align: left;
 }
 
+.card-brand-cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.card-cat-tag {
+    font-size: 10px !important;
+    line-height: 18px !important;
+    padding: 0 6px !important;
+    margin: 0 !important;
+    border-radius: 4px !important;
+    color: #64748b !important;
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
 .card-brand {
     color: #999;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 1.2px;
-    margin-bottom: 8px;
     text-transform: uppercase;
 }
 
@@ -110,18 +126,34 @@
     font-weight: 700;
 }
 
+.card-rating-stars {
+    font-size: 12px !important;
+    color: #fadb14 !important;
+}
+
+.card-sold-count {
+    font-size: 12px !important;
+}
+
 .card-sold {
     font-size: 0.8rem;
     color: #999;
     font-weight: 500;
 }
 
-.card-price-container {
-    margin-top: auto;
+.price-stock-row {
+    margin-top: auto; /* Đẩy giá và trạng thái xuống cuối card */
     display: flex;
-    align-items: baseline;
-    gap: 8px;
+    align-items: flex-end;
+    justify-content: space-between;
     flex-wrap: wrap;
+    gap: 8px;
+}
+
+.price-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .card-price {
@@ -137,17 +169,11 @@
     font-weight: 500;
 }
 
-.price-row {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.price-row .card-price {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color_main_title);
+.stock-tag {
+    margin: 0 !important;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    padding: 0 6px;
 }
 
 @media (max-width: 768px) {
@@ -168,5 +194,11 @@
     .card-badges {
         top: 8px;
         left: 8px;
+    }
+
+    .price-stock-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
     }
 }

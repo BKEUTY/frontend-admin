@@ -3,12 +3,11 @@ import { useParams, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import './AdminProductDetail.css';
 import { StarFilled } from '@ant-design/icons';
-import Pagination from "../../../Component/Common/Pagination";
-import Skeleton from "../../../Component/Common/Skeleton";
+import { Pagination, Skeleton, CButton } from "../../../Component/Common";
 import adminApi from '../../../api/adminApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import NotFound from '../../../Component/ErrorPages/NotFound';
-import { generateSlug, extractIdsFromSlug } from '../../../utils/helpers';
+import { generateSlug } from '../../../utils/helpers';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
 import dummy2 from '../../../Assets/Images/Products/product_dummy_2.jpg';
@@ -27,9 +26,8 @@ export default function AdminProductDetail() {
     const categoryName = location.state?.category || t('all_products');
     const categoryLink = location.state?.from || '/admin/products';
 
-    const { productId: parsedPid, variantId: parsedVid } = extractIdsFromSlug(slug);
-    const productIdParam = parsedPid || slug;
-    const variantIdParam = parsedVid;
+    const stateProductId = location.state?.id || location.state?.productId;
+    const stateVariantId = location.state?.variantId;
 
     const fallbackImg = useMemo(() => getRandomImage(), []);
 
@@ -56,7 +54,13 @@ export default function AdminProductDetail() {
             try {
                 const response = await adminApi.getAllProducts(0, 1000);
                 const parentProducts = response.data.content || [];
-                const found = parentProducts.find(p => p.productId?.toString() === productIdParam?.toString() || p.id?.toString() === productIdParam?.toString());
+                
+                let found;
+                if (stateProductId) {
+                    found = parentProducts.find(p => p.productId?.toString() === stateProductId?.toString() || p.id?.toString() === stateProductId?.toString());
+                } else if (slug) {
+                    found = parentProducts.find(p => generateSlug(p.name) === slug || slug.includes(generateSlug(p.name)));
+                }
 
                 if (found) {
                     const actualId = found.productId || found.id;
@@ -96,7 +100,7 @@ export default function AdminProductDetail() {
                         rating: 4.8,
                         reviews_count: 124,
                         categories: found.categories || [],
-                        images: [found.image ? getImageUrl(found.image) : fallbackImg, ...variantImages, getRandomImage(), getRandomImage()].filter(Boolean).slice(0, 5),
+                        images: [found.image ? getImageUrl(found.image) : fallbackImg, ...variantImages, getRandomImage(), getRandomImage(), getRandomImage()].filter(Boolean).slice(0, 5),
                         options: options,
                         variants: mappedVariants,
                         content: { en: { details: found.description || "" }, vi: { details: found.description || "" } },
@@ -105,8 +109,8 @@ export default function AdminProductDetail() {
                     
                     setProductData(mergedData);
                     
-                    if (variantIdParam && mappedVariants.length > 0) {
-                        const targetVariant = mappedVariants.find(v => v.id === variantIdParam);
+                    if (stateVariantId && mappedVariants.length > 0) {
+                        const targetVariant = mappedVariants.find(v => v.id === stateVariantId);
                         if (targetVariant && targetVariant.variantOptions) {
                             setSelectedOptions(targetVariant.variantOptions);
                         } else {
@@ -133,8 +137,8 @@ export default function AdminProductDetail() {
             }
         };
 
-        if (productIdParam) fetchProduct();
-    }, [productIdParam, variantIdParam, fallbackImg]);
+        fetchProduct();
+    }, [stateProductId, stateVariantId, slug, fallbackImg]);
 
     useEffect(() => {
         if (productData && productData.variants && Object.keys(selectedOptions).length > 0) {
@@ -158,7 +162,13 @@ export default function AdminProductDetail() {
         if (currentVariant && productData) {
             const combinedName = currentVariant.productVariantName && currentVariant.productVariantName !== productData.name ? `${productData.name} ${currentVariant.productVariantName}` : productData.name;
             const newSlug = generateSlug(combinedName, productData.id, currentVariant.id);
-            if (slug !== newSlug) window.history.replaceState(null, '', `/admin/products/${newSlug}`);
+            if (slug !== newSlug) {
+                window.history.replaceState(
+                    { ...window.history.state, usr: { ...window.history.state?.usr, id: productData.id, productId: productData.id, variantId: currentVariant.id } },
+                    '', 
+                    `/admin/products/${newSlug}`
+                );
+            }
         }
     }, [currentVariant, productData, slug]);
 

@@ -2,15 +2,6 @@ import React from 'react';
 import { Button, ConfigProvider } from 'antd';
 import './CButton.css';
 
-/**
- * Common Styled Button for Bkeuty Web App
- * @param {string} type - 'primary' | 'secondary' | 'outline' | 'danger'
- * @param {boolean} loading - loading state
- * @param {boolean} disabled - disabled state
- * @param {React.ReactNode} icon - icon before text
- * @param {string} size - 'small' | 'middle' | 'large'
- * @param {boolean} block - width 100%
- */
 const CButton = ({
     children,
     type = 'primary',
@@ -24,18 +15,23 @@ const CButton = ({
     style = {},
     htmlType = 'button'
 }) => {
+    const isAntdDefault = type === 'secondary' || type === 'outline';
+
     return (
         <ConfigProvider
             theme={{
                 token: {
                     colorPrimary: 'var(--color_main_title)',
-                    borderRadius: 8,
-                    controlHeight: 50,
+                    colorPrimaryHover: 'var(--color_main_title_hover)',
+                    borderRadius: 12,
+                    controlHeight: size === 'large' ? 54 : 46,
+                    fontFamily: 'var(--inter_font)',
                 },
             }}
         >
             <Button
-                type={type === 'outline' ? 'default' : (type === 'secondary' ? 'default' : type)}
+                type={isAntdDefault ? 'default' : (type === 'danger' ? 'primary' : type)}
+                danger={type === 'danger'}
                 loading={loading}
                 disabled={disabled}
                 icon={icon}

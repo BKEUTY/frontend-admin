@@ -28,6 +28,11 @@ const ProductCard = ({ product, t, language, onClickData }) => {
     const rating = parseFloat(product.rating || 4.8);
     const stockQuantity = product.stockQuantity || 0;
 
+    // Trích xuất danh mục đầu tiên để hiển thị trên thẻ card
+    const firstCategory = product.categories && product.categories.length > 0 
+        ? (typeof product.categories[0] === 'object' ? product.categories[0].categoryName : product.categories[0])
+        : null;
+
     let sold = product.sold || 120;
     if (typeof sold === 'string') {
         const parsed = parseInt(sold.replace(/\D/g, ''));
@@ -39,7 +44,13 @@ const ProductCard = ({ product, t, language, onClickData }) => {
 
     const handleClick = () => {
         const path = `/admin/products/${idForDetail}`;
-        navigate(path, { state: onClickData });
+        navigate(path, { 
+            state: { 
+                ...onClickData, 
+                productId: product.parentId || product.originalId || product.id, 
+                variantId: product.originalId 
+            } 
+        });
     };
 
     const CardContent = (
@@ -55,7 +66,11 @@ const ProductCard = ({ product, t, language, onClickData }) => {
             bordered={false}
         >
             <div className="card-info">
-                <Text type="secondary" className="card-brand">{brand.toUpperCase()}</Text>
+                <Space size="small" className="card-brand-cat">
+                    <Text type="secondary" className="card-brand">{brand.toUpperCase()}</Text>
+                    {firstCategory && <Tag color="default" className="card-cat-tag">{firstCategory}</Tag>}
+                </Space>
+                
                 <Title level={5} className="card-name" ellipsis={{ rows: 2 }}>{name}</Title>
 
                 <Space size="small" align="center" className="card-rating">
@@ -69,7 +84,7 @@ const ProductCard = ({ product, t, language, onClickData }) => {
                         <Text className="card-price">{price}</Text>
                     </div>
                     <Tag color={stockQuantity > 0 ? 'green' : 'red'} className="stock-tag">
-                        {stockQuantity > 0 ? `${t('in_stock', 'Còn')} ${stockQuantity}` : t('out_of_stock', 'Hết hàng')}
+                        {stockQuantity > 0 ? `${t('in_stock')} ${stockQuantity}` : t('out_of_stock_btn')}
                     </Tag>
                 </div>
             </div>

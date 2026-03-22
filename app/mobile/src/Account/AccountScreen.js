@@ -20,6 +20,7 @@ const AccountScreen = () => {
     const mainFeatures = isAuthenticated ? [
         { id: 'info', iconName: 'person-outline', title: t('account'), route: 'Profile', color: '#6366f1' },
         { id: 'dashboard', iconName: 'bar-chart-outline', title: t('admin_dashboard_title'), route: 'AdminDashboard', color: '#10b981' },
+        { id: 'orders', iconName: 'list-outline', title: t('orders') || 'Orders', route: 'AdminOrders', color: '#f59e0b' },
     ] : [];
 
 

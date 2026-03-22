@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Table, Tag, Spin } from 'antd';
+import { Row, Col, Table, Tag, Spin, Typography } from 'antd';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import adminApi from '../../../api/adminApi';
 import {
@@ -19,6 +19,9 @@ import {
 } from 'recharts';
 import './Dashboard.css';
 import StatsCard from '../Common/StatsCard';
+import { PageWrapper } from '../../Common';
+
+const { Text } = Typography;
 
 const Dashboard = () => {
     const { t } = useLanguage();
@@ -37,10 +40,9 @@ const Dashboard = () => {
                 const data = await adminApi.getStats();
                 setStatsData({
                     ...data,
-                    revenue: '40,689,000 đ' // Mock revenue for now
+                    revenue: '40,689,000 đ' 
                 });
             } catch (error) {
-                console.error("Dashboard stats error", error);
             } finally {
                 setLoading(false);
             }
@@ -94,15 +96,15 @@ const Dashboard = () => {
             title: t('admin_product_name'),
             dataIndex: 'name',
             key: 'name',
-            render: (text) => <span style={{ fontWeight: 600 }}>{text}</span>,
+            render: (text) => <Text className="product-name-cell">{text}</Text>,
         },
         {
             title: t('admin_product_category'),
             dataIndex: 'category',
             key: 'category',
             render: (tag) => (
-                <Tag color="magenta" style={{ borderRadius: '6px', border: 'none', fontWeight: 600, padding: '2px 10px' }}>
-                    {t(tag.toLowerCase()).toUpperCase()}
+                <Tag className="category-tag-modern">
+                    {t(tag.toLowerCase())}
                 </Tag>
             ),
         },
@@ -110,14 +112,14 @@ const Dashboard = () => {
             title: t('admin_product_price'),
             dataIndex: 'price',
             key: 'price',
-            render: (price) => <span style={{ color: '#1f2937' }}>{price}</span>,
+            render: (price) => <Text className="price-cell">{price}</Text>,
         },
         {
             title: t('admin_product_sold'),
             dataIndex: 'sold',
             key: 'sold',
             align: 'right',
-            render: (sold) => <span style={{ fontWeight: 700, color: 'var(--admin-primary)' }}>{sold}</span>,
+            render: (sold) => <span className="sold-count-badge">{sold}</span>,
         },
     ];
 
@@ -130,84 +132,63 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-content">
-            <div className="dashboard-header admin-page-header">
-                <h2 className="dashboard-title">{t('dashboard')}</h2>
-            </div>
-
-            {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
-                    <Spin size="large" />
-                </div>
-            ) : (
-                <>
-                    <Row gutter={[24, 24]}>
-                        <Col xs={24} lg={16}>
-                            <div className="beauty-card chart-card">
-                                <div className="chart-header">
-                                    <span className="chart-title">{t('revenue_overview')}</span>
-                                </div>
-                                <div className="chart-container" style={{ marginLeft: -20, marginTop: 20 }}>
-                                    <ResponsiveContainer width="100%" height={380}>
-                                        <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="var(--admin-primary)" stopOpacity={0.3} />
-                                                    <stop offset="95%" stopColor="var(--admin-primary)" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f0f0f0" />
-                                            <XAxis
-                                                dataKey="name"
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: '#9ca3af', fontSize: 12 }}
-                                                dy={10}
-                                            />
-                                            <YAxis
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: '#9ca3af', fontSize: 12 }}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="value"
-                                                stroke="var(--admin-primary)"
-                                                strokeWidth={3}
-                                                fillOpacity={1}
-                                                fill="url(#colorValue)"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </Col>
-
-                        <Col xs={24} lg={8}>
-                            <div className="stat-cards-container">
-                                {stats.map((stat, index) => (
-                                    <StatsCard key={index} {...stat} />
-                                ))}
-                            </div>
-                        </Col>
-                    </Row>
-
-                    <div className="table-card beauty-card">
-                        <div className="chart-header">
-                            <span className="chart-title">{t('admin_top_products')}</span>
-                        </div>
-                        <Table
-                            columns={columns}
-                            dataSource={products}
-                            pagination={false}
-                            className="admin-modern-table"
-                            scroll={{ x: 'max-content' }}
-                        />
+            <PageWrapper title={t('dashboard')} noCard>
+                {loading ? (
+                    <div className="dashboard-loading-wrap">
+                        <Spin size="large" />
                     </div>
-                </>
-            )}
+                ) : (
+                    <>
+                        <Row gutter={[24, 24]}>
+                            <Col xs={24} lg={16}>
+                                <div className="beauty-card chart-card">
+                                    <div className="chart-header">
+                                        <span className="chart-title">{t('revenue_overview')}</span>
+                                    </div>
+                                    <div className="chart-container">
+                                        <ResponsiveContainer width="100%" height={380}>
+                                            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                <defs>
+                                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="var(--admin-primary)" stopOpacity={0.2} />
+                                                        <stop offset="95%" stopColor="var(--admin-primary)" stopOpacity={0} />
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
+                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
+                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                                                <Area type="monotone" dataKey="value" stroke="var(--admin-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            </Col>
+
+                            <Col xs={24} lg={8}>
+                                <div className="stat-cards-container">
+                                    {stats.map((stat, index) => (
+                                        <StatsCard key={index} {...stat} />
+                                    ))}
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <div className="table-card beauty-card">
+                            <div className="chart-header">
+                                <span className="chart-title">{t('admin_top_products')}</span>
+                            </div>
+                            <Table
+                                columns={columns}
+                                dataSource={products}
+                                pagination={false}
+                                className="admin-modern-table"
+                                scroll={{ x: 'max-content' }}
+                            />
+                        </div>
+                    </>
+                )}
+            </PageWrapper>
         </div>
     );
 };

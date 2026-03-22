@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Steps, Form, Input, Select, Upload, notification, InputNumber, Row, Col, Button, Space } from 'antd';
+import { Steps, Form, Select, Upload, notification, InputNumber, Row, Col, Space } from 'antd';
 import {
-    PlusOutlined, DeleteOutlined, ArrowRightOutlined, CheckCircleOutlined,
+    PlusOutlined, DeleteOutlined, CheckCircleOutlined,
     CloudUploadOutlined, FileImageOutlined, LoadingOutlined, EyeOutlined, EditOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import adminApi from '../../../api/adminApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import { CButton } from '../../Common';
+import { CButton, CInput } from '../../Common';
 import { generateSlug } from '../../../utils/helpers';
 import './ProductCreate.css';
 
@@ -22,7 +22,6 @@ const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
 const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
 
 const { Option } = Select;
-const { TextArea } = Input;
 
 const ProductCreate = () => {
     const { t } = useLanguage();
@@ -132,10 +131,14 @@ const ProductCreate = () => {
 
     const handleSubmitOptions = async () => {
         if (!createdProductId) return;
+        
         const validOptions = optionTypes.filter(o => o.name && o.name.trim() !== '' && o.values && o.values.length > 0);
         
         if (validOptions.length === 0) {
-            setCurrentStep(3);
+            notification.warning({
+                message: t('info'),
+                description: t('admin_error_at_least_one_option')
+            });
             return;
         }
 
@@ -213,7 +216,8 @@ const ProductCreate = () => {
         setLoading(true);
         try {
             const productName = form.getFieldValue('name');
-            let newProductSlug = generateSlug(productName, createdProductId, 0);
+            let newProductSlug = generateSlug(productName);
+            let redirectVariantId = null;
 
             if (variants.length > 0) {
                 await Promise.all(variants.map(v =>
@@ -229,11 +233,17 @@ const ProductCreate = () => {
                 ));
                 const firstVariant = variants[0];
                 const variantCombinedName = firstVariant.displayVariantName ? `${productName} - ${firstVariant.displayVariantName}` : productName;
-                newProductSlug = generateSlug(variantCombinedName, createdProductId, firstVariant.id);
+                newProductSlug = generateSlug(variantCombinedName);
+                redirectVariantId = firstVariant.id;
             }
 
             notification.success({ message: t('success'), description: t('admin_msg_variants_success') });
-            navigate(`/admin/products/${newProductSlug}`);
+            navigate(`/admin/products/${newProductSlug}`, {
+                state: {
+                    productId: createdProductId,
+                    variantId: redirectVariantId
+                }
+            });
             
         } catch (error) {
             notification.error({ message: t('error'), description: t('admin_error_options_save') });
@@ -270,7 +280,7 @@ const ProductCreate = () => {
         <div className="pc-create-container">
             <div className="pc-header-section">
                 <div className="pc-back-btn" onClick={() => navigate('/admin/products')}>
-                    <ArrowRightOutlined className="pc-back-icon" />
+                    <PlusOutlined style={{ transform: 'rotate(45deg)' }} />
                 </div>
                 <div className="pc-header-info">
                     <h2>{t('admin_product_create')}</h2>
@@ -363,7 +373,7 @@ const ProductCreate = () => {
                                 {currentStep === 0 && (
                                     <Form form={form} layout="vertical" onFinish={handleCreateProduct} requiredMark={false} className="pc-form-full">
                                         <Form.Item name="name" rules={[{ required: true, message: t('admin_error_name_required') }]} className="pc-mb-16">
-                                            <Input className="pc-preview-title-input" placeholder={t('admin_placeholder_product_name')} />
+                                            <CInput className="pc-preview-title-input" placeholder={t('admin_placeholder_product_name')} />
                                         </Form.Item>
                                         <Row gutter={24} className="pc-mb-20">
                                             <Col span={24}>
@@ -379,11 +389,11 @@ const ProductCreate = () => {
                                         </Row>
                                         <div className="pc-input-label">{t('admin_label_desc')}</div>
                                         <Form.Item name="description" className="pc-mb-30">
-                                            <TextArea className="pc-input-textarea" rows={4} placeholder={t('admin_placeholder_desc')} />
+                                            <CInput multiline rows={4} placeholder={t('admin_placeholder_desc')} />
                                         </Form.Item>
                                         <div className="pc-actions-bottom">
                                             <CButton type="primary" htmlType="submit" loading={loading} block size="large" className="pc-admin-btn">
-                                                {t('admin_btn_create_continue')} <ArrowRightOutlined className="pc-icon-ml-8" />
+                                                {t('admin_btn_create_continue')}
                                             </CButton>
                                         </div>
                                     </Form>
@@ -396,7 +406,7 @@ const ProductCreate = () => {
                                         <div className="pc-actions-flex">
                                             <CButton type="secondary" onClick={() => setCurrentStep(0)} className="pc-flex-1">{t('back')}</CButton>
                                             <CButton type="primary" onClick={handleUploadProductImage} loading={loading} className="pc-admin-btn pc-flex-2">
-                                                {t('admin_btn_upload_continue')} <ArrowRightOutlined className="pc-icon-ml-8" />
+                                                {t('admin_btn_upload_continue')}
                                             </CButton>
                                         </div>
                                     </div>
@@ -408,13 +418,13 @@ const ProductCreate = () => {
                                         {optionTypes.map((opt, index) => (
                                             <div key={index} className="pc-option-group">
                                                 <div className="pc-option-header">
-                                                    <Input
+                                                    <CInput
                                                         value={opt.name}
                                                         onChange={(e) => handleOptionNameChange(index, e.target.value)}
                                                         placeholder={t('admin_placeholder_option_name')}
                                                         className="pc-preview-title-input pc-w-60"
                                                     />
-                                                    {index > 0 && <Button type="text" danger icon={<DeleteOutlined />} onClick={() => handleRemoveOptionType(index)} />}
+                                                    {index > 0 && <CButton type="text" danger icon={<DeleteOutlined />} onClick={() => handleRemoveOptionType(index)} />}
                                                 </div>
                                                 <Select
                                                     mode="tags"
@@ -433,7 +443,7 @@ const ProductCreate = () => {
                                         <div className="pc-actions-flex pc-mt-48">
                                             <CButton type="secondary" onClick={() => setCurrentStep(1)} className="pc-flex-1">{t('back')}</CButton>
                                             <CButton type="primary" onClick={handleSubmitOptions} loading={loading} className="pc-admin-btn pc-flex-2">
-                                                {t('admin_btn_gen_variants')} <ArrowRightOutlined className="pc-icon-ml-8" />
+                                                {t('admin_btn_gen_variants')}
                                             </CButton>
                                         </div>
                                     </div>
@@ -495,7 +505,7 @@ const ProductCreate = () => {
                                         <div className="pc-actions-flex pc-mt-48 pc-pt-20">
                                             <CButton type="secondary" onClick={() => setCurrentStep(2)} className="pc-flex-1">{t('back')}</CButton>
                                             <CButton type="primary" onClick={handleSaveVariants} loading={loading} className="pc-admin-btn pc-flex-2">
-                                                <CheckCircleOutlined className="pc-icon-mr-8" /> {t('admin_btn_save_finish')}
+                                                <CheckCircleOutlined style={{ marginRight: 8 }} /> {t('admin_btn_save_finish')}
                                             </CButton>
                                         </div>
                                     </div>
@@ -510,7 +520,8 @@ const ProductCreate = () => {
                         <div className="pc-tabs-style">
                             <div className="pc-tab-header">{t('product_details')}</div>
                             <div className="pc-tab-content">
-                                <TextArea 
+                                <CInput 
+                                    multiline
                                     value={formDescription} 
                                     readOnly 
                                     rows={6} 

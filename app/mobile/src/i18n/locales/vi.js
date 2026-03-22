@@ -240,7 +240,6 @@ export default {
     admin_hint_price_step_3: "(Giá & tồn kho nhập ở bước cuối)",
     admin_no_variants: "Chưa có phân loại nào",
     admin_values: "Tùy chọn",
-    available: "Còn lại",
     admin_variant_name_label: "Tên phân loại",
     admin_variant_image_label: "Ảnh đại diện",
     admin_variant_desc_label: "Mô tả phân loại (nếu có)",
@@ -270,6 +269,25 @@ export default {
     api_error_fetch_categories: "Không thể tải danh sách danh mục.",
     api_error_fetch: "Không thể tải dữ liệu.",
 
+    // Bổ sung cho OrderList
+    api_error_general: "Đã có lỗi xảy ra, vui lòng thử lại.",
+    product: "Sản phẩm",
+    price: "Giá bán",
+    guest: "Khách vãng lai",
+    payment_method: "Phương thức thanh toán",
+    status: "Trạng thái",
+    view: "Xem",
+    total: "Tổng cộng",
+    status_unpaid: "Chưa thanh toán",
+    status_paid: "Đã thanh toán",
+    status_pending: "Chờ xử lý",
+    status_completed: "Hoàn thành",
+    status_cancelled: "Đã hủy",
+    order_detail: "Chi tiết đơn hàng",
+    close: "Đóng",
+    order_info: "Thông tin đơn hàng",
+    customer_info: "Thông tin khách hàng",
+
     // Mobile specific
     admin_portal: "Cổng Quản Trị",
     send_otp: "Gửi mã OTP",
@@ -285,4 +303,11 @@ export default {
     promo_subtitle: "Ưu đãi lên đến 50% cho tất cả sản phẩm chăm sóc da. Đừng bỏ lỡ!",
     brand_story: "Hành trình mang đến vẻ đẹp thuần khiết",
     brand_desc: "Bkeuty tự hào là người bạn đồng hành tin cậy, thấu hiểu và nâng tầm làn da Việt.",
+
+    all_products: "Tất cả sản phẩm",
+    categories: "Danh mục",
+    coming_soon: "Sắp ra mắt",
+    admin_variant_id: "Mã phân loại",
+    items: "sản phẩm",
+    no_products_found: "Không tìm thấy sản phẩm nào",
 };

@@ -13,10 +13,7 @@ export const generateSlug = (text, pid, vid) => {
       .trim()
       .replace(/\s+/g, "-");
 
-    const encodedPid = Number(pid).toString(36);
-    const encodedVid = Number(vid).toString(36);
-    
-    return `${str}-i.${encodedPid}z${encodedVid}`;
+    return str;
 };
 
 export const extractIdsFromSlug = (slug) => {

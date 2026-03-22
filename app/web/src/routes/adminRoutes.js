@@ -5,6 +5,7 @@ const ProductList = lazy(() => import('../Component/Admin/Products/ProductList')
 const ProductCreate = lazy(() => import('../Component/Admin/Products/ProductCreate'));
 const AdminProductDetail = lazy(() => import('../Component/Admin/Products/AdminProductDetail'));
 const OrderList = lazy(() => import('../Component/Admin/Orders/OrderList'));
+const AdminOrderDetail = lazy(() => import('../Component/Admin/Orders/AdminOrderDetail'));
 const AdminHome = lazy(() => import('../Component/Admin/AdminHome'));
 const DevelopingState = lazy(() => import('../Component/Common/DevelopingState'));
 
@@ -32,6 +33,10 @@ export const adminRoutes = [
     {
         path: "orders",
         element: <OrderList />
+    },
+    {
+        path: "orders/:id",
+        element: <AdminOrderDetail />
     },
     {
         path: "services",

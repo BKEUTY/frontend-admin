@@ -1,0 +1,88 @@
+.admin-pd-breadcrumb {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 24px;
+    font-weight: 500;
+}
+
+.admin-pd-breadcrumb a {
+    color: #64748b;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.admin-pd-breadcrumb a:hover {
+    color: var(--admin-primary);
+}
+
+.admin-pd-divider {
+    margin: 0 8px;
+    color: #cbd5e1;
+}
+
+.admin-pd-current {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.admin-mb15 {
+    margin-bottom: 15px;
+}
+
+.admin-mb30 {
+    margin-bottom: 30px;
+}
+
+.shadow-card {
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+.shadow-card .ant-card-head {
+    border-bottom: 1px solid #f1f5f9;
+    background-color: #ffffff;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 16px 24px;
+}
+
+.shadow-card .ant-card-body {
+    background-color: #ffffff;
+    padding: 24px;
+}
+
+.status-select.success .ant-select-selector {
+    background-color: #ecfdf5 !important;
+    color: #10b981 !important;
+    border-color: #a7f3d0 !important;
+    font-weight: 600;
+}
+
+.status-select.warning .ant-select-selector {
+    background-color: #fffbeb !important;
+    color: #f59e0b !important;
+    border-color: #fde68a !important;
+    font-weight: 600;
+}
+
+.status-select.error .ant-select-selector {
+    background-color: #fef2f2 !important;
+    color: #ef4444 !important;
+    border-color: #fecaca !important;
+    font-weight: 600;
+}
+
+.status-select.default .ant-select-selector {
+    background-color: #f8fafc !important;
+    color: #64748b !important;
+    border-color: #e2e8f0 !important;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .shadow-card {
+        border-radius: 12px;
+    }
+}
