@@ -12,10 +12,10 @@ import {
     View,
     Modal
 } from 'react-native';
-import { CButton, CInput } from '../../Component/Common';
-import adminApi from '../../api/adminApi';
-import { COLORS } from '../../constants/Theme';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { CButton, CInput } from '../../../Component/Common';
+import adminApi from '../../../api/adminApi';
+import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
+import { useLanguage } from '../../../i18n/LanguageContext';
 
 const ProductCreateScreen = ({ navigation }) => {
     const { t } = useLanguage();
@@ -213,7 +213,7 @@ const ProductCreateScreen = ({ navigation }) => {
         <View>
             <View style={styles.card}>
                 <Text style={styles.cardTitle}>
-                    <Ionicons name="information-circle" size={20} color={COLORS.mainTitle} style={{ marginRight: 8 }} />
+                    <Ionicons name="information-circle" size={20} color={COLORS.primary} style={{ marginRight: 8 }} />
                     {t('admin_section_general')}
                 </Text>
                 <CInput
@@ -230,11 +230,11 @@ const ProductCreateScreen = ({ navigation }) => {
                 >
                     <Text style={styles.inputLabel}>{t('admin_label_category')}</Text>
                     <View style={styles.pickerInner}>
-                        <Ionicons name="list" size={18} color={COLORS.mainTitle} style={{ marginRight: 10 }} />
-                        <Text style={[styles.pickerValue, !selectedCategoryId && { color: '#94a3b8' }]}>
+                        <Ionicons name="list" size={18} color={COLORS.primary} style={{ marginRight: 10 }} />
+                        <Text style={[styles.pickerValue, !selectedCategoryId && { color: COLORS.textLight }]}>
                             {selectedCategoryName}
                         </Text>
-                        <Ionicons name="chevron-down" size={18} color="#94a3b8" />
+                        <Ionicons name="chevron-down" size={18} color={COLORS.textLight} />
                     </View>
                 </TouchableOpacity>
 
@@ -249,7 +249,7 @@ const ProductCreateScreen = ({ navigation }) => {
                             <View style={styles.modalHeader}>
                                 <Text style={styles.modalTitle}>{t('admin_label_category')}</Text>
                                 <TouchableOpacity onPress={() => setCategoryModalVisible(false)}>
-                                    <Ionicons name="close" size={24} color="#64748b" />
+                                    <Ionicons name="close" size={24} color={COLORS.textSecondary} />
                                 </TouchableOpacity>
                             </View>
                             <ScrollView style={{ maxHeight: 400 }}>
@@ -265,7 +265,7 @@ const ProductCreateScreen = ({ navigation }) => {
                                         <Text style={[styles.categoryItemText, selectedCategoryId === cat.id && styles.categoryItemTextActive]}>
                                             {cat.categoryName}
                                         </Text>
-                                        {selectedCategoryId === cat.id && <Ionicons name="checkmark" size={20} color={COLORS.mainTitle} />}
+                                        {selectedCategoryId === cat.id && <Ionicons name="checkmark" size={20} color={COLORS.primary} />}
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
@@ -287,7 +287,7 @@ const ProductCreateScreen = ({ navigation }) => {
     const renderMediaStep = () => (
         <View style={styles.card}>
             <Text style={styles.cardTitle}>
-                <Ionicons name="image" size={20} color={COLORS.mainTitle} style={{ marginRight: 8 }} />
+                <Ionicons name="image" size={20} color={COLORS.primary} style={{ marginRight: 8 }} />
                 {t('admin_section_media')}
             </Text>
             <TouchableOpacity style={styles.uploadBox} onPress={pickImage} activeOpacity={0.8}>
@@ -295,13 +295,13 @@ const ProductCreateScreen = ({ navigation }) => {
                     <>
                         <Image source={{ uri: image }} style={styles.previewImage} />
                         <TouchableOpacity style={styles.removeImageBtn} onPress={() => setImage(null)}>
-                            <Ionicons name="close-circle" size={24} color="#ef4444" />
+                            <Ionicons name="close-circle" size={24} color={COLORS.danger} />
                         </TouchableOpacity>
                     </>
                 ) : (
                     <View style={styles.uploadPlaceholder}>
                         <View style={styles.uploadIconCircle}>
-                            <Ionicons name="cloud-upload-outline" size={28} color={COLORS.mainTitle} />
+                            <Ionicons name="cloud-upload-outline" size={28} color={COLORS.primary} />
                         </View>
                         <Text style={styles.uploadText}>{t('admin_btn_upload')}</Text>
                     </View>
@@ -318,7 +318,7 @@ const ProductCreateScreen = ({ navigation }) => {
                     <View style={styles.cardHeaderRow}>
                         <Text style={styles.cardTitle}>{t('admin_label_option_name')} {index + 1}</Text>
                         {index > 0 && <TouchableOpacity onPress={() => removeOptionType(index)}>
-                            <MaterialCommunityIcons name="delete-outline" size={24} color="#ef4444" />
+                            <MaterialCommunityIcons name="delete-outline" size={24} color={COLORS.danger} />
                         </TouchableOpacity>}
                     </View>
 
@@ -333,7 +333,7 @@ const ProductCreateScreen = ({ navigation }) => {
                         {opt.values.map((val, valIdx) => (
                             <TouchableOpacity key={valIdx} style={styles.tag} onPress={() => removeOptionValue(index, valIdx)}>
                                 <Text style={styles.tagText}>{val}</Text>
-                                <Ionicons name="close" size={14} color={COLORS.mainTitle} />
+                                <Ionicons name="close" size={14} color={COLORS.primary} />
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -362,7 +362,7 @@ const ProductCreateScreen = ({ navigation }) => {
             ))}
 
             <TouchableOpacity style={styles.dashedBtn} onPress={addOptionType}>
-                <Ionicons name="add-circle-outline" size={24} color={COLORS.mainTitle || '#c2185b'} />
+                <Ionicons name="add-circle-outline" size={24} color={COLORS.primary} />
                 <Text style={styles.dashedBtnText}>{t('admin_btn_add_option')}</Text>
             </TouchableOpacity>
         </View>
@@ -413,11 +413,11 @@ const ProductCreateScreen = ({ navigation }) => {
         >
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                    <Ionicons name="arrow-back" size={22} color="#1e293b" />
+                    <Ionicons name="arrow-back" size={22} color={COLORS.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{t('admin_product_create')}</Text>
                 <TouchableOpacity onPress={() => setIsPreview(!isPreview)} style={styles.backBtn}>
-                    <Ionicons name={isPreview ? "options-outline" : "eye-outline"} size={22} color={isPreview ? (COLORS.mainTitle || '#c2185b') : "#1e293b"} />
+                    <Ionicons name={isPreview ? "options-outline" : "eye-outline"} size={22} color={isPreview ? COLORS.primary : COLORS.text} />
                 </TouchableOpacity>
             </View>
 
@@ -434,17 +434,17 @@ const ProductCreateScreen = ({ navigation }) => {
                                     <Ionicons name="checkmark" size={16} color="white" />
                                 ) : (
                                     <View style={styles.stepIconWrapper}>
-                                        {step === 0 && <Feather name="shopping-bag" size={16} color={currentStep >= step ? "white" : "#94a3b8"} />}
-                                        {step === 1 && <Feather name="image" size={16} color={currentStep >= step ? "white" : "#94a3b8"} />}
-                                        {step === 2 && <Feather name="settings" size={16} color={currentStep >= step ? "white" : "#94a3b8"} />}
-                                        {step === 3 && <MaterialCommunityIcons name="collage" size={16} color={currentStep >= step ? "white" : "#94a3b8"} />}
+                                        {step === 0 && <Feather name="shopping-bag" size={16} color={currentStep >= step ? "white" : COLORS.textLight} />}
+                                        {step === 1 && <Feather name="image" size={16} color={currentStep >= step ? "white" : COLORS.textLight} />}
+                                        {step === 2 && <Feather name="settings" size={16} color={currentStep >= step ? "white" : COLORS.textLight} />}
+                                        {step === 3 && <MaterialCommunityIcons name="collage" size={16} color={currentStep >= step ? "white" : COLORS.textLight} />}
                                     </View>
                                 )}
                             </View>
                             {step < 3 && (
                                 <View style={[
                                     styles.stepLine,
-                                    currentStep > step && { backgroundColor: COLORS.mainTitle || '#c2185b' }
+                                    currentStep > step && { backgroundColor: COLORS.primary }
                                 ]} />
                             )}
                         </View>
@@ -490,19 +490,19 @@ const ProductCreateScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f9fa',
+        backgroundColor: COLORS.background,
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingTop: Platform.OS === 'android' ? 40 : 50,
+        paddingTop: Platform.OS === 'ios' ? 50 : 40,
         paddingBottom: 12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
-        elevation: 1,
+        borderBottomColor: COLORS.border,
+        ...SHADOWS.light,
     },
     backBtn: {
         width: 40,
@@ -512,29 +512,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
+        borderColor: COLORS.border,
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: '700',
-        color: '#0f172a',
+        fontWeight: '800',
+        color: COLORS.text,
     },
     stepperContainer: {
         backgroundColor: 'white',
         paddingBottom: 16,
         paddingTop: 8,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        shadowColor: "#64748b",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-        elevation: 3,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        ...SHADOWS.medium,
         marginBottom: 16,
         zIndex: 10,
     },
@@ -557,27 +548,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: COLORS.border,
         backgroundColor: '#fff',
         zIndex: 2,
     },
     stepActive: {
-        backgroundColor: COLORS.mainTitle || '#c2185b',
-        borderColor: COLORS.mainTitle || '#c2185b',
-        shadowColor: COLORS.mainTitle || '#c2185b',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-        elevation: 5,
-        transform: [{ scale: 1.05 }],
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
+        ...SHADOWS.medium,
+        shadowColor: COLORS.primary,
     },
     stepInactive: {
-        backgroundColor: '#f8fafc',
-        borderColor: '#cbd5e1',
+        backgroundColor: COLORS.background,
+        borderColor: COLORS.border,
     },
     stepCurrent: {
         transform: [{ scale: 1.1 }],
-        borderColor: COLORS.mainTitle || '#c2185b',
+        borderColor: COLORS.primary,
         borderWidth: 2,
         backgroundColor: '#fff',
     },
@@ -588,7 +575,7 @@ const styles = StyleSheet.create({
     stepLine: {
         flex: 1,
         height: 2,
-        backgroundColor: '#e2e8f0',
+        backgroundColor: COLORS.border,
         marginHorizontal: 8,
         borderRadius: 1,
     },
@@ -596,7 +583,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 14,
         fontWeight: '800',
-        color: COLORS.mainTitle || '#c2185b',
+        color: COLORS.primary,
         marginBottom: 4,
         letterSpacing: 0.5,
     },
@@ -609,13 +596,7 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         padding: 24,
         marginBottom: 24,
-        shadowColor: "#001e3c",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.04,
-        shadowRadius: 16,
-        elevation: 2,
-        borderWidth: 1,
-        borderColor: 'rgba(241, 245, 249, 0.8)',
+        ...SHADOWS.light,
     },
     cardHeaderRow: {
         flexDirection: 'row',
@@ -625,26 +606,27 @@ const styles = StyleSheet.create({
     },
     cardTitle: {
         fontSize: 16,
-        fontWeight: '700',
-        color: '#1e293b',
+        fontWeight: '800',
+        color: COLORS.text,
         marginBottom: 16,
         flexDirection: 'row',
         alignItems: 'center',
     },
     label: {
         fontSize: 14,
-        fontWeight: '600',
-        color: '#334155',
+        fontWeight: '700',
+        color: COLORS.textSecondary,
         marginBottom: 10,
         marginLeft: 2,
     },
     sectionDesc: {
         fontSize: 14,
-        color: '#64748b',
-        marginBottom: 20,
+        color: COLORS.textSecondary,
+        marginBottom: 22,
         textAlign: 'center',
         paddingHorizontal: 16,
         lineHeight: 20,
+        fontWeight: '500',
     },
     categoryPickerTrigger: {
         marginBottom: 20,
@@ -652,23 +634,24 @@ const styles = StyleSheet.create({
     inputLabel: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#475569',
+        color: COLORS.textSecondary,
         marginBottom: 8,
     },
     pickerInner: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f8fafc',
+        backgroundColor: COLORS.background,
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 14,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
+        borderColor: COLORS.border,
     },
     pickerValue: {
         flex: 1,
         fontSize: 15,
-        color: '#1e293b',
+        color: COLORS.text,
+        fontWeight: '500',
     },
     modalOverlay: {
         flex: 1,
@@ -681,6 +664,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 30,
         padding: 24,
         paddingBottom: 40,
+        ...SHADOWS.medium,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -691,7 +675,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 18,
         fontWeight: '800',
-        color: '#1e293b',
+        color: COLORS.text,
     },
     categoryItem: {
         flexDirection: 'row',
@@ -699,23 +683,23 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
+        borderBottomColor: COLORS.border,
     },
     categoryItemText: {
         fontSize: 16,
-        color: '#475569',
-        fontWeight: '500',
+        color: COLORS.textSecondary,
+        fontWeight: '600',
     },
     categoryItemTextActive: {
-        color: COLORS.mainTitle,
-        fontWeight: '700',
+        color: COLORS.primary,
+        fontWeight: '800',
     },
     uploadBox: {
         height: 160,
-        backgroundColor: '#f8fafc',
+        backgroundColor: COLORS.background,
         borderRadius: 16,
         borderWidth: 2,
-        borderColor: '#e2e8f0',
+        borderColor: COLORS.border,
         borderStyle: 'dashed',
         justifyContent: 'center',
         alignItems: 'center',
@@ -725,22 +709,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     uploadIconCircle: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 52,
+        height: 52,
+        borderRadius: 26,
         backgroundColor: '#fdf2f8',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 12,
     },
     uploadText: {
-        color: '#64748b',
-        fontWeight: '600',
+        color: COLORS.textSecondary,
+        fontWeight: '700',
         fontSize: 14,
     },
     previewImage: {
         width: '100%',
         height: '100%',
+        resizeMode: 'cover',
     },
     removeImageBtn: {
         position: 'absolute',
@@ -749,11 +734,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         borderRadius: 16,
         padding: 4,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        ...SHADOWS.light,
     },
     tagsContainer: {
         flexDirection: 'row',
@@ -774,8 +755,8 @@ const styles = StyleSheet.create({
     },
     tagText: {
         fontSize: 13,
-        color: COLORS.mainTitle || '#c2185b',
-        fontWeight: '600',
+        color: COLORS.primary,
+        fontWeight: '700',
     },
     addValueRow: {
         flexDirection: 'row',
@@ -784,8 +765,8 @@ const styles = StyleSheet.create({
     },
     dashedBtn: {
         height: 56,
-        borderWidth: 1.5,
-        borderColor: COLORS.mainTitle || '#c2185b',
+        borderWidth: 2,
+        borderColor: COLORS.primary,
         borderStyle: 'dashed',
         borderRadius: 16,
         flexDirection: 'row',
@@ -796,78 +777,65 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     dashedBtnText: {
-        color: COLORS.mainTitle || '#c2185b',
-        fontWeight: '700',
-        fontSize: 15,
+        color: COLORS.primary,
+        fontWeight: '800',
     },
     variantCard: {
-        backgroundColor: 'white',
-        padding: 12,
-        borderRadius: 16,
-        marginBottom: 12,
         flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        shadowColor: "#94a3b8",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 6,
-        elevation: 1,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
+        backgroundColor: 'white',
+        borderRadius: 24,
+        padding: 16,
+        marginBottom: 16,
+        ...SHADOWS.light,
     },
     variantImagePlaceholder: {
         width: 60,
         height: 60,
-        backgroundColor: '#f8fafc',
-        borderRadius: 10,
+        backgroundColor: COLORS.background,
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
+        marginRight: 16,
     },
     variantInfo: {
         flex: 1,
     },
     variantName: {
         fontSize: 15,
-        fontWeight: '700',
-        color: '#334155',
-        marginBottom: 8,
+        fontWeight: '800',
+        color: COLORS.text,
+        marginBottom: 12,
     },
     variantRow: {
         flexDirection: 'row',
         alignItems: 'center',
     },
-    inputPrefix: {
-        color: '#94a3b8',
-        marginRight: 6,
-        fontWeight: '600',
-    },
     footer: {
-        paddingHorizontal: 16,
-        paddingVertical: 20,
-        paddingBottom: Platform.OS === 'ios' ? 34 : 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.98)',
-        borderTopWidth: 1,
-        borderTopColor: '#f1f5f9',
         flexDirection: 'row',
+        padding: 20,
+        backgroundColor: 'white',
+        borderTopWidth: 1,
+        borderTopColor: COLORS.border,
         gap: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 8,
     },
     premiumBtnPrimary: {
-        flex: 2,
-        height: 58,
+        flex: 1,
         borderRadius: 16,
+        height: 54,
+        ...SHADOWS.medium,
+        shadowColor: COLORS.primary,
     },
     premiumBtnSecondary: {
-        flex: 1,
-        height: 58,
+        flex: 0.4,
         borderRadius: 16,
+        height: 54,
+        backgroundColor: COLORS.background,
+        borderColor: COLORS.border,
+    },
+    inputPrefix: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: COLORS.textSecondary,
     }
 });
 

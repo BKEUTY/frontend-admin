@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS } from '../constants/Theme';
-import { useLanguage } from '../i18n/LanguageContext';
-import adminApi from '../api/adminApi';
-import { getImageUrl } from '../api/axiosClient';
+import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
+import { useLanguage } from '../../../i18n/LanguageContext';
+import adminApi from '../../../api/adminApi';
+import { getImageUrl } from '../../../api/axiosClient';
 
 const ProductListScreen = ({ navigation }) => {
     const { t } = useLanguage();
@@ -66,6 +66,7 @@ const ProductListScreen = ({ navigation }) => {
         <TouchableOpacity 
             style={styles.productCard}
             onPress={() => navigation.navigate('AdminProductCreate', { productId: item.id })}
+            activeOpacity={0.7}
         >
             <View style={styles.productImageContainer}>
                 {item.image ? (
@@ -85,12 +86,12 @@ const ProductListScreen = ({ navigation }) => {
                     </Text>
                     <View style={styles.stockBadge}>
                         <Text style={styles.stockText}>
-                            {t('stock')}: {item.variants ? item.variants.reduce((sum, v) => sum + v.stockQuantity, 0) : 0}
+                            {t('admin_product_stock')}: {item.variants ? item.variants.reduce((sum, v) => sum + v.stockQuantity, 0) : 0}
                         </Text>
                     </View>
                 </View>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
+            <Ionicons name="chevron-forward" size={20} color={COLORS.textLight} />
         </TouchableOpacity>
     );
 
@@ -101,16 +102,18 @@ const ProductListScreen = ({ navigation }) => {
                 <TouchableOpacity 
                     style={styles.addButton}
                     onPress={() => navigation.navigate('AdminProductCreate')}
+                    activeOpacity={0.8}
                 >
                     <Ionicons name="add" size={24} color="white" />
                 </TouchableOpacity>
             </View>
 
             <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color="#94a3b8" style={styles.searchIcon} />
+                <Ionicons name="search" size={20} color={COLORS.textLight} style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder={t('search')}
+                    placeholderTextColor={COLORS.textLight}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                 />
@@ -118,7 +121,7 @@ const ProductListScreen = ({ navigation }) => {
 
             {loading && page === 0 ? (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color={COLORS.mainTitle} />
+                    <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
             ) : (
                 <FlatList
@@ -128,8 +131,9 @@ const ProductListScreen = ({ navigation }) => {
                     contentContainerStyle={styles.listContent}
                     onEndReached={loadMore}
                     onEndReachedThreshold={0.5}
+                    showsVerticalScrollIndicator={false}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.mainTitle]} />
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />
                     }
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
@@ -146,34 +150,32 @@ const ProductListScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f9fa',
+        backgroundColor: COLORS.background,
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
-        paddingTop: 60,
+        paddingTop: Platform.OS === 'ios' ? 60 : 40,
         paddingBottom: 20,
         backgroundColor: 'white',
+        ...SHADOWS.light,
     },
     headerTitle: {
         fontSize: 24,
         fontWeight: '800',
-        color: '#0f172a',
+        color: COLORS.text,
     },
     addButton: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: COLORS.mainTitle,
+        backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
-        elevation: 4,
-        shadowColor: COLORS.mainTitle,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
+        ...SHADOWS.medium,
+        shadowColor: COLORS.primary,
     },
     searchContainer: {
         flexDirection: 'row',
@@ -184,7 +186,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         height: 50,
         borderWidth: 1,
-        borderColor: '#f1f5f9',
+        borderColor: COLORS.border,
     },
     searchIcon: {
         marginRight: 10,
@@ -192,7 +194,8 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 15,
-        color: '#1e293b',
+        color: COLORS.text,
+        fontWeight: '500',
     },
     listContent: {
         padding: 16,
@@ -206,18 +209,14 @@ const styles = StyleSheet.create({
         padding: 12,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#f1f5f9',
-        elevation: 2,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
+        borderColor: COLORS.border,
+        ...SHADOWS.light,
     },
     productImageContainer: {
-        width: 70,
-        height: 70,
+        width: 76,
+        height: 76,
         borderRadius: 12,
-        backgroundColor: '#f8fafc',
+        backgroundColor: COLORS.background,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,
@@ -226,20 +225,22 @@ const styles = StyleSheet.create({
     productImage: {
         width: '100%',
         height: '100%',
+        resizeMode: 'cover',
     },
     productInfo: {
         flex: 1,
     },
     productName: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '700',
-        color: '#1e293b',
-        marginBottom: 4,
+        color: COLORS.text,
+        marginBottom: 2,
     },
     productCategory: {
-        fontSize: 13,
-        color: '#64748b',
+        fontSize: 12,
+        color: COLORS.textSecondary,
         marginBottom: 8,
+        fontWeight: '500',
     },
     productMeta: {
         flexDirection: 'row',
@@ -249,18 +250,18 @@ const styles = StyleSheet.create({
     productPrice: {
         fontSize: 15,
         fontWeight: '800',
-        color: COLORS.mainTitle,
+        color: COLORS.primary,
     },
     stockBadge: {
         paddingHorizontal: 8,
         paddingVertical: 4,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: COLORS.border,
         borderRadius: 8,
     },
     stockText: {
-        fontSize: 11,
-        fontWeight: '600',
-        color: '#475569',
+        fontSize: 10,
+        fontWeight: '700',
+        color: COLORS.textSecondary,
     },
     centerContainer: {
         flex: 1,
@@ -274,7 +275,7 @@ const styles = StyleSheet.create({
     emptyText: {
         marginTop: 16,
         fontSize: 15,
-        color: '#94a3b8',
+        color: COLORS.textLight,
         fontWeight: '500',
     }
 });

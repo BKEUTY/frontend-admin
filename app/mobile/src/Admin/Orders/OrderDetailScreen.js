@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { COLORS } from '../constants/Theme';
-import { useLanguage } from '../i18n/LanguageContext';
+import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
+import { useLanguage } from '../../../i18n/LanguageContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useOrders } from '../hooks/useOrders';
+import { useOrders } from '../../../hooks/useOrders';
 
 const { width } = Dimensions.get('window');
 
@@ -25,7 +25,7 @@ const OrderDetailScreen = () => {
     if (detailLoading) {
         return (
             <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-                <ActivityIndicator size="large" color={COLORS.mainTitle} />
+                <ActivityIndicator size="large" color={COLORS.primary} />
             </View>
         );
     }
@@ -34,7 +34,7 @@ const OrderDetailScreen = () => {
         return (
             <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
                 <Ionicons name="document-text-outline" size={60} color="#e5e7eb" />
-                <Text style={{ marginTop: 15, color: '#9ca3af' }}>{t('no_data')}</Text>
+                <Text style={{ marginTop: 15, color: COLORS.textLight, fontWeight: '600' }}>{t('no_data')}</Text>
             </View>
         );
     }
@@ -60,18 +60,18 @@ const OrderDetailScreen = () => {
                 <View style={styles.stepIconBoxOuter}>
                     {isActive || isCompleted ? (
                         <LinearGradient
-                            colors={isActive ? [COLORS.mainTitle, COLORS.mainTitleDark || '#880e4f'] : ['#f3f4f6', '#f3f4f6']}
+                            colors={isActive ? [COLORS.primary, COLORS.primaryHover] : ['#f3f4f6', '#e5e7eb']}
                             style={[styles.stepIconBox, isActive && styles.stepActiveShadow]}
                         >
                             <Ionicons
                                 name={icon}
                                 size={18}
-                                color={isActive ? 'white' : COLORS.mainTitle}
+                                color={isActive ? 'white' : COLORS.primary}
                             />
                         </LinearGradient>
                     ) : (
                         <View style={styles.stepIconBox}>
-                            <Ionicons name={icon} size={18} color="#9ca3af" />
+                            <Ionicons name={icon} size={18} color={COLORS.textLight} />
                         </View>
                     )}
                 </View>
@@ -86,11 +86,11 @@ const OrderDetailScreen = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'PAID':
-            case 'COMPLETED': return '#10b981';
+            case 'COMPLETED': return COLORS.success;
             case 'UNPAID':
-            case 'PENDING': return '#f59e0b';
-            case 'CANCELLED': return '#ef4444';
-            default: return '#6b7280';
+            case 'PENDING': return COLORS.warning;
+            case 'CANCELLED': return COLORS.danger;
+            default: return COLORS.textSecondary;
         }
     };
 
@@ -98,7 +98,7 @@ const OrderDetailScreen = () => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#111827" />
+                    <Ionicons name="arrow-back" size={24} color={COLORS.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>{t('order_detail')}</Text>
                 <View style={{ width: 40 }} />
@@ -109,10 +109,10 @@ const OrderDetailScreen = () => {
                     <View style={styles.orderIdHeader}>
                         <View>
                             <Text style={styles.orderIdLabel}>{t('order_id')} #{orderData.id}</Text>
-                            <Text style={styles.orderDate}>{t('date')}: {orderData.createdAt}</Text>
+                            <Text style={styles.orderDate}>{t('admin_date')}: {orderData.createdAt}</Text>
                         </View>
                         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(orderData.status) + '15' }]}>
-                            <Text style={[styles.statusBadgeText, { color: getStatusColor(orderData.status) }]}>{t(`status_${orderData.status.toLowerCase()}`) || orderData.status}</Text>
+                            <Text style={[styles.statusBadgeText, { color: getStatusColor(orderData.status) }]}>{t(`status_${orderData.status?.toLowerCase()}`) || orderData.status}</Text>
                         </View>
                     </View>
 
@@ -120,36 +120,36 @@ const OrderDetailScreen = () => {
                         {orderData.status === 'PENDING' && (
                             <>
                                 <TouchableOpacity 
-                                    style={[styles.btnAction, { borderColor: '#ef4444' }]} 
+                                    style={[styles.btnAction, { borderColor: COLORS.danger }]} 
                                     onPress={() => updateStatus(orderData.id, 'CANCELLED')}
                                 >
-                                    <Ionicons name="close-circle-outline" size={18} color="#ef4444" />
-                                    <Text style={[styles.btnText, { color: '#ef4444' }]}>Hủy đơn</Text>
+                                    <Ionicons name="close-circle-outline" size={18} color={COLORS.danger} />
+                                    <Text style={[styles.btnText, { color: COLORS.danger }]}>{t('cancel')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity 
-                                    style={[styles.btnAction, { backgroundColor: '#10b981', borderColor: '#10b981' }]} 
+                                    style={[styles.btnAction, { backgroundColor: COLORS.success, borderColor: COLORS.success }]} 
                                     onPress={() => updateStatus(orderData.id, 'COMPLETED')}
                                 >
                                     <Ionicons name="checkmark-circle-outline" size={18} color="white" />
-                                    <Text style={[styles.btnText, { color: 'white' }]}>Hoàn thành</Text>
+                                    <Text style={[styles.btnText, { color: 'white' }]}>{t('confirm')}</Text>
                                 </TouchableOpacity>
                             </>
                         )}
                         {orderData.status === 'UNPAID' && (
                             <>
                                 <TouchableOpacity 
-                                    style={[styles.btnAction, { borderColor: '#ef4444' }]} 
+                                    style={[styles.btnAction, { borderColor: COLORS.danger }]} 
                                     onPress={() => updateStatus(orderData.id, 'CANCELLED')}
                                 >
-                                    <Ionicons name="close-circle-outline" size={18} color="#ef4444" />
-                                    <Text style={[styles.btnText, { color: '#ef4444' }]}>Hủy đơn</Text>
+                                    <Ionicons name="close-circle-outline" size={18} color={COLORS.danger} />
+                                    <Text style={[styles.btnText, { color: COLORS.danger }]}>{t('cancel')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity 
-                                    style={[styles.btnAction, { backgroundColor: '#10b981', borderColor: '#10b981' }]} 
+                                    style={[styles.btnAction, { backgroundColor: COLORS.success, borderColor: COLORS.success }]} 
                                     onPress={() => updateStatus(orderData.id, 'PAID')}
                                 >
                                     <Ionicons name="cash-outline" size={18} color="white" />
-                                    <Text style={[styles.btnText, { color: 'white' }]}>Xác nhận thanh toán</Text>
+                                    <Text style={[styles.btnText, { color: 'white' }]}>{t('confirm')}</Text>
                                 </TouchableOpacity>
                             </>
                         )}
@@ -157,25 +157,25 @@ const OrderDetailScreen = () => {
                 </View>
 
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>{t('customer_info') || 'Customer Info'}</Text>
+                    <Text style={styles.sectionTitle}>{t('customer_info')}</Text>
                 </View>
-                <View style={styles.timelineCard}>
+                <View style={styles.infoCard}>
                     <View style={styles.infoRow}>
-                        <Ionicons name="person-outline" size={18} color="#6b7280" />
+                        <Ionicons name="person-outline" size={18} color={COLORS.textSecondary} />
                         <Text style={styles.infoText}>{orderData.user?.username}</Text>
                     </View>
                     <View style={styles.infoRow}>
-                        <Ionicons name="location-outline" size={18} color="#6b7280" />
+                        <Ionicons name="location-outline" size={18} color={COLORS.textSecondary} />
                         <Text style={styles.infoText}>{orderData.address}</Text>
                     </View>
                     <View style={styles.infoRow}>
-                        <Ionicons name="card-outline" size={18} color="#6b7280" />
+                        <Ionicons name="card-outline" size={18} color={COLORS.textSecondary} />
                         <Text style={styles.infoText}>{orderData.paymentMethod}</Text>
                     </View>
                 </View>
 
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>{t('order_info') || 'Order Status'}</Text>
+                    <Text style={styles.sectionTitle}>{t('order_info')}</Text>
                 </View>
 
                 <View style={styles.timelineCard}>
@@ -213,43 +213,44 @@ const OrderDetailScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f9fafb' },
-    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, height: 56, backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, height: Platform.OS === 'ios' ? 100 : 70, paddingTop: Platform.OS === 'ios' ? 40 : 10, backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor: COLORS.border, ...SHADOWS.light },
     backButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-    headerTitle: { flex: 1, textAlign: 'center', fontSize: 16, fontWeight: '700', color: '#111827' },
-    content: { flex: 1, padding: 20 },
-    mainCard: { backgroundColor: 'white', borderRadius: 24, padding: 20, marginBottom: 24, elevation: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, borderWidth: 1, borderColor: '#f9fafb' },
+    headerTitle: { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '800', color: COLORS.text },
+    content: { flex: 1, padding: 16 },
+    mainCard: { backgroundColor: 'white', borderRadius: 24, padding: 20, marginBottom: 24, borderWidht: 1, borderColor: COLORS.border, ...SHADOWS.medium },
     orderIdHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
-    orderIdLabel: { fontSize: 17, fontWeight: '900', color: '#111827', marginBottom: 4 },
-    orderDate: { fontSize: 13, color: '#9ca3af', fontWeight: '500' },
+    orderIdLabel: { fontSize: 18, fontWeight: '900', color: COLORS.text, marginBottom: 4 },
+    orderDate: { fontSize: 13, color: COLORS.textLight, fontWeight: '500' },
     statusBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 },
-    statusBadgeText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+    statusBadgeText: { fontSize: 10, fontWeight: '800', letterSpacing: 0.5, textTransform: 'uppercase' },
     actionButtonsRow: { flexDirection: 'row', gap: 12, marginTop: 10 },
-    btnAction: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, borderRadius: 10, borderWidth: 1, gap: 6 },
-    btnText: { fontSize: 13, fontWeight: '700' },
+    btnAction: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 44, borderRadius: 12, borderWidth: 1.5, gap: 8 },
+    btnText: { fontSize: 13, fontWeight: '800' },
     sectionHeader: { marginBottom: 16, paddingHorizontal: 4 },
-    sectionTitle: { fontSize: 18, fontWeight: '900', color: '#111827' },
-    timelineCard: { backgroundColor: 'white', borderRadius: 24, padding: 24, marginBottom: 24, elevation: 5, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8 },
-    infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 10 },
-    infoText: { fontSize: 14, color: '#4b5563', flex: 1 },
-    timelineLine: { position: 'absolute', left: 44, top: 40, bottom: 40, width: 2, backgroundColor: '#e5e7eb', zIndex: 0 },
+    sectionTitle: { fontSize: 18, fontWeight: '900', color: COLORS.text },
+    infoCard: { backgroundColor: 'white', borderRadius: 24, padding: 20, marginBottom: 24, ...SHADOWS.light },
+    infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 },
+    infoText: { fontSize: 14, color: COLORS.textSecondary, flex: 1, fontWeight: '500' },
+    timelineCard: { backgroundColor: 'white', borderRadius: 24, padding: 24, marginBottom: 24, ...SHADOWS.light },
+    timelineLine: { position: 'absolute', left: 44, top: 40, bottom: 40, width: 2, backgroundColor: COLORS.border, zIndex: 0 },
     timelineStep: { flexDirection: 'row', marginBottom: 24, alignItems: 'center' },
     stepIconBoxOuter: { width: 40, height: 40, marginRight: 20, zIndex: 1 },
-    stepIconBox: { width: 40, height: 40, borderRadius: 14, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#e5e7eb' },
-    stepActiveShadow: { elevation: 5, shadowColor: COLORS.mainTitle, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 0 },
+    stepIconBox: { width: 40, height: 40, borderRadius: 14, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: COLORS.border },
+    stepActiveShadow: { ...SHADOWS.medium, shadowColor: COLORS.primary, shadowOpacity: 0.3, borderWidth: 0 },
     stepContent: { flex: 1 },
-    stepLabel: { fontSize: 14, fontWeight: '700', color: '#111827', marginBottom: 2 },
-    stepDate: { fontSize: 12, color: '#9ca3af', fontWeight: '500' },
-    textActive: { color: COLORS.mainTitle },
-    summaryCard: { backgroundColor: '#111827', borderRadius: 24, padding: 24, marginBottom: 40 },
-    summaryTitle: { fontSize: 16, fontWeight: '900', color: 'white', marginBottom: 20 },
-    summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 },
+    stepLabel: { fontSize: 15, fontWeight: '700', color: COLORS.text, marginBottom: 2 },
+    stepDate: { fontSize: 12, color: COLORS.textLight, fontWeight: '500' },
+    textActive: { color: COLORS.primary },
+    summaryCard: { backgroundColor: '#111827', borderRadius: 28, padding: 24, marginBottom: 40, ...SHADOWS.medium },
+    summaryTitle: { fontSize: 17, fontWeight: '900', color: 'white', marginBottom: 22 },
+    summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14 },
     summaryLabel: { fontSize: 14, color: '#9ca3af', fontWeight: '500' },
     summaryValue: { fontSize: 14, color: 'white', fontWeight: '700' },
-    summaryValueGreen: { fontSize: 14, color: '#10b981', fontWeight: '700' },
-    totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 15, paddingTop: 15, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', borderStyle: 'dashed' },
+    summaryValueGreen: { fontSize: 14, color: COLORS.success, fontWeight: '700' },
+    totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 18, paddingTop: 18, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.14)', borderStyle: 'dashed' },
     totalLabel: { fontSize: 18, fontWeight: '900', color: 'white' },
-    totalValue: { fontSize: 22, fontWeight: '900', color: COLORS.mainTitle }
+    totalValue: { fontSize: 24, fontWeight: '900', color: COLORS.primary }
 });
 
 export default OrderDetailScreen;

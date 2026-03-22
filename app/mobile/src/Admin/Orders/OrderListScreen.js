@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useLanguage } from '../i18n/LanguageContext';
-import { COLORS } from '../constants/Theme';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator, Platform } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useLanguage } from '../../../i18n/LanguageContext';
+import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../hooks/useOrders';
+import { useOrders } from '../../../hooks/useOrders';
 
 const { width } = Dimensions.get('window');
 
@@ -13,9 +13,11 @@ const OrderListScreen = () => {
     const { t } = useLanguage();
     const { orders, loading, refreshing, setRefreshing, fetchOrders, pagination } = useOrders();
 
-    useEffect(() => {
-        fetchOrders(0, 10);
-    }, [fetchOrders]);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchOrders(0, 10);
+        }, [fetchOrders])
+    );
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -25,11 +27,11 @@ const OrderListScreen = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'PAID':
-            case 'COMPLETED': return '#10b981';
+            case 'COMPLETED': return COLORS.success;
             case 'UNPAID':
-            case 'PENDING': return '#f59e0b';
-            case 'CANCELLED': return '#ef4444';
-            default: return '#6b7280';
+            case 'PENDING': return COLORS.warning;
+            case 'CANCELLED': return COLORS.danger;
+            default: return COLORS.textSecondary;
         }
     };
 
@@ -52,13 +54,15 @@ const OrderListScreen = () => {
             <View style={styles.divider} />
             
             <View style={styles.cardContent}>
-                <View style={styles.row}>
-                    <Ionicons name="card-outline" size={16} color="#6b7280" />
-                    <Text style={styles.textValue}>{item.paymentMethod || 'COD'}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Ionicons name="person-outline" size={16} color="#6b7280" />
-                    <Text style={styles.textValue}>{item.userId || t('guest')}</Text>
+                <View style={styles.metaRow}>
+                    <View style={styles.row}>
+                        <Ionicons name="card-outline" size={16} color={COLORS.textLight} />
+                        <Text style={styles.textValue}>{item.paymentMethod || 'COD'}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Ionicons name="person-outline" size={16} color={COLORS.textLight} />
+                        <Text style={styles.textValue}>{item.userId || t('guest')}</Text>
+                    </View>
                 </View>
                 <View style={styles.totalBox}>
                     <Text style={styles.totalLabel}>{t('total')}:</Text>
@@ -76,7 +80,7 @@ const OrderListScreen = () => {
             
             {loading && !refreshing && (
                 <View style={styles.loader}>
-                    <ActivityIndicator size="large" color={COLORS.mainTitle} />
+                    <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
             )}
 
@@ -85,7 +89,8 @@ const OrderListScreen = () => {
                 keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
                 renderItem={renderOrderItem}
                 contentContainerStyle={styles.listContainer}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.mainTitle]} />}
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />}
                 ListEmptyComponent={
                     !loading && (
                         <View style={styles.emptyContainer}>
@@ -100,26 +105,42 @@ const OrderListScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f9fafb' },
-    header: { height: 60, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
-    headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
-    listContainer: { padding: 15, paddingBottom: 40 },
+    container: { flex: 1, backgroundColor: COLORS.background },
+    header: { 
+        height: Platform.OS === 'ios' ? 100 : 70, 
+        backgroundColor: 'white', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        paddingTop: Platform.OS === 'ios' ? 40 : 10,
+        ...SHADOWS.light 
+    },
+    headerTitle: { fontSize: 20, fontWeight: '800', color: COLORS.text },
+    listContainer: { padding: 16, paddingBottom: 60 },
     loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    card: { backgroundColor: 'white', borderRadius: 16, padding: 16, marginBottom: 15, elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, borderWidth: 1, borderColor: '#f3f4f6' },
+    card: { 
+        backgroundColor: 'white', 
+        borderRadius: 20, 
+        padding: 16, 
+        marginBottom: 16, 
+        borderWidth: 1, 
+        borderColor: COLORS.border,
+        ...SHADOWS.light 
+    },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-    orderId: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
-    orderDate: { fontSize: 12, color: '#9ca3af' },
+    orderId: { fontSize: 17, fontWeight: '800', color: COLORS.text, marginBottom: 2 },
+    orderDate: { fontSize: 12, color: COLORS.textLight, fontWeight: '500' },
     statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
     statusText: { fontSize: 11, fontWeight: '800', textTransform: 'uppercase' },
-    divider: { height: 1, backgroundColor: '#f3f4f6', marginVertical: 12 },
-    cardContent: { gap: 8 },
-    row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    textValue: { fontSize: 13, color: '#4b5563', fontWeight: '500' },
-    totalBox: { flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 4 },
-    totalLabel: { fontSize: 12, color: '#6b7280' },
-    totalValue: { fontSize: 16, fontWeight: 'bold', color: COLORS.mainTitle },
+    divider: { height: 1.5, backgroundColor: COLORS.border, marginVertical: 12, borderRadius: 1 },
+    cardContent: { gap: 12 },
+    metaRow: { flexDirection: 'row', gap: 20 },
+    row: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    textValue: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '600' },
+    totalBox: { flexDirection: 'row', alignItems: 'baseline', gap: 6, marginTop: 4, justifyContent: 'flex-end' },
+    totalLabel: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '500' },
+    totalValue: { fontSize: 18, fontWeight: '900', color: COLORS.primary },
     emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingTop: 100 },
-    emptyText: { marginTop: 15, fontSize: 16, color: '#9ca3af', fontWeight: '500' }
+    emptyText: { marginTop: 15, fontSize: 16, color: COLORS.textLight, fontWeight: '600' }
 });
 
 export default OrderListScreen;

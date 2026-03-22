@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform, useWindowDimensions, Modal, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import { useLanguage } from '../../i18n/LanguageContext';
-import { COLORS } from '../../constants/Theme';
+import { useLanguage } from '../../../i18n/LanguageContext';
+import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
-import adminApi from '../../api/adminApi';
+import adminApi from '../../../api/adminApi';
 import { useFocusEffect } from '@react-navigation/native';
 
 const DashboardScreen = ({ navigation }) => {
@@ -63,7 +63,7 @@ const DashboardScreen = ({ navigation }) => {
             iconLib: MaterialCommunityIcons,
             trend: 8.5,
             trendType: 'up',
-            colors: ['#c2185b', '#e91e63'],
+            colors: [COLORS.primary, COLORS.primaryHover],
             bgLight: '#fce7f3'
         },
         {
@@ -77,7 +77,7 @@ const DashboardScreen = ({ navigation }) => {
             bgLight: '#dbeafe'
         },
         {
-            title: t('admin_dashboard_appointments') || 'Users',
+            title: t('admin_dashboard_users'),
             value: statsData.users.toString(),
             icon: 'account-group',
             iconLib: MaterialCommunityIcons,
@@ -87,7 +87,7 @@ const DashboardScreen = ({ navigation }) => {
             bgLight: '#d1fae5'
         },
         {
-            title: t('admin_dashboard_products') || 'Products',
+            title: t('admin_dashboard_products'),
             value: statsData.products.toString(),
             icon: 'package-variant-closed',
             iconLib: MaterialCommunityIcons,
@@ -120,9 +120,9 @@ const DashboardScreen = ({ navigation }) => {
                     <Ionicons
                         name={item.trendType === 'up' ? 'trending-up' : 'trending-down'}
                         size={14}
-                        color={item.trendType === 'up' ? '#059669' : '#dc2626'}
+                        color={item.trendType === 'up' ? COLORS.success : COLORS.danger}
                     />
-                    <Text style={[styles.trendText, { color: item.trendType === 'up' ? '#059669' : '#dc2626' }]}>
+                    <Text style={[styles.trendText, { color: item.trendType === 'up' ? COLORS.success : COLORS.danger }]}>
                         {Math.abs(item.trend)}%
                     </Text>
                 </View>
@@ -140,12 +140,10 @@ const DashboardScreen = ({ navigation }) => {
 
     const handleEditProduct = () => {
         setActionModalVisible(false);
-        // navigation.navigate('AdminProductCreate', { productId: selectedProduct.id });
     };
 
     const handleDeleteProduct = () => {
         setActionModalVisible(false);
-        // Handle delete logic
     };
 
     const renderProductItem = ({ item }) => (
@@ -156,7 +154,7 @@ const DashboardScreen = ({ navigation }) => {
             delayLongPress={500}
         >
             <View style={styles.productIcon}>
-                <MaterialCommunityIcons name="package-variant-closed" size={24} color={COLORS.mainTitle} />
+                <MaterialCommunityIcons name="package-variant-closed" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.productInfo}>
                 <Text style={styles.productName} numberOfLines={1}>{item.name}</Text>
@@ -166,7 +164,7 @@ const DashboardScreen = ({ navigation }) => {
             </View>
             <View style={styles.productMeta}>
                 <Text style={styles.productPrice}>{item.price}</Text>
-                <Text style={styles.productSold}>{t('sold_count')}: {item.sold}</Text>
+                <Text style={styles.productSold}>{t('admin_product_sold')}: {item.sold}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -174,7 +172,7 @@ const DashboardScreen = ({ navigation }) => {
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <LinearGradient
-                colors={[COLORS.mainTitle, '#e91e63']}
+                colors={[COLORS.primary, COLORS.primaryHover]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.headerGradient}
@@ -207,7 +205,7 @@ const DashboardScreen = ({ navigation }) => {
                 <View style={styles.tableCard}>
                     {isLoading ? (
                         <View style={{ padding: 40 }}>
-                             <ActivityIndicator size="small" color={COLORS.mainTitle} />
+                             <ActivityIndicator size="small" color={COLORS.primary} />
                         </View>
                     ) : topProducts.length > 0 ? (
                         <FlatList
@@ -244,23 +242,23 @@ const DashboardScreen = ({ navigation }) => {
                                 {selectedProduct ? `${t('admin_product_action')}: ${selectedProduct.name}` : t('admin_product_action')}
                             </Text>
                             <TouchableOpacity onPress={() => setActionModalVisible(false)}>
-                                <Ionicons name="close" size={24} color="#64748b" />
+                                <Ionicons name="close" size={24} color={COLORS.textSecondary} />
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.modalBody}>
                             <TouchableOpacity style={styles.modalActionBtn} onPress={handleEditProduct}>
                                 <View style={[styles.modalActionIcon, { backgroundColor: '#eff6ff' }]}>
-                                    <FontAwesome5 name="edit" size={18} color="#3b82f6" />
+                                    <FontAwesome5 name="edit" size={18} color={COLORS.info} />
                                 </View>
                                 <Text style={styles.modalActionText}>{t('edit')}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity style={[styles.modalActionBtn, styles.modalActionBtnDanger]} onPress={handleDeleteProduct}>
                                 <View style={[styles.modalActionIcon, { backgroundColor: '#fef2f2' }]}>
-                                    <MaterialCommunityIcons name="delete-outline" size={20} color="#ef4444" />
+                                    <MaterialCommunityIcons name="delete-outline" size={20} color={COLORS.danger} />
                                 </View>
-                                <Text style={[styles.modalActionText, { color: '#ef4444' }]}>{t('delete')}</Text>
+                                <Text style={[styles.modalActionText, { color: COLORS.danger }]}>{t('delete')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -273,11 +271,11 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f9fa',
+        backgroundColor: COLORS.background,
     },
     headerGradient: {
         paddingTop: Platform.OS === 'ios' ? 60 : 40,
-        paddingBottom: 30,
+        paddingBottom: 40,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
@@ -299,13 +297,13 @@ const styles = StyleSheet.create({
         color: '#ffffff',
     },
     avatarPlaceholder: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         backgroundColor: 'rgba(255,255,255,0.2)',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: 'rgba(255,255,255,0.4)',
     },
     avatarText: {
@@ -315,7 +313,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         padding: 20,
-        marginTop: -20,
+        marginTop: -30,
     },
     statsGrid: {
         flexDirection: 'row',
@@ -328,11 +326,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 24,
         padding: 20,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.04,
-        shadowRadius: 12,
-        elevation: 4,
+        ...SHADOWS.light,
         marginBottom: 8,
     },
     iconWrapper: {
@@ -344,15 +338,15 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     statValue: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: '900',
-        color: '#0f172a',
-        marginBottom: 6,
+        color: COLORS.text,
+        marginBottom: 4,
         letterSpacing: -0.5,
     },
     statLabel: {
-        fontSize: 14,
-        color: '#64748b',
+        fontSize: 13,
+        color: COLORS.textSecondary,
         fontWeight: '600',
         marginBottom: 12,
     },
@@ -375,11 +369,6 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         marginLeft: 4,
     },
-    trendLabel: {
-        fontSize: 10,
-        marginLeft: 4,
-        color: '#94a3b8',
-    },
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -390,31 +379,27 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '800',
-        color: '#1a1a1a',
+        color: COLORS.text,
     },
     seeAllText: {
         fontSize: 14,
-        color: COLORS.mainTitle,
+        color: COLORS.primary,
         fontWeight: '600',
     },
     tableCard: {
         backgroundColor: 'white',
         borderRadius: 20,
         padding: 8,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 3,
+        ...SHADOWS.medium,
     },
     productItem: {
-        padding: 18,
+        padding: 16,
         flexDirection: 'row',
         alignItems: 'center',
     },
     productIcon: {
-        width: 40,
-        height: 40,
+        width: 44,
+        height: 44,
         borderRadius: 12,
         backgroundColor: '#fce7f3',
         justifyContent: 'center',
@@ -427,18 +412,18 @@ const styles = StyleSheet.create({
     productName: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#1e293b',
+        color: COLORS.text,
         marginBottom: 4,
     },
     categoryPill: {
-        backgroundColor: '#f1f5f9',
+        backgroundColor: COLORS.border,
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 6,
         alignSelf: 'flex-start',
     },
     categoryText: {
-        color: '#64748b',
+        color: COLORS.textSecondary,
         fontSize: 11,
         fontWeight: '600',
     },
@@ -448,34 +433,29 @@ const styles = StyleSheet.create({
     productPrice: {
         fontSize: 15,
         fontWeight: '700',
-        color: COLORS.mainTitle,
+        color: COLORS.primary,
         marginBottom: 2,
     },
     productSold: {
-        fontSize: 12,
-        color: '#94a3b8',
-        fontWeight: '500',
+        fontSize: 11,
+        color: COLORS.textLight,
+        fontWeight: '600',
     },
     separator: {
         height: 1,
-        backgroundColor: '#f1f5f9',
-        marginHorizontal: 18,
+        backgroundColor: COLORS.border,
+        marginHorizontal: 16,
     },
     emptyContainer: {
         padding: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: 220,
-        backgroundColor: '#fafafa',
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-        borderStyle: 'dashed',
+        minHeight: 200,
     },
     emptyText: {
         marginTop: 12,
         fontSize: 14,
-        color: '#94a3b8',
+        color: COLORS.textLight,
         fontWeight: '500',
     },
     modalOverlay: {
@@ -491,11 +471,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 340,
         padding: 24,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
-        elevation: 10,
+        ...SHADOWS.medium,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -504,12 +480,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingBottom: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#f1f5f9',
+        borderBottomColor: COLORS.border,
     },
     modalTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1e293b',
+        color: COLORS.text,
         flex: 1,
         marginRight: 12,
     },
@@ -521,7 +497,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 12,
         paddingHorizontal: 16,
-        backgroundColor: '#f8fafc',
+        backgroundColor: COLORS.background,
         borderRadius: 16,
     },
     modalActionBtnDanger: {
@@ -540,7 +516,7 @@ const styles = StyleSheet.create({
     modalActionText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#334155',
+        color: COLORS.text,
     },
 });
 

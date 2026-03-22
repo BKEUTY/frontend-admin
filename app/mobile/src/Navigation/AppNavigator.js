@@ -6,13 +6,13 @@ import { View, Text } from 'react-native';
 
 import AccountScreen from '../Account/AccountScreen';
 import ProfileScreen from '../Account/ProfileScreen';
-import OrderDetailScreen from '../Admin/OrderDetailScreen';
-import OrderListScreen from '../Admin/OrderListScreen';
+import OrderDetailScreen from '../Admin/Orders/OrderDetailScreen';
+import OrderListScreen from '../Admin/Orders/OrderListScreen';
 import { COLORS } from '../constants/Theme';
 import { useLanguage } from '../i18n/LanguageContext';
-import AdminDashboard from '../Admin/DashboardScreen';
-import AdminProductList from '../Admin/ProductListScreen';
-import AdminProductCreate from '../Admin/ProductCreateScreen';
+import AdminDashboard from '../Admin/Dashboard/DashboardScreen';
+import AdminProductList from '../Admin/Products/ProductListScreen';
+import AdminProductCreate from '../Admin/Products/ProductCreateScreen';
 
 import NotFoundScreen from '../Component/ErrorPages/NotFoundScreen';
 import ServerErrorScreen from '../Component/ErrorPages/ServerErrorScreen';
