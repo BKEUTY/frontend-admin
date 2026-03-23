@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Dimensions } from 'react-native';
-import { COLORS } from '../constants/Theme';
+import { COLORS } from '../../constants/Theme';
 import { useNavigation } from '@react-navigation/native';
-import { useLanguage } from '../i18n/LanguageContext';
-import Header from '../Component/Header';
-import { useAuth } from '../Context/AuthContext';
+import { useLanguage } from '../../i18n/LanguageContext';
+import Header from '../../Component/Header';
+import { useAuth } from '../../Context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');

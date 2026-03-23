@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useLanguage } from '../../../i18n/LanguageContext';
-import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
+import { useLanguage } from '../../../../i18n/LanguageContext';
+import { COLORS, SHADOWS, SIZES } from '../../../../constants/Theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useOrders } from '../../../hooks/useOrders';
+import { useAdminOrders } from '../../../../hooks/useAdminOrders';
 
 const { width } = Dimensions.get('window');
 
 const OrderListScreen = () => {
     const navigation = useNavigation();
     const { t } = useLanguage();
-    const { orders, loading, refreshing, setRefreshing, fetchOrders, pagination } = useOrders();
+    const { orders, loading, refreshing, setRefreshing, fetchOrders, pagination } = useAdminOrders();
 
     useFocusEffect(
         React.useCallback(() => {

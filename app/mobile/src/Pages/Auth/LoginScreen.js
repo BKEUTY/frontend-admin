@@ -12,10 +12,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import Loading from '../Component/Common/Loading';
-import { useAuth } from '../Context/AuthContext';
-import { useLanguage } from '../i18n/LanguageContext';
-import { COLORS, SIZES, SHADOWS } from '../constants/Theme';
+import Loading from '../../Component/Common/Loading';
+import { useAuth } from '../../Context/AuthContext';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { COLORS, SIZES, SHADOWS } from '../../constants/Theme';
 
 const LoginScreen = ({ navigation }) => {
     const { t } = useLanguage();
@@ -61,11 +61,10 @@ const LoginScreen = ({ navigation }) => {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.header}>
-                    <Image
-                        source={require('../Assets/Images/logo.svg')}
-                        style={styles.logo}
-                        resizeMode="contain"
-                    />
+                    <View style={styles.logoContainer}>
+                        <Text style={styles.logoText}>BK ADMIN</Text>
+                    </View>
+
                     <View style={styles.adminBadge}>
                         <Text style={styles.adminBadgeText}>MANAGEMENT ONLY</Text>
                     </View>
@@ -146,11 +145,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 40,
     },
-    logo: {
-        width: 140,
-        height: 70,
+    logoContainer: {
         marginBottom: 20,
     },
+    logoText: {
+        fontSize: 34,
+        fontWeight: '900',
+        color: COLORS.mainTitle,
+        letterSpacing: 2,
+        fontStyle: 'italic',
+    },
+
     title: {
         fontSize: 30,
         fontWeight: '800',

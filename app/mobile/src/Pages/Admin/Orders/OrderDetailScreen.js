@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { COLORS, SHADOWS, SIZES } from '../../../../constants/Theme';
+import { useLanguage } from '../../../../i18n/LanguageContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useOrders } from '../../../hooks/useOrders';
+import { useAdminOrders } from '../../../../hooks/useAdminOrders';
 
 const { width } = Dimensions.get('window');
 
@@ -14,13 +14,13 @@ const OrderDetailScreen = () => {
     const route = useRoute();
     const { orderId } = route.params || {};
     const { t } = useLanguage();
-    const { orderDetail, detailLoading, fetchOrderDetails, updateStatus } = useOrders();
+    const { orderDetail, detailLoading, fetchOrderDetail, updateOrderStatus } = useAdminOrders();
 
     useEffect(() => {
         if (orderId) {
-            fetchOrderDetails(orderId);
+            fetchOrderDetail(orderId);
         }
-    }, [orderId, fetchOrderDetails]);
+    }, [orderId, fetchOrderDetail]);
 
     if (detailLoading) {
         return (
@@ -128,7 +128,7 @@ const OrderDetailScreen = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity 
                                     style={[styles.btnAction, { backgroundColor: COLORS.success, borderColor: COLORS.success }]} 
-                                    onPress={() => updateStatus(orderData.id, 'COMPLETED')}
+                                    onPress={() => updateOrderStatus({ id: orderData.id, status: 'COMPLETED' })}
                                 >
                                     <Ionicons name="checkmark-circle-outline" size={18} color="white" />
                                     <Text style={[styles.btnText, { color: 'white' }]}>{t('confirm')}</Text>
@@ -139,14 +139,14 @@ const OrderDetailScreen = () => {
                             <>
                                 <TouchableOpacity 
                                     style={[styles.btnAction, { borderColor: COLORS.danger }]} 
-                                    onPress={() => updateStatus(orderData.id, 'CANCELLED')}
+                                    onPress={() => updateOrderStatus({ id: orderData.id, status: 'CANCELLED' })}
                                 >
                                     <Ionicons name="close-circle-outline" size={18} color={COLORS.danger} />
                                     <Text style={[styles.btnText, { color: COLORS.danger }]}>{t('cancel')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity 
                                     style={[styles.btnAction, { backgroundColor: COLORS.success, borderColor: COLORS.success }]} 
-                                    onPress={() => updateStatus(orderData.id, 'PAID')}
+                                    onPress={() => updateOrderStatus({ id: orderData.id, status: 'PAID' })}
                                 >
                                     <Ionicons name="cash-outline" size={18} color="white" />
                                     <Text style={[styles.btnText, { color: 'white' }]}>{t('confirm')}</Text>

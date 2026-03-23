@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform, useWindowDimensions, Modal, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import { useLanguage } from '../../../i18n/LanguageContext';
-import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
+import { useLanguage } from '../../../../i18n/LanguageContext';
+import { COLORS, SHADOWS, SIZES } from '../../../../constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
-import adminApi from '../../../api/adminApi';
+import adminApi from '../../../../api/adminApi';
 import { useFocusEffect } from '@react-navigation/native';
 
 const DashboardScreen = ({ navigation }) => {

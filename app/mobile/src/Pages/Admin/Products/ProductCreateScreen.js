@@ -12,10 +12,10 @@ import {
     View,
     Modal
 } from 'react-native';
-import { CButton, CInput } from '../../../Component/Common';
-import adminApi from '../../../api/adminApi';
-import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { CButton, CInput } from '../../../../Component/Common';
+import adminApi from '../../../../api/adminApi';
+import { COLORS, SHADOWS, SIZES } from '../../../../constants/Theme';
+import { useLanguage } from '../../../../i18n/LanguageContext';
 
 const ProductCreateScreen = ({ navigation }) => {
     const { t } = useLanguage();

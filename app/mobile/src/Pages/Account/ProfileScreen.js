@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { COLORS, SIZES } from '../constants/Theme';
-import { useLanguage } from '../i18n/LanguageContext';
+import { COLORS, SIZES } from '../../constants/Theme';
+import { useLanguage } from '../../i18n/LanguageContext';
 import { Ionicons } from '@expo/vector-icons';
-import { CButton, CInput } from '../Component/Common';
+import { CButton, CInput } from '../../Component/Common';
 
 const DEFAULT_AVATAR = 'https://via.placeholder.com/150';
 

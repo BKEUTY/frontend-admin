@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS, SHADOWS, SIZES } from '../../../constants/Theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
-import adminApi from '../../../api/adminApi';
-import { getImageUrl } from '../../../api/axiosClient';
+import { COLORS, SHADOWS, SIZES } from '../../../../constants/Theme';
+import { useLanguage } from '../../../../i18n/LanguageContext';
+import adminApi from '../../../../api/adminApi';
+import { getImageUrl } from '../../../../api/axiosClient';
 
 const ProductListScreen = ({ navigation }) => {
     const { t } = useLanguage();

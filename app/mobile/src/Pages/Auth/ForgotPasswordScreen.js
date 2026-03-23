@@ -11,8 +11,8 @@ import {
     Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useLanguage } from '../i18n/LanguageContext';
-import Loading from '../Component/Common/Loading';
+import { useLanguage } from '../../i18n/LanguageContext';
+import Loading from '../../Component/Common/Loading';
 
 const ForgotPasswordScreen = ({ navigation }) => {
     const { t } = useLanguage();

@@ -3,7 +3,7 @@ import { orderApi } from '../api/orderApi';
 import { showToast } from '../utils/ToastService';
 import { useLanguage } from '../i18n/LanguageContext';
 
-export const useOrders = () => {
+export const useAdminOrders = () => {
     const { t } = useLanguage();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,16 +14,16 @@ export const useOrders = () => {
         setLoading(true);
         try {
             const res = await orderApi.getAllOrders(page, size);
-            if (res.data && res.data.content) {
-                setOrders(res.data.content);
+            const data = res.data || res;
+            if (data && data.content) {
+                setOrders(data.content);
                 setPagination({
-                    current: res.data.number + 1,
-                    pageSize: res.data.size,
-                    total: res.data.totalElements,
+                    current: (data.number || 0) + 1,
+                    pageSize: data.size || size,
+                    total: data.totalElements || 0,
                 });
             }
         } catch (error) {
-            console.error(error);
             showToast(t('error'), 'error', t('api_error_general'));
         } finally {
             setLoading(false);
@@ -32,34 +32,31 @@ export const useOrders = () => {
     }, [t]);
 
     const [orderDetail, setOrderDetail] = useState(null);
-    const [detailLoading, setDetailLoading] = useState(true);
+    const [detailLoading, setDetailLoading] = useState(false);
 
-    const fetchOrderDetails = useCallback(async (id) => {
+    const fetchOrderDetail = useCallback(async (id) => {
         setDetailLoading(true);
         try {
             const res = await orderApi.getOrderById(id);
-            if (res.data) {
-                setOrderDetail(res.data);
-            }
+            const data = res.data || res;
+            setOrderDetail(data);
         } catch (error) {
-            console.error(error);
-            showToast(t('error'), 'error', t('api_error_general'));
+            showToast(t('error'), 'error', t('api_error_fetch'));
         } finally {
             setDetailLoading(false);
         }
     }, [t]);
 
-    const updateStatus = async (orderId, newStatus) => {
+    const updateOrderStatus = async ({ id, status }) => {
         try {
-            await orderApi.updateOrderStatus(orderId, newStatus);
-            showToast(t('success'), 'success', 'Cập nhật trạng thái thành công');
+            await orderApi.updateOrderStatus(id, status);
+            showToast(t('success'), 'success', t('update_info_success'));
             fetchOrders(pagination.current - 1, pagination.pageSize);
-            if (orderDetail && orderDetail.orderId === orderId) {
-                fetchOrderDetails(orderId);
+            if (orderDetail && (orderDetail.orderId === id || orderDetail.id === id)) {
+                fetchOrderDetail(id);
             }
             return true;
         } catch (error) {
-            console.error(error);
             showToast(t('error'), 'error', t('api_error_general'));
             return false;
         }
@@ -72,9 +69,9 @@ export const useOrders = () => {
         setRefreshing,
         pagination,
         fetchOrders,
-        updateStatus,
+        updateOrderStatus,
         orderDetail,
         detailLoading,
-        fetchOrderDetails
+        fetchOrderDetail
     };
 };

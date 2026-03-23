@@ -4,22 +4,22 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text } from 'react-native';
 
-import AccountScreen from '../Account/AccountScreen';
-import ProfileScreen from '../Account/ProfileScreen';
-import OrderDetailScreen from '../Admin/Orders/OrderDetailScreen';
-import OrderListScreen from '../Admin/Orders/OrderListScreen';
+import AccountScreen from '../Pages/Account/AccountScreen';
+import ProfileScreen from '../Pages/Account/ProfileScreen';
+import OrderDetailScreen from '../Pages/Admin/Orders/OrderDetailScreen';
+import OrderListScreen from '../Pages/Admin/Orders/OrderListScreen';
 import { COLORS } from '../constants/Theme';
 import { useLanguage } from '../i18n/LanguageContext';
-import AdminDashboard from '../Admin/Dashboard/DashboardScreen';
-import AdminProductList from '../Admin/Products/ProductListScreen';
-import AdminProductCreate from '../Admin/Products/ProductCreateScreen';
+import AdminDashboard from '../Pages/Admin/Dashboard/DashboardScreen';
+import AdminProductList from '../Pages/Admin/Products/ProductListScreen';
+import AdminProductCreate from '../Pages/Admin/Products/ProductCreateScreen';
 
 import NotFoundScreen from '../Component/ErrorPages/NotFoundScreen';
 import ServerErrorScreen from '../Component/ErrorPages/ServerErrorScreen';
 import { Ionicons } from '@expo/vector-icons';
 
-import LoginScreen from '../Auth/LoginScreen';
-import ForgotPasswordScreen from '../Auth/ForgotPasswordScreen';
+import LoginScreen from '../Pages/Auth/LoginScreen';
+import ForgotPasswordScreen from '../Pages/Auth/ForgotPasswordScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
