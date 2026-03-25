@@ -7,7 +7,8 @@ const AdminProductDetail = lazy(() => import('../Component/Admin/Products/AdminP
 const OrderList = lazy(() => import('../Component/Admin/Orders/OrderList'));
 const AdminOrderDetail = lazy(() => import('../Component/Admin/Orders/AdminOrderDetail'));
 const AdminHome = lazy(() => import('../Component/Admin/AdminHome'));
-const DevelopingState = lazy(() => import('../Component/Common/DevelopingState'));
+const PromotionList = lazy(() => import('../Component/Admin/Promotions/PromotionList'));
+const PromotionCreate = lazy(() => import('../Component/Admin/Promotions/PromotionCreate'));
 
 export const adminRoutes = [
     {
@@ -29,6 +30,18 @@ export const adminRoutes = [
     {
         path: "products/:slug",
         element: <AdminProductDetail />
+    },
+    {
+        path: "promotions",
+        element: <PromotionList />
+    },
+    {
+        path: "promotions/create",
+        element: <PromotionCreate />
+    },
+    {
+        path: "promotions/edit/:id",
+        element: <PromotionCreate />
     },
     {
         path: "orders",

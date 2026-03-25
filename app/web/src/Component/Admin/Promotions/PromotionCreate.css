@@ -1,0 +1,58 @@
+.admin-promo-create-container {
+    padding: 0;
+}
+
+.promo-form-wrapper {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.promo-form-section {
+    background: #fbfbfb;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+}
+
+.promo-form-section:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.promo-input-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.promo-submit-area {
+    margin-top: 32px;
+}
+
+.pc-loading-icon {
+    font-size: 24px;
+    color: #1890ff;
+}
+
+.ant-form-item-label label {
+    font-weight: 600 !important;
+    color: var(--text-color) !important;
+}
+
+.ant-picker-range {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .promo-form-wrapper {
+        padding: 16px;
+    }
+
+    .promo-form-section {
+        padding: 16px;
+    }
+}

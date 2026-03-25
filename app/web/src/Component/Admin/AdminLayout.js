@@ -11,7 +11,8 @@ import {
     LogoutOutlined,
     HomeOutlined,
     ArrowRightOutlined,
-    SearchOutlined
+    SearchOutlined,
+    TagOutlined
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
@@ -94,6 +95,12 @@ const AdminLayout = () => {
             icon: <ShoppingOutlined />,
             label: t('products'),
             desc: t('admin_home_products_desc')
+        },
+        {
+            key: '/admin/promotions',
+            icon: <TagOutlined />,
+            label: t('promotion'),
+            desc: "Quản lý chương trình khuyến mãi & marketing"
         },
         {
             key: '/admin/services',
