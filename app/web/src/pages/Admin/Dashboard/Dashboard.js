@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Table, Tag, Spin, Typography } from 'antd';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import adminApi from '../../../api/adminApi';
+import adminProductApi from '../../../api/adminProductApi';
 import {
     TransactionOutlined,
     ShoppingOutlined,
@@ -18,8 +18,8 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import './Dashboard.css';
-import StatsCard from '../Common/StatsCard';
-import { PageWrapper } from '../../Common';
+import StatsCard from '../../../Component/Admin/Common/StatsCard';
+import { PageWrapper } from '../../../Component/Common';
 
 const { Text } = Typography;
 
@@ -37,7 +37,7 @@ const Dashboard = () => {
         const fetchStats = async () => {
             setLoading(true);
             try {
-                const data = await adminApi.getStats();
+                const data = await adminProductApi.getStats();
                 setStatsData({
                     ...data,
                     revenue: '40,689,000 đ' 

@@ -99,8 +99,8 @@ const AdminLayout = () => {
         {
             key: '/admin/promotions',
             icon: <TagOutlined />,
-            label: t('promotion'),
-            desc: "Quản lý chương trình khuyến mãi & marketing"
+            label: t('promotions'),
+            desc: t('admin_home_promotions_desc')
         },
         {
             key: '/admin/services',

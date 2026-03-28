@@ -5,12 +5,11 @@ import { useAuth } from '../../Context/AuthContext';
 const AdminRoute = ({ children }) => {
     const { isAuthenticated, user_role } = useAuth();
     const location = useLocation();
-
     if (!isAuthenticated) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    if (!user_role || user_role.toUpperCase() !== 'ADMIN') {
+    if (user_role.toUpperCase() !== 'ADMIN') {
         return <Navigate to="/login" replace />;
     }
 

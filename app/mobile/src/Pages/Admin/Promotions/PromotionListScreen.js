@@ -93,7 +93,7 @@ const PromotionListScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>{t('promotion')}</Text>
+                <Text style={styles.headerTitle}>{t('promotions')}</Text>
                 <TouchableOpacity
                     style={styles.addButton}
                     onPress={() => navigation.navigate('AdminPromotionCreate')}

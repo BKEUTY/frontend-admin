@@ -16,8 +16,8 @@ import AdminDashboard from '../Pages/Admin/Dashboard/DashboardScreen';
 import AdminProductList from '../Pages/Admin/Products/ProductListScreen';
 import AdminProductCreate from '../Pages/Admin/Products/ProductCreateScreen';
 
-import NotFoundScreen from '../Component/ErrorPages/NotFoundScreen';
-import ServerErrorScreen from '../Component/ErrorPages/ServerErrorScreen';
+import NotFoundScreen from '../Pages/ErrorPages/NotFoundScreen';
+import ServerErrorScreen from '../Pages/ErrorPages/ServerErrorScreen';
 import { Ionicons } from '@expo/vector-icons';
 
 import LoginScreen from '../Pages/Auth/LoginScreen';
@@ -50,8 +50,8 @@ function TabNavigator() {
         >
             <Tab.Screen name="AdminDashboard" component={AdminDashboard} options={{ title: t('dashboard') }} />
             <Tab.Screen name="AdminProducts" component={AdminProductList} options={{ title: t('products') }} />
-            <Tab.Screen name="AdminOrders" component={OrderListScreen} options={{ title: t('orders') || 'Orders' }} />
-            <Tab.Screen name="AdminPromotions" component={PromotionListScreen} options={{ title: t('promotion') || 'Promotion' }} />
+            <Tab.Screen name="AdminOrders" component={OrderListScreen} options={{ title: t('orders') }} />
+            <Tab.Screen name="AdminPromotions" component={PromotionListScreen} options={{ title: t('promotions') }} />
             <Tab.Screen name="Account" component={AccountScreen} options={{ title: t('account') }} />
         </Tab.Navigator >
     );

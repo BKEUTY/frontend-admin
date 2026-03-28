@@ -1,8 +1,28 @@
-.pagination-wrapper {
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
     margin-top: 30px;
     padding-bottom: 20px;
-    display: flex;
-    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .pagination-container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.pagination-info {
+    font-family: var(--inter_font);
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.pagination-info strong {
+    color: #111;
+    font-weight: 600;
 }
 
 .pagination {

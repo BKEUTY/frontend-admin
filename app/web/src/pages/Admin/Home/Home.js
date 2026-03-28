@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage } from '../../../i18n/LanguageContext';
 import {
     ControlOutlined,
     ShoppingOutlined,
@@ -12,7 +12,7 @@ import {
     PieChartOutlined,
     ArrowRightOutlined
 } from '@ant-design/icons';
-import './AdminHome.css';
+import './Home.css';
 
 const AdminHome = () => {
     const { t } = useLanguage();

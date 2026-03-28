@@ -1,0 +1,450 @@
+.admin-product-list-container {
+    padding-bottom: 40px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.admin-product-list-container .ant-typography,
+.admin-product-list-container .ant-table,
+.admin-product-list-container .ant-select,
+.admin-product-list-container .ant-input,
+.admin-product-list-container .ant-btn {
+    font-family: inherit;
+}
+
+.admin-header-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.admin-filter-bar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: #ffffff;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-toolbar-search {
+    flex: 2;
+    min-width: 250px;
+}
+
+.admin-toolbar-select {
+    flex: 1;
+    min-width: 180px;
+}
+
+.admin-filter-bar .ant-input-search > .ant-input-group > .ant-input-group-addon:last-child {
+    left: -1px;
+}
+
+.admin-filter-bar .ant-input-search .ant-input-affix-wrapper {
+    height: 44px;
+    border-radius: 12px 0 0 12px;
+    border-color: #e2e8f0;
+    background: #f8fafc;
+    padding: 0 16px;
+    transition: all 0.3s ease;
+}
+
+.admin-filter-bar .ant-input-search .ant-input-affix-wrapper:hover {
+    border-color: var(--color_main_title, #1890ff);
+}
+
+.admin-filter-bar .ant-input-search .ant-input-affix-wrapper:focus,
+.admin-filter-bar .ant-input-search .ant-input-affix-wrapper-focused {
+    background: white;
+    border-color: var(--color_main_title, #1890ff);
+    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.05);
+    z-index: 1;
+}
+
+.admin-filter-bar .ant-input-search .ant-input {
+    background: transparent;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.admin-filter-bar .ant-input-search .ant-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.admin-filter-bar .ant-input-search .ant-input-clear-icon {
+    font-size: 14px;
+    color: #cbd5e1;
+}
+
+.admin-filter-bar .ant-input-search .ant-input-clear-icon:hover {
+    color: #94a3b8;
+}
+
+.admin-filter-bar .ant-input-search .ant-btn {
+    height: 44px;
+    border-radius: 0 12px 12px 0 !important;
+    border-color: #e2e8f0;
+    background: white;
+    width: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+}
+
+.admin-filter-bar .ant-input-search .ant-btn .anticon {
+    font-size: 18px;
+    color: #475569;
+    transition: color 0.2s ease;
+}
+
+.admin-filter-bar .ant-input-search .ant-btn:hover {
+    border-color: var(--color_main_title, #1890ff);
+    background: white;
+}
+
+.admin-filter-bar .ant-input-search .ant-btn:hover .anticon {
+    color: var(--color_main_title, #1890ff);
+}
+
+.admin-filter-bar .ant-select {
+    height: 44px;
+}
+
+.admin-filter-bar .ant-select-selector {
+    height: 44px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    padding: 0 16px !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease !important;
+    display: flex;
+    align-items: center;
+}
+
+.admin-filter-bar .ant-select:hover .ant-select-selector {
+    border-color: var(--color_main_title, #1890ff) !important;
+}
+
+.admin-filter-bar .ant-select-focused .ant-select-selector,
+.admin-filter-bar .ant-select-open .ant-select-selector {
+    border-color: var(--color_main_title, #1890ff) !important;
+    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.05) !important;
+    background-color: #ffffff !important;
+}
+
+.admin-filter-bar .ant-select-selection-item,
+.admin-filter-bar .ant-select-selection-placeholder {
+    line-height: 42px !important;
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+.admin-filter-bar .ant-select-selection-placeholder {
+    color: #94a3b8 !important;
+}
+
+.admin-filter-bar .ant-select-selection-item {
+    color: #1e293b !important;
+}
+
+.admin-filter-bar .ant-select-arrow {
+    color: #94a3b8;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    right: 16px;
+}
+
+.admin-filter-bar .ant-select-open .ant-select-arrow {
+    transform: rotate(180deg);
+}
+
+.admin-filter-bar .ant-select-clear {
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 14px;
+    right: 16px;
+    margin-top: -7px;
+    transition: color 0.2s ease;
+}
+
+.admin-filter-bar .ant-select-clear:hover {
+    color: #64748b;
+}
+
+.admin-product-list-container .admin-table-wrapper {
+    border-radius: 16px;
+    background: white;
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.admin-product-list-container .beauty-table {
+    border-radius: 0;
+    border: none;
+}
+
+.admin-product-list-container .beauty-table .ant-table-thead>tr>th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.admin-product-list-container .beauty-table .ant-table-thead>tr>th.ant-table-column-has-sorters:hover {
+    background: #f1f5f9;
+}
+
+.admin-product-list-container .beauty-table .ant-table-tbody>tr>td {
+    padding: 16px 20px;
+    font-size: 0.9rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+}
+
+.admin-product-list-container .beauty-table .ant-table-tbody>tr:hover>td {
+    background: #f8fafc !important;
+}
+
+.admin-table-id {
+    color: #64748b;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 500;
+    font-size: 13px;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.admin-table-image-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.admin-table-image-wrapper:hover {
+    transform: scale(1.1);
+    border-color: var(--color_main_title, #1890ff);
+}
+
+.admin-table-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-table-product-name {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.admin-table-brand {
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.admin-table-tag {
+    border-radius: 6px !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+    padding: 4px 10px !important;
+    font-size: 0.75rem !important;
+    margin: 2px 4px 2px 0 !important;
+    display: inline-block;
+}
+
+.admin-price-wrapper {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+}
+
+.admin-old-price-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: -2px;
+}
+
+.admin-old-price {
+    font-size: 0.8rem !important;
+    color: #94a3b8 !important;
+}
+
+.admin-current-price {
+    font-size: 0.95rem;
+    font-weight: 700 !important;
+    color: #0f172a;
+}
+
+.admin-current-price.is-sale {
+    color: #e11d48 !important;
+}
+
+.admin-action-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.edit-btn {
+    color: #d97706 !important;
+    background: #fef3c7 !important;
+}
+
+.edit-btn:hover {
+    background: #f59e0b !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+}
+
+.delete-btn {
+    color: #e11d48 !important;
+    background: #ffe4e6 !important;
+}
+
+.delete-btn:hover {
+    background: #f43f5e !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25) !important;
+}
+
+.admin-table-row-pointer {
+    cursor: pointer;
+}
+
+.admin-modal-action-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.admin-custom-pagination {
+    border-top: 1px solid #f1f5f9;
+    padding: 16px 24px;
+    background: white;
+}
+
+@media (max-width: 992px) {
+    .admin-filter-bar {
+        gap: 12px;
+    }
+    .admin-toolbar-search {
+        min-width: 200px;
+    }
+    .admin-toolbar-select {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-product-list-container {
+        padding: 0 12px 30px 12px;
+    }
+
+    .admin-header-buttons {
+        width: 100%;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .admin-btn-responsive {
+        flex: 1;
+        justify-content: center;
+        padding: 0 8px;
+        font-size: 0.85rem;
+    }
+
+    .admin-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+        gap: 12px;
+        margin-bottom: 16px;
+        border-radius: 10px;
+    }
+
+    .admin-toolbar-search,
+    .admin-toolbar-select {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .admin-product-list-container .admin-table-wrapper {
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .admin-product-list-container .beauty-table .ant-table-thead>tr>th,
+    .admin-product-list-container .beauty-table .ant-table-tbody>tr>td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    .admin-table-image-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+    }
+
+    .admin-table-product-name {
+        font-size: 0.85rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: normal;
+    }
+    
+    .admin-custom-pagination {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-header-buttons {
+        flex-direction: column;
+    }
+    
+    .admin-btn-responsive {
+        width: 100%;
+    }
+}

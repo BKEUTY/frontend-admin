@@ -20,8 +20,7 @@ const Login = () => {
         setLoading(true);
         try {
             const user = await login(values.email, values.password);
-            
-            if (user?.user_role === 'ADMIN') {
+            if (user?.user_role === 'admin') {
                 notifySuccess('success', t('login_success'));
                 navigate('/admin');
             } else {

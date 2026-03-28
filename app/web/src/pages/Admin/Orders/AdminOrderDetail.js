@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Typography, Tag, Select, Row, Col, Card, Table, Descriptions } from 'antd';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import { useAdminOrders } from '../../../hooks/useAdminOrders';
-import { Skeleton, PageWrapper, CButton } from '../../Common';
+import { useAdminOrderDetail, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
+import { Skeleton, PageWrapper, CButton } from '../../../Component/Common';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import './AdminOrderDetail.css';
 
@@ -13,18 +13,13 @@ export default function AdminOrderDetail() {
     const { id } = useParams();
     const { t } = useLanguage();
     const navigate = useNavigate();
-    const { orderDetail, detailLoading, fetchOrderDetail, updateOrderStatus } = useAdminOrders(0, 10, true);
-
-    useEffect(() => {
-        if (id) {
-            fetchOrderDetail(id);
-        }
-    }, [id, fetchOrderDetail]);
+    
+    const { data: orderDetail, isLoading: detailLoading } = useAdminOrderDetail(id);
+    const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
 
     const handleStatusChange = async (value) => {
         try {
             await updateOrderStatus({ id: id, status: value });
-            fetchOrderDetail(id);
         } catch (error) {}
     };
 

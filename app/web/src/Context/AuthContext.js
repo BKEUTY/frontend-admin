@@ -4,9 +4,6 @@ import {
     setAccessToken, 
     clearAccessToken, 
     getAccessToken, 
-    getRefreshToken,
-    setRefreshToken,
-    clearRefreshToken,
     getUserSession, 
     setUserSession, 
     clearUserSession 
@@ -17,7 +14,7 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const decodeToken = (token) => {
-    if (!token || typeof token !== 'string' || !token.includes('.')) return {};
+    if (!token || typeof token !== 'string' || !token.includes('.')) return null;
     try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -26,20 +23,23 @@ const decodeToken = (token) => {
         ).join(''));
         return JSON.parse(jsonPayload);
     } catch (e) {
-        return {};
+        return null;
     }
 };
 
-const extractUserFromToken = (accessToken) => {
-    const userData = decodeToken(accessToken);
-    const userRole = userData.user_role || (userData.realm_access?.roles?.includes('ADMIN') ? 'ADMIN' : 'UNKNOWN');
-    const role = userRole.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'UNKNOWN';
+const extractAdminUserFromToken = (accessToken) => {
+    const decodedPayload = decodeToken(accessToken);
+    if (!decodedPayload) throw new Error("Invalid token payload");
+
+    if (decodedPayload.user_role !== 'admin') {
+        throw new Error('Access Denied: You do not have Admin privileges.');
+    }
 
     return {
-        id: userData.sub,
-        email: userData.email,
-        name: userData.name || userData.preferred_username,
-        user_role: role
+        id: decodedPayload.sub,
+        email: decodedPayload.email,
+        name: decodedPayload.name,
+        user_role: decodedPayload.user_role
     };
 };
 
@@ -47,87 +47,49 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => getUserSession());
     const [isInitializing, setIsInitializing] = useState(true);
 
-    const refreshAccessToken = useCallback(async () => {
-        try {
-            const currentRefreshToken = getRefreshToken();
-            if (!currentRefreshToken) {
-                throw new Error('No refresh token available');
-            }
-
-            const response = await authApi.refresh({ refreshToken: currentRefreshToken });
-            const accessToken = response.data?.accessToken;
-            const newRefreshToken = response.data?.refreshToken;
-            
-            if (!accessToken) {
-                throw new Error('No access token returned');
-            }
-            
-            const newUser = extractUserFromToken(accessToken);
-            if (newUser.user_role !== 'ADMIN') {
-                clearAccessToken();
-                clearRefreshToken();
-                clearUserSession();
-                setUser(null);
-                return false;
-            }
-
-            setAccessToken(accessToken);
-            if (newRefreshToken) {
-                setRefreshToken(newRefreshToken);
-            }
-            setUserSession(newUser);
-            setUser(newUser);
-            
-            return true;
-        } catch (error) {
-            clearAccessToken();
-            clearRefreshToken();
-            clearUserSession();
-            setUser(null);
-            return false;
-        }
+    const handleSessionCleanup = useCallback(() => {
+        clearAccessToken();
+        clearUserSession();
+        setUser(null);
     }, []);
 
     useEffect(() => {
-        const initAuth = async () => {
-            if (getUserSession() && getRefreshToken()) {
-                await refreshAccessToken();
+        const initAuth = () => {
+            const token = getAccessToken();
+            const session = getUserSession();
+
+            if (!token || !session) {
+                handleSessionCleanup();
+            } else {
+                setUser(session);
             }
             setIsInitializing(false);
         };
         initAuth();
-    }, [refreshAccessToken]);
+    }, [handleSessionCleanup]);
 
-    const login = async (email, password) => {
-        const response = await authApi.login({ username: email, password });
-        const accessToken = response.data?.accessToken;
-        const refreshToken = response.data?.refreshToken;
+    const login = async (username, password) => {
+        const response = await authApi.login({ username, password });
+        const accessToken = response.data.accessToken;
         
-        const newUser = extractUserFromToken(accessToken);
-        
-        if (newUser.user_role !== 'ADMIN') {
-            throw new Error('Access Denied: Only Admin allowed');
-        }
+        if (!accessToken) throw new Error('Login failed: No access token');
+
+        const adminUser = extractAdminUserFromToken(accessToken);
 
         setAccessToken(accessToken);
-        if (refreshToken) {
-            setRefreshToken(refreshToken);
-        }
-        setUserSession(newUser);
-        setUser(newUser);
+        setUserSession(adminUser);
+        setUser(adminUser);
         
-        return newUser;
+        return adminUser;
     };
 
     const logout = async () => {
         try {
             await authApi.logout();
         } catch (error) {
+            console.error(error);
         } finally {
-            setUser(null);
-            clearAccessToken();
-            clearRefreshToken();
-            clearUserSession();
+            handleSessionCleanup();
         }
     };
 
@@ -138,8 +100,7 @@ export const AuthProvider = ({ children }) => {
             user_role: user?.user_role,
             isInitializing,
             login,
-            logout,
-            refreshAccessToken
+            logout
         }}>
             {!isInitializing && children}
         </AuthContext.Provider>

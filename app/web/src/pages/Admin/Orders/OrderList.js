@@ -3,8 +3,8 @@ import { Table, Typography, Space, Tooltip, Tag, Select, Button } from 'antd';
 import { SyncOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import { useAdminOrders } from '../../../hooks/useAdminOrders';
-import { EmptyState, PageWrapper, CButton, Pagination } from '../../Common';
+import { useAdminOrders, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
+import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
 import './OrderList.css';
 
 const { Text } = Typography;
@@ -16,13 +16,14 @@ const OrderList = () => {
     const pageSize = 10;
 
     const { 
-        data: orders, 
+        orders, 
         totalItems,
         totalPages, 
-        loading, 
-        fetchOrders,
-        updateOrderStatus 
-    } = useAdminOrders(currentPage, pageSize, true);
+        isLoading, 
+        refetchOrders 
+    } = useAdminOrders({ page: currentPage, size: pageSize });
+
+    const { mutateAsync: updateOrderStatus, isPending: isUpdating } = useUpdateOrderStatus();
 
     const handleStatusChange = async (orderId, value) => {
         try {
@@ -127,9 +128,9 @@ const OrderList = () => {
                             icon={<SyncOutlined />}
                             onClick={() => {
                                 setCurrentPage(0);
-                                fetchOrders();
+                                refetchOrders();
                             }}
-                            loading={loading}
+                            loading={isLoading || isUpdating}
                             className="admin-btn-responsive"
                         >
                             {t('refresh')}
@@ -144,7 +145,7 @@ const OrderList = () => {
                         rowKey="id"
                         className="beauty-table"
                         pagination={false}
-                        loading={loading}
+                        loading={isLoading}
                         scroll={{ x: 'max-content' }}
                         locale={{ emptyText: <EmptyState description={t('no_orders')} /> }}
                     />
@@ -153,6 +154,8 @@ const OrderList = () => {
                             <Pagination 
                                 page={currentPage} 
                                 totalPages={totalPages} 
+                                totalItems={totalItems}
+                                pageSize={pageSize}
                                 onPageChange={(page) => {
                                     setCurrentPage(page);
                                     window.scrollTo({ top: 0, behavior: 'smooth' });

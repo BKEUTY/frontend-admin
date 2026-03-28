@@ -1,14 +1,15 @@
 import React, { lazy } from 'react';
 
-const Dashboard = lazy(() => import('../Component/Admin/Dashboard/Dashboard'));
-const ProductList = lazy(() => import('../Component/Admin/Products/ProductList'));
-const ProductCreate = lazy(() => import('../Component/Admin/Products/ProductCreate'));
-const AdminProductDetail = lazy(() => import('../Component/Admin/Products/AdminProductDetail'));
-const OrderList = lazy(() => import('../Component/Admin/Orders/OrderList'));
-const AdminOrderDetail = lazy(() => import('../Component/Admin/Orders/AdminOrderDetail'));
-const AdminHome = lazy(() => import('../Component/Admin/AdminHome'));
-const PromotionList = lazy(() => import('../Component/Admin/Promotions/PromotionList'));
-const PromotionCreate = lazy(() => import('../Component/Admin/Promotions/PromotionCreate'));
+const Dashboard = lazy(() => import('../pages/Admin/Dashboard/Dashboard'));
+const DevelopingState = lazy(() => import('../Component/Common/DevelopingState'));
+const ProductList = lazy(() => import('../pages/Admin/Products/ProductList'));
+const ProductCreate = lazy(() => import('../pages/Admin/Products/ProductCreate'));
+const AdminProductDetail = lazy(() => import('../pages/Admin/Products/AdminProductDetail'));
+const OrderList = lazy(() => import('../pages/Admin/Orders/OrderList'));
+const AdminOrderDetail = lazy(() => import('../pages/Admin/Orders/AdminOrderDetail'));
+const AdminHome = lazy(() => import('../pages/Admin/Home/Home'));
+const PromotionList = lazy(() => import('../pages/Admin/Promotions/PromotionList'));
+const PromotionCreate = lazy(() => import('../pages/Admin/Promotions/PromotionCreate'));
 
 export const adminRoutes = [
     {

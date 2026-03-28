@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Form, Select, notification, InputNumber, Row, Col, DatePicker } from 'antd';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
-import promotionApi from '../../../api/promotionApi';
+import adminPromotionApi from '../../../api/adminPromotionApi';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import { PageWrapper, CButton, CInput } from '../../Common';
+import { PageWrapper, CButton, CInput } from '../../../Component/Common';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
 import './PromotionCreate.css';
 
@@ -28,10 +28,9 @@ const PromotionCreate = () => {
                     dates: [dayjs(p.startAt), dayjs(p.endAt)]
                 });
             } else {
-                // Fetch from API if state is not available
                 const fetchDetail = async () => {
                     try {
-                        const res = await promotionApi.getById(id);
+                        const res = await adminPromotionApi.getById(id);
                         if (res.data) {
                             form.setFieldsValue({
                                 ...res.data,
@@ -58,19 +57,19 @@ const PromotionCreate = () => {
                 startAt: values.dates[0].toISOString(),
                 endAt: values.dates[1].toISOString(),
                 status: values.status || 'INCOMING',
-                promotionType: 'PRODUCT', // Default as per mobile
+                promotionType: 'PRODUCT',
                 maxDiscount: values.maxDiscount || 0,
-                type: 'PRODUCT', // DTO polymorphic field
+                type: 'PRODUCT',
                 categoryIds: [],
                 productIds: [],
                 brandIds: []
             };
 
             if (isEdit) {
-                await promotionApi.update(id, payload);
+                await adminPromotionApi.update(id, payload);
                 notification.success({ message: t('success'), description: t('promo_update_success') });
             } else {
-                await promotionApi.create(payload);
+                await adminPromotionApi.create(payload);
                 notification.success({ message: t('success'), description: t('promo_create_success') });
             }
             navigate('/admin/promotions');

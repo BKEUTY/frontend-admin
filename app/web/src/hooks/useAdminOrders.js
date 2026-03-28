@@ -1,16 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { orderApi } from '../api/orderApi';
+import adminOrderApi from '../api/adminOrderApi';
 import { notification } from 'antd';
 import { useLanguage } from '../i18n/LanguageContext';
 
-export const useAdminOrders = (currentPage, pageSize, isAuthenticated) => {
-    const { t } = useLanguage();
-    const queryClient = useQueryClient();
-
-    const { data: ordersData, isLoading: isOrdersLoading, refetch: fetchOrders } = useQuery({
-        queryKey: ['adminOrders', currentPage, pageSize],
+export const useAdminOrders = (params = {}, options = {}) => {
+    const ordersQuery = useQuery({
+        queryKey: ['adminOrders', params],
         queryFn: async () => {
-            const response = await orderApi.getAllOrders(currentPage, pageSize);
+            const response = await adminOrderApi.getAll(params);
             const data = response.data || response;
             return {
                 content: data?.content || [],
@@ -18,13 +15,36 @@ export const useAdminOrders = (currentPage, pageSize, isAuthenticated) => {
                 totalElements: data?.totalElements || 0,
             };
         },
-        enabled: !!isAuthenticated,
-        refetchOnMount: true,
-        retry: false,
+        ...options,
     });
 
-    const updateStatusMutation = useMutation({
-        mutationFn: ({ id, status }) => orderApi.updateOrderStatus(id, status),
+    return {
+        orders: ordersQuery.data?.content || [],
+        totalPages: ordersQuery.data?.totalPages || 0,
+        totalItems: ordersQuery.data?.totalElements || 0,
+        isLoading: ordersQuery.isPending,
+        refetchOrders: ordersQuery.refetch,
+    };
+};
+
+export const useAdminOrderDetail = (id, options = {}) => {
+    return useQuery({
+        queryKey: ['adminOrderDetail', id],
+        queryFn: async () => {
+            const response = await adminOrderApi.getById(id);
+            return response.data || response;
+        },
+        enabled: !!id,
+        ...options,
+    });
+};
+
+export const useUpdateOrderStatus = () => {
+    const { t } = useLanguage();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, status }) => adminOrderApi.updateOrderStatus(id, status),
         onSuccess: () => {
             notification.success({ 
                 key: 'update_order_status',
@@ -32,6 +52,7 @@ export const useAdminOrders = (currentPage, pageSize, isAuthenticated) => {
                 description: t('update_info_success') 
             });
             queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
+            queryClient.invalidateQueries({ queryKey: ['adminOrderDetail'] });
         },
         onError: (error) => {
             if (!error?.isGlobalHandled) {
@@ -43,29 +64,4 @@ export const useAdminOrders = (currentPage, pageSize, isAuthenticated) => {
             }
         }
     });
-
-    const { data: orderDetailRes, isPending: isDetailLoading, mutateAsync: fetchOrderDetail } = useMutation({
-        mutationFn: async (orderId) => {
-            const response = await orderApi.getOrderById(orderId);
-            return response.data || response;
-        },
-        onError: () => {
-            notification.error({
-                message: t('error'),
-                description: t('api_error_fetch')
-            });
-        }
-    });
-
-    return {
-        data: ordersData?.content || [],
-        totalPages: ordersData?.totalPages || 0,
-        totalItems: ordersData?.totalElements || 0,
-        loading: isOrdersLoading || updateStatusMutation.isPending,
-        fetchOrders,
-        updateOrderStatus: updateStatusMutation.mutateAsync,
-        orderDetail: orderDetailRes || null,
-        detailLoading: isDetailLoading,
-        fetchOrderDetail,
-    };
 };

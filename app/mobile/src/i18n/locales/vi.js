@@ -28,7 +28,6 @@ export default {
     product_details: "Chi tiết sản phẩm",
     how_to_apply: "Hướng dẫn sử dụng",
     ingredients: "Thành phần",
-    vat_included: "đã bao gồm VAT",
     variant_selected_label: "Lựa chọn đã chọn",
     in_stock_label: "Trong kho",
     in_stock: "Còn hàng",

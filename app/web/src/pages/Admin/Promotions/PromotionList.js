@@ -2,11 +2,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Table, Button, notification, Typography, Tooltip, Tag, Space, Modal } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import promotionApi from '../../../api/promotionApi';
+import adminPromotionApi from '../../../api/adminPromotionApi';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAuth } from '../../../Context/AuthContext';
-import { EmptyState, PageWrapper, CButton } from '../../Common';
-import Pagination from '../../Common/Pagination';
+import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
 import './PromotionList.css';
 
 const { Text } = Typography;
@@ -29,7 +28,7 @@ const PromotionList = () => {
         if (!isAuthenticated) return;
         setLoading(true);
         try {
-            const response = await promotionApi.getAll(currentPage);
+            const response = await adminPromotionApi.getAll(currentPage);
             const items = response.data?.content || [];
             setData(items);
             setTotalPages(response.data?.totalPages || 0);
@@ -62,7 +61,7 @@ const PromotionList = () => {
         if (!selectedRecord) return;
         setLoading(true);
         try {
-            await promotionApi.delete(selectedRecord.id);
+            await adminPromotionApi.delete(selectedRecord.id);
             notification.success({ message: t('success'), description: t('delete_success') });
             fetchPromotions();
         } catch (error) {
@@ -153,11 +152,11 @@ const PromotionList = () => {
         <div className="admin-promotion-list-container">
             <PageWrapper
                 title={t('promo_list_title')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('items')}</>}
+                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('promotion_items')}</>}
                 extra={
                     <Space size="large" wrap className="admin-space-btn">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={() => { setCurrentPage(0); fetchPromotions(); }} loading={loading} className="admin-btn-responsive">{t('refresh')}</CButton>
-                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/promotions/create')} className="admin-btn-responsive">{t('admin_product_create')}</CButton>
+                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/promotions/create')} className="admin-btn-responsive">{t('admin_promotion_create')}</CButton>
                     </Space>
                 }
             >
@@ -168,7 +167,16 @@ const PromotionList = () => {
                     />
                     {data.length > 0 && totalPages > 1 && (
                         <div className="admin-custom-pagination">
-                            <Pagination page={currentPage} totalPages={totalPages} onPageChange={(page) => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+                            <Pagination 
+                                page={currentPage} 
+                                totalPages={totalPages} 
+                                totalItems={totalItems}
+                                pageSize={pageSize}
+                                onPageChange={(page) => { 
+                                    setCurrentPage(page); 
+                                    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                                }} 
+                            />
                         </div>
                     )}
                 </div>

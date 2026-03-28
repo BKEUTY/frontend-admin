@@ -1,4 +1,4 @@
-import { axiosClient } from './axiosClient';
+import axiosClient from './axiosClient';
 
 class BaseApi {
     constructor(resource, client = axiosClient) {
@@ -6,13 +6,16 @@ class BaseApi {
         this.client = client;
     }
 
-
     getAll(params = {}, config = {}) {
         return this.client.get(this.resource, { params, ...config });
     }
 
     getById(id, config = {}) {
         return this.client.get(`${this.resource}/${id}`, config);
+    }
+
+    getByName(name, config = {}) {
+        return this.client.get(`${this.resource}/name/${name}`, config);
     }
 
     create(data, config = {}) {

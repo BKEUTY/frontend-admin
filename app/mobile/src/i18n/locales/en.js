@@ -28,7 +28,6 @@ export default {
     product_details: "Product details",
     how_to_apply: "How to apply",
     ingredients: "Ingredients",
-    vat_included: "VAT included",
     variant_selected_label: "Selected option",
     in_stock_label: "In stock",
     in_stock: "In stock",

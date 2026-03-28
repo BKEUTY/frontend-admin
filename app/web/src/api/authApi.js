@@ -4,8 +4,8 @@ const authApi = {
     login: (data) => {
         return axiosClient.post('/api/auth/login', data);
     },
-    refresh: (data) => {
-        return axiosClient.post('/api/auth/refresh', data || {}, { skipGlobalErrorHandler: true });
+    refresh: () => {
+        return axiosClient.post('/api/auth/refresh', {}, { skipGlobalErrorHandler: true });
     },
     logout: () => {
         return axiosClient.post('/api/auth/logout');

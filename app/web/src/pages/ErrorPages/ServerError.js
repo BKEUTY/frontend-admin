@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { ToolOutlined } from '@ant-design/icons';
-import { CButton } from '../Common';
+import { CButton } from '../../Component/Common';
 import './ErrorPage.css';
 
 const ServerError = () => {

@@ -80,7 +80,7 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                     <Ionicons name="arrow-back" size={24} color={COLORS.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>
-                    {promotionId ? t('edit') : t('create_account') || 'Tạo mới'} {t('promotion')}
+                    {promotionId ? t('edit') : t('create_account') || 'Tạo mới'} {t('promotions')}
                 </Text>
             </View>
 
