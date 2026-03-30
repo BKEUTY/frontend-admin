@@ -249,7 +249,7 @@ export default {
     
     admin_msg_create_success: "Product created successfully!",
     admin_msg_options_success: "Options created successfully!",
-    admin_msg_variants_success: "All variants updated successfully!",
+    admin_msg_variants_success: "Variants updated successfully!",
     admin_msg_upload_success: "Product uploaded successfully!",
     admin_error_create: "Failed to create product.",
     admin_error_upload_img: "Product created but image upload failed.",

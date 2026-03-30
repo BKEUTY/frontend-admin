@@ -26,6 +26,7 @@ const ProductList = () => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [sortOption, setSortOption] = useState('default');
+    const [statusFilter, setStatusFilter] = useState(undefined);
     const [searchText, setSearchText] = useState('');
     const [inputValue, setInputValue] = useState('');
     const pageSize = 10;
@@ -34,9 +35,10 @@ const ProductList = () => {
         const params = { page: currentPage, size: pageSize };
         if (selectedCategories.length > 0) params.categoryId = selectedCategories.join(',');
         if (sortOption !== 'default') params.sort = sortOption;
+        if (statusFilter) params.status = statusFilter;
         if (searchText) params.search = searchText;
         return params;
-    }, [currentPage, pageSize, selectedCategories, sortOption, searchText]);
+    }, [currentPage, pageSize, selectedCategories, sortOption, statusFilter, searchText]);
 
     const { products, totalPages, totalItems, isLoading, refetchProducts, categories } = usePublicProducts(queryParams);
 
@@ -60,6 +62,11 @@ const ProductList = () => {
         { label: t('sort_price_desc'), value: 'price_desc' },
         { label: t('sort_stock_asc'), value: 'stock_asc' },
         { label: t('sort_stock_desc'), value: 'stock_desc' },
+    ];
+
+    const statusOptions = [
+        { label: t('active'), value: 'ACTIVE' },
+        { label: t('inactive'), value: 'INACTIVE' }
     ];
 
     const handlePreview = (record) => {
@@ -110,9 +117,15 @@ const ProductList = () => {
         setCurrentPage(0);
     };
 
+    const handleStatusChange = (value) => {
+        setStatusFilter(value);
+        setCurrentPage(0);
+    };
+
     const handleResetFilters = () => {
         setCurrentPage(0);
         setSortOption('default');
+        setStatusFilter(undefined);
         setSearchText('');
         setInputValue('');
         setSelectedCategories([]);
@@ -155,8 +168,15 @@ const ProductList = () => {
             dataIndex: 'brand',
             key: 'brand',
             width: 120,
-            render: (brand) => (
-                <Text strong className="admin-table-brand">{brand}</Text>
+            render: (brand, record) => (
+                <Space direction="vertical" size={2}>
+                    <Text strong className="admin-table-brand">{brand}</Text>
+                    {record.status && (
+                        <Tag color={record.status === 'ACTIVE' ? 'processing' : 'default'} style={{ margin: 0, fontSize: '10px', lineHeight: '16px' }}>
+                            {record.status}
+                        </Tag>
+                    )}
+                </Space>
             )
         },
         {
@@ -261,6 +281,14 @@ const ProductList = () => {
                             (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                         }
                         value={selectedCategories.length === 1 ? selectedCategories[0] : undefined}
+                    />
+                    <Select
+                        allowClear
+                        placeholder={t('status')}
+                        options={statusOptions}
+                        onChange={handleStatusChange}
+                        className="admin-toolbar-select"
+                        value={statusFilter}
                     />
                     <Select
                         placeholder="Sắp xếp"

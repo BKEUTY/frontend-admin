@@ -167,12 +167,6 @@
     object-fit: contain;
 }
 
-.pc-image-form-item {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-}
-
 .pc-upload-dragger {
     background: transparent !important;
     border: none !important;
@@ -272,17 +266,6 @@
     font-weight: 500;
 }
 
-.pc-detail-price {
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: var(--admin-primary);
-    background-color: #fff5f8;
-    padding: 15px 25px;
-    border-radius: 12px;
-    width: fit-content;
-    margin: 20px 0;
-}
-
 .pc-detail-current-price-wrapper {
     display: flex;
     flex-direction: column;
@@ -300,20 +283,6 @@
     padding: 15px 25px;
     border-radius: 12px;
     width: fit-content;
-}
-
-.pc-detail-old-price-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: 5px;
-}
-
-.pc-detail-old-price-text {
-    font-size: 1.2rem;
-    color: #94a3b8;
-    text-decoration: line-through;
-    font-weight: 600;
 }
 
 .pc-preview-options {
@@ -368,11 +337,6 @@
     border-color: var(--admin-primary);
     color: var(--admin-primary);
     background-color: #fff1f6;
-}
-
-.pc-size-btn.preview-mode.active:hover {
-    background: var(--admin-primary);
-    color: white;
 }
 
 .pc-actions-top {
@@ -460,13 +424,6 @@
     margin-bottom: 8px;
     font-size: 0.95rem;
     color: #334155;
-}
-
-.pc-input-textarea {
-    border-radius: 12px !important;
-    border: 1px solid #e2e8f0 !important;
-    background: #ffffff !important;
-    box-shadow: none !important;
 }
 
 .pc-actions-bottom {
@@ -557,7 +514,7 @@
 }
 
 .pc-custom-scrollbar {
-    max-height: 460px;
+    max-height: 550px;
     overflow-y: auto;
     padding-right: 8px;
 }
@@ -587,24 +544,26 @@
 
 .pc-variant-row {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    align-items: flex-start;
+    gap: 20px;
     border: 1px solid #f1f5f9;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    background: #fff;
     transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .pc-variant-row:hover {
     border-color: var(--admin-primary);
-    background-color: #fafafa;
+    box-shadow: 0 4px 16px rgba(193, 53, 132, 0.06);
 }
 
 .pc-variant-img-upload {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
     border: 1px dashed #cbd5e1;
     display: flex;
     align-items: center;
@@ -612,6 +571,12 @@
     overflow: hidden;
     flex-shrink: 0;
     cursor: pointer;
+    background: #f8fafc;
+    transition: border-color 0.2s;
+}
+
+.pc-variant-img-upload:hover {
+    border-color: var(--admin-primary);
 }
 
 .pc-variant-img {
@@ -626,42 +591,59 @@
 }
 
 .pc-variant-icon {
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .pc-variant-info-col {
-    flex: 1 1 200px;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+}
+
+.pc-variant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 12px;
 }
 
 .pc-variant-name {
-    font-weight: 600;
-    color: #333;
-    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--admin-primary);
+    font-size: 1.1rem;
 }
 
-.pc-variant-inputs-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
+.pc-variant-inputs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.pc-variant-desc-col {
+    width: 100%;
+    margin-top: 4px;
 }
 
 .pc-variant-input-col {
-    flex: 1 1 120px;
+    display: flex;
+    flex-direction: column;
 }
 
 .pc-variant-input-label {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    margin-bottom: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
 }
 
 .pc-input-number {
     width: 100%;
     border-radius: 8px;
+    height: 40px;
+    display: flex;
+    align-items: center;
 }
 
 .pc-loading-icon {
@@ -699,56 +681,10 @@
     margin: 20px 0;
 }
 
-.pc-detail-current-price-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transition: opacity 0.2s;
-}
-
-.pc-detail-current-price-wrapper.pc-price-loading {
-    opacity: 0.4;
-    pointer-events: none;
-}
-
-.pc-detail-current-price {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--admin-primary);
-    background: #fff5f8;
-    padding: 14px 22px;
-    border-radius: 12px;
-    width: fit-content;
-}
-
 .pc-vat-tag {
     color: #64748b;
     font-size: 0.9rem;
     font-weight: 500;
-}
-
-.pc-detail-old-price-wrapper {
-    margin-left: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.pc-discount-badge-main {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: #ef4444;
-    color: white;
-    font-weight: 800;
-    font-size: 1rem;
-    padding: 6px 14px;
-    border-radius: 20px;
-    z-index: 10;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
 
 .pc-rating-container {
@@ -763,14 +699,6 @@
 .pc-star-icon {
     color: #f59e0b !important;
     font-size: 16px;
-}
-
-.pc-size-btn.active {
-    border-color: var(--admin-primary);
-    background: var(--admin-primary);
-    color: white;
-    box-shadow: 0 6px 14px rgba(193, 53, 132, 0.18);
-    transform: translateY(-2px);
 }
 
 .pc-detail-tags {
@@ -868,13 +796,6 @@
         font-size: 1.6rem;
     }
 
-    .pc-detail-price {
-        font-size: 1.8rem;
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-    }
-
     .pc-actions-flex {
         flex-direction: column;
     }
@@ -882,12 +803,17 @@
     .pc-variant-row {
         flex-direction: column;
         align-items: flex-start;
+        padding: 16px;
     }
 
-    .pc-variant-inputs-row {
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
+    .pc-variant-img-upload {
+        width: 80px;
+        height: 80px;
+    }
+
+    .pc-variant-inputs-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
 
     .pc-product-description-bottom {

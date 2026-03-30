@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { StarFilled } from '@ant-design/icons';
+import { Tag } from 'antd';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { Pagination, Skeleton } from "../../../Component/Common";
 import publicProductApi from '../../../api/publicProductApi';
@@ -66,8 +67,6 @@ export default function AdminProductDetail() {
             setIsLoading(true);
             try {
                 let responseData = null;
-                console.log("Prod:", productId);
-                console.log("Slug:", slug);
                 if (productId) {
                     responseData = (await publicProductApi.getById(productId)).data;
                 } else if (slug) {
@@ -149,7 +148,7 @@ export default function AdminProductDetail() {
             }
         }
     };
-    console.log("productData", productData);
+
     const displayName = productData?.name;
     const shownPrice = currentPrice.hasDiscount ? currentPrice.promotionPrice : currentPrice.originPrice;
 
@@ -200,12 +199,19 @@ export default function AdminProductDetail() {
                     </div>
                     <div className="admin-pd-main-image">
                         <img src={mainImage} alt={displayName} onError={(e) => { e.target.src = fallbackImg }} />
-                        {currentPrice.hasDiscount && <div className="admin-pd-discount-badge-main">{t('promotions    ')}</div>}
+                        {currentPrice.hasDiscount && <div className="admin-pd-discount-badge-main">{t('promotions')}</div>}
                     </div>
                 </div>
 
                 <div className="admin-pd-info-side">
-                    <div className="admin-pd-brand-label">{productData.brand}</div>
+                    <div className="admin-pd-brand-label">
+                        {productData.brand}
+                        {productData.status && (
+                            <Tag color={productData.status === 'ACTIVE' ? 'processing' : 'default'} style={{ marginLeft: 10 }}>
+                                {productData.status}
+                            </Tag>
+                        )}
+                    </div>
                     <h1 className="admin-pd-detail-title">{displayName}</h1>
 
                     {productData.categories?.length > 0 && (
@@ -223,7 +229,6 @@ export default function AdminProductDetail() {
                         <div className="admin-pd-current-price-wrapper">
                             <div className="admin-pd-current-price">
                                 {shownPrice.toLocaleString('vi-VN')}đ
-                                <span className="admin-pd-vat-tag">{t('vat_included')}</span>
                             </div>
                             {currentPrice.hasDiscount && (
                                 <div className="admin-pd-old-price-wrapper">

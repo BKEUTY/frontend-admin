@@ -253,7 +253,7 @@ export default {
     
     admin_msg_create_success: "Product created successfully!",
     admin_msg_options_success: "Options created successfully!",
-    admin_msg_variants_success: "All variants updated successfully!",
+    admin_msg_variants_success: "Variants updated successfully!",
     admin_msg_upload_success: "Product uploaded successfully!",
     admin_error_create: "Failed to create product.",
     admin_error_upload_img: "Product created but image upload failed.",
@@ -355,6 +355,8 @@ export default {
     sort_price_desc: "Price: High to Low",
     sort_stock_asc: "Stock: Low to High",
     sort_stock_desc: "Stock: High to Low",
+    active: "Active",
+    inactive: "Inactive",
 
     feature_developing_title: "Feature Under Maintenance / Development",
     feature_developing_desc: "This feature is currently under development and will be available soon.",

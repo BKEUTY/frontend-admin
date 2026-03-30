@@ -253,7 +253,7 @@ export default {
     
     admin_msg_create_success: "Thông tin cơ bản đã được lưu!",
     admin_msg_options_success: "Cấu hình phân loại đã được lưu!",
-    admin_msg_variants_success: "Toàn bộ danh sách phân loại đã được cập nhật!",
+    admin_msg_variants_success: "Danh sách phân loại đã được cập nhật!",
     admin_msg_upload_success: "Tải ảnh sản phẩm lên thành công!",
     admin_error_create: "Lỗi lưu thông tin sản phẩm.",
     admin_error_upload_img: "Sản phẩm đã tạo nhưng không tải được ảnh.",
@@ -355,6 +355,8 @@ export default {
     sort_price_desc: "Giá: Cao đến Thấp",
     sort_stock_asc: "Số lượng: Thấp đến Cao",
     sort_stock_desc: "Số lượng: Cao đến Thấp",
+    active: "Đang bán",
+    inactive: "Ngừng bán",
 
     feature_developing_title: "Tính năng đang bảo trì / phát triển",
     feature_developing_desc: "Tính năng này đang trong quá trình phát triển và sẽ sớm ra mắt.",

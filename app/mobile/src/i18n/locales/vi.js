@@ -249,7 +249,7 @@ export default {
     
     admin_msg_create_success: "Thông tin cơ bản đã được lưu!",
     admin_msg_options_success: "Cấu hình phân loại đã được lưu!",
-    admin_msg_variants_success: "Toàn bộ danh sách phân loại đã được cập nhật!",
+    admin_msg_variants_success: "Danh sách phân loại đã được cập nhật!",
     admin_msg_upload_success: "Tải ảnh sản phẩm lên thành công!",
     admin_error_create: "Lỗi lưu thông tin sản phẩm.",
     admin_error_upload_img: "Sản phẩm đã tạo nhưng không tải được ảnh.",

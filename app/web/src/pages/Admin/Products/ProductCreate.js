@@ -4,9 +4,10 @@ import {
     DeleteOutlined,
     EditOutlined,
     EyeOutlined,
-    FileImageOutlined, LoadingOutlined,
+    FileImageOutlined,
     PlusOutlined,
-    StarFilled
+    StarFilled,
+    LoadingOutlined
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Col, Form, InputNumber, Row, Select, Space, Steps, Upload, notification } from 'antd';
@@ -16,9 +17,8 @@ import adminBrandApi from '../../../api/adminBrandApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import { CButton, CInput } from '../../../Component/Common';
 import { useAdminProducts } from '../../../hooks/useAdminProducts';
-import { useProductDetail, usePublicProducts } from '../../../hooks/usePublicProducts';
+import { usePublicProducts } from '../../../hooks/usePublicProducts';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import { generateSlug } from '../../../utils/helpers';
 import './ProductCreate.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
@@ -28,11 +28,9 @@ import dummy4 from '../../../Assets/Images/Products/product_dummy_4.jpg';
 import dummy5 from '../../../Assets/Images/Products/product_dummy_5.svg';
 
 const { Option } = Select;
+const { Dragger } = Upload;
 const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
 const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
-
-const resolveHasDiscount = (origin, promotion) =>
-    origin > 0 && promotion > 0 && promotion < origin;
 
 const ProductCreate = () => {
     const { t } = useLanguage();
@@ -43,21 +41,18 @@ const ProductCreate = () => {
     const [loading, setLoading] = useState(false);
     const [isPreview, setIsPreview] = useState(false);
 
-    const [optionTypes, setOptionTypes] = useState([{ name: '', values: [] }]);
+    const [optionTypes, setOptionTypes] = useState([{ optionName: '', optionValues: [] }]);
     const [variants, setVariants] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
-    const [firstVariantId, setFirstVariantId] = useState(null);
 
     const fallbackImg = useMemo(() => getRandomImage(), []);
 
     const formName = Form.useWatch('name', form);
-    const formDescription = Form.useWatch('description', form);
     const formCategories = Form.useWatch('categories', form);
     const formBrandId = Form.useWatch('brandId', form);
-    const imageField = Form.useWatch('image', form);
-    const previewImage = imageField?.file?.originFileObj
-        ? URL.createObjectURL(imageField.file.originFileObj)
-        : fallbackImg;
+    const [selectedImageFile, setSelectedImageFile] = useState(null);
+
+    const previewImage = selectedImageFile ? URL.createObjectURL(selectedImageFile) : fallbackImg;
 
     const { categories } = usePublicProducts();
     const {
@@ -69,26 +64,21 @@ const ProductCreate = () => {
         queryKey: ['brands'],
         queryFn: async () => {
             const brandRes = await adminBrandApi.getAll({ page: 0, size: 1000 });
-            return brandRes.data?.content || brandRes.data || [];
+            return brandRes.data?.content || [];
         }
     });
 
-    const priceQueryId = isPreview ? firstVariantId : null;
-    const { data: productRaw, isLoading: isPriceLoading } = useProductDetail(priceQueryId, {
-        enabled: !!priceQueryId
-    });
-
-    const handleCreateProduct = async (values) => {
+    const handleCreateProduct = async ({ name, description, categories, brandId }) => {
         setLoading(true);
         try {
             const res = await createProduct({
-                name: values.name,
-                description: values.description || '',
-                productCategories: values.categories.map(Number),
-                brandId: Number(values.brandId),
+                name,
+                description,
+                productCategories: categories.map(Number),
+                brandId,
                 image: ''
             });
-            setCreatedProductId(res.data.id);
+            setCreatedProductId(res.id);
             notification.success({ message: t('success'), description: t('admin_msg_create_success') });
             setCurrentStep(1);
         } catch (error) {
@@ -99,20 +89,18 @@ const ProductCreate = () => {
     };
 
     const handleUploadProductImage = async () => {
-        if (!createdProductId || !imageField?.file) { setCurrentStep(2); return; }
+        if (!createdProductId || !selectedImageFile) { setCurrentStep(2); return; }
         setLoading(true);
         try {
-            const uploadRes = await uploadProductImage({ file: imageField.file.originFileObj, productId: createdProductId });
+            const uploadRes = await uploadProductImage({ file: selectedImageFile, productId: createdProductId });
             if (uploadRes.data?.url) {
                 await updateProduct({
                     id: createdProductId,
-                    data: {
-                        name: form.getFieldValue('name'),
-                        description: form.getFieldValue('description') || '',
-                        productCategories: form.getFieldValue('categories').map(Number),
-                        brandId: Number(form.getFieldValue('brandId')),
-                        image: uploadRes.data.url
-                    }
+                    name: form.getFieldValue('name'),
+                    description: form.getFieldValue('description'),
+                    productCategories: form.getFieldValue('categories').map(Number),
+                    brandId: form.getFieldValue('brandId'),
+                    image: uploadRes.data.url
                 });
                 notification.success({ message: t('success'), description: t('admin_msg_upload_success') });
             }
@@ -124,37 +112,30 @@ const ProductCreate = () => {
         }
     };
 
-    const handleAddOptionType = () => setOptionTypes([...optionTypes, { name: '', values: [] }]);
+    const handleAddOptionType = () => setOptionTypes([...optionTypes, { optionName: '', optionValues: [] }]);
     const handleRemoveOptionType = (index) => setOptionTypes(prev => prev.filter((_, i) => i !== index));
-    const handleOptionNameChange = (index, val) => setOptionTypes(prev => prev.map((opt, i) => i === index ? { ...opt, name: val } : opt));
-    const handleOptionValuesChange = (index, val) => setOptionTypes(prev => prev.map((opt, i) => i === index ? { ...opt, values: val } : opt));
-
+    const handleOptionNameChange = (index, val) => setOptionTypes(prev => prev.map((opt, i) => i === index ? { ...opt, optionName: val } : opt));
+    const handleOptionValuesChange = (index, val) => setOptionTypes(prev => prev.map((opt, i) => i === index ? { ...opt, optionValues: val } : opt));
+    
     const handleSubmitOptions = async () => {
         if (!createdProductId) return;
-        const validOptions = optionTypes.filter(o => o.name?.trim() !== '' && o.values?.length > 0);
-        if (validOptions.length === 0) {
+        const validOptions = optionTypes.filter(o => o.optionName?.trim() && o.optionValues?.length);
+
+        if (!validOptions.length) {
             return notification.warning({ message: t('info'), description: t('admin_error_at_least_one_option') });
         }
+        
         setLoading(true);
         try {
             const res = await createOption({
                 productId: createdProductId,
-                productOptionValues: validOptions.map(opt => ({ optionName: opt.name, optionValues: opt.values }))
+                productOptionValues: validOptions
             });
-            if (res.data) {
-                const suffixes = [];
-                const generateCombinations = (opts, index = 0, currentCombo = []) => {
-                    if (index === opts.length) { suffixes.push(currentCombo.join(' - ')); return; }
-                    for (let val of opts[index].values) generateCombinations(opts, index + 1, [...currentCombo, val]);
-                };
-                generateCombinations(validOptions);
-                setVariants(res.data.map((v, idx) => ({
-                    ...v,
-                    displayVariantName: suffixes[idx] || v.productVariantName || '',
-                    price: 0,
-                    stockQuantity: 0
-                })));
+            
+            if (res) {
+                setVariants(res.map(v => ({ ...v, price: 0, stockQuantity: 0, productImageUrl: '', description: '' })));
             }
+            
             notification.success({ message: t('success'), description: t('admin_msg_options_success') });
             setCurrentStep(3);
         } catch {
@@ -164,14 +145,15 @@ const ProductCreate = () => {
         }
     };
 
-    const handleVariantChange = (id, field, value) =>
+    const handleVariantChange = (id, field, value) => {
         setVariants(prev => prev.map(v => v.id === id ? { ...v, [field]: value } : v));
+    }
 
     const handleVariantImageUpload = async (id, file) => {
         try {
             notification.open({ message: t('loading'), key: 'skuUpload', icon: <LoadingOutlined className="pc-loading-icon" />, duration: 0 });
             const res = await uploadSkuImage({ file, skuId: id });
-            handleVariantChange(id, 'productImageUrl', res.data.url);
+            handleVariantChange(id, 'productImageUrl', res.url);
             notification.success({ message: t('success'), key: 'skuUpload' });
         } catch {
             notification.destroy('skuUpload');
@@ -183,38 +165,11 @@ const ProductCreate = () => {
         if (!createdProductId) return;
         setLoading(true);
         try {
-            const productName = form.getFieldValue('name');
-            if (variants.length > 0) {
-                await Promise.all(variants.map(v =>
-                    updateVariant({
-                        id: v.id,
-                        data: {
-                            productVariantName: v.displayVariantName
-                                ? `${productName} - ${v.displayVariantName}`
-                                : v.productVariantName,
-                            price: v.price || 0,
-                            stockQuantity: v.stockQuantity || 0,
-                            description: form.getFieldValue('description') || '',
-                            productImageUrl: v.productImageUrl,
-                            status: 'ACTIVE'
-                        }
-                    })
-                ));
-            }
-
-            const firstVariant = variants[0];
-            const variantCombinedName = firstVariant?.displayVariantName
-                ? `${productName} ${firstVariant.displayVariantName}`
-                : productName;
-
+            await Promise.all(variants.map(({ id, productVariantName, price, stockQuantity, productImageUrl, description }) => 
+                updateVariant({ id, productVariantName, price, stockQuantity, productImageUrl, description, status: 'ACTIVE' })
+            ));
             notification.success({ message: t('success'), description: t('admin_msg_variants_success') });
-            navigate(`/admin/products/${generateSlug(variantCombinedName)}`, {
-                state: {
-                    id: createdProductId,
-                    productId: createdProductId,
-                    variantId: firstVariant?.id
-                }
-            });
+            navigate(`/admin/products/${variants[0].productVariantName}`);
         } catch {
             notification.error({ message: t('error'), description: t('admin_error_options_save') });
         } finally {
@@ -223,59 +178,45 @@ const ProductCreate = () => {
     };
 
     useEffect(() => {
-        if (variants.length > 0 && !firstVariantId) {
-            setFirstVariantId(variants[0].id);
-        }
-    }, [variants, firstVariantId]);
-
-    useEffect(() => {
-        if (isPreview && productRaw?.options && Object.keys(selectedOptions).length === 0) {
+        if (isPreview && optionTypes.length > 0 && Object.keys(selectedOptions).length === 0) {
             const initialOptions = {};
-            productRaw.options.forEach(opt => {
-                if (opt.values?.length > 0) initialOptions[opt.name] = opt.values[0];
+            optionTypes.forEach(opt => {
+                if (opt.optionValues?.length) initialOptions[opt.optionName] = opt.optionValues[0];
             });
             setSelectedOptions(initialOptions);
         }
-    }, [isPreview, productRaw, selectedOptions]);
+    }, [isPreview, optionTypes, selectedOptions]);
 
     const currentVariant = useMemo(() => {
-        if (!productRaw?.variants || Object.keys(selectedOptions).length === 0) return null;
-        return productRaw.variants.find(v => {
-            if (!v.variantOptions || Object.keys(v.variantOptions).length === 0) return false;
-            return Object.entries(selectedOptions).every(([optName, selectedVal]) => {
-                const vVal = v.variantOptions[optName];
-                return vVal?.toString().toLowerCase().trim() === selectedVal?.toString().toLowerCase().trim();
-            });
+        if (!variants.length || !Object.keys(selectedOptions).length) return null;
+        const selectedValues = optionTypes
+            .map(opt => selectedOptions[opt.optionName])
+            .filter(Boolean);
+        return variants.find(v => {
+            if (!v.optionValues || !v.optionValues.length) return false;
+            return selectedValues.every(val => v.optionValues.includes(val));
         }) || null;
-    }, [productRaw, selectedOptions]);
+    }, [variants, selectedOptions, optionTypes]);
 
-    const originPrice = productRaw?.originPrice || 0;
-    const promotionPrice = productRaw?.promotionPrice || 0;
-    const hasDiscount = resolveHasDiscount(originPrice, promotionPrice);
-    const shownPrice = hasDiscount ? promotionPrice : originPrice;
-    const discountPercent = hasDiscount
-        ? Math.round(((originPrice - promotionPrice) / originPrice) * 100)
-        : null;
+    const shownPrice = currentVariant?.price || 0;
+    const variantImage = currentVariant?.productImageUrl ? getImageUrl(currentVariant.productImageUrl) : previewImage;
 
     const renderPreviewOptions = () => {
-        const displayOptions = (isPreview && productRaw?.options?.length > 0)
-            ? productRaw.options
-            : optionTypes.filter(o => o.name?.trim() !== '' && o.values?.length > 0);
-        if (displayOptions.length === 0) return null;
+        const displayOptions = optionTypes.filter(o => o.optionName?.trim() && o.optionValues?.length);
+        if (!displayOptions.length) return null;
         return (
             <div className="pc-preview-options">
                 {displayOptions.map((opt, idx) => (
                     <div key={idx} className="pc-option-preview-group">
-                        <span className="pc-option-preview-label">{opt.name.toUpperCase()}:</span>
+                        <span className="pc-option-preview-label">{opt.optionName.toUpperCase()}:</span>
                         <div className="pc-size-options">
-                            {opt.values.map(val => {
-                                const isActive = isPreview &&
-                                    selectedOptions[opt.name]?.toString().toLowerCase().trim() === val?.toString().toLowerCase().trim();
+                            {opt.optionValues.map(val => {
+                                const isActive = isPreview && selectedOptions[opt.optionName] === val;
                                 return (
                                     <button
                                         key={val}
                                         className={`pc-size-btn preview-mode ${isActive ? 'active' : ''}`}
-                                        onClick={() => isPreview && setSelectedOptions(prev => ({ ...prev, [opt.name]: val }))}
+                                        onClick={() => isPreview && setSelectedOptions(prev => ({ ...prev, [opt.optionName]: val }))}
                                     >
                                         {val}
                                     </button>
@@ -319,29 +260,32 @@ const ProductCreate = () => {
                     <div className="pc-product-gallery">
                         <div className="pc-thumbnail-list">
                             <div className="pc-thumb-item active">
-                                <img src={previewImage} alt={t('admin_product_image')} />
+                                <img src={isPreview ? variantImage : previewImage} alt={t('admin_product_image')} />
                             </div>
                         </div>
                         <div className="pc-main-image">
-                            {currentStep === 1 ? (
-                                <Form.Item name="image" className="pc-image-form-item" form={form}>
-                                    <Upload.Dragger maxCount={1} beforeUpload={() => false} showUploadList={false} className="pc-upload-dragger">
-                                        {imageField ? (
-                                            <img src={previewImage} alt={t('product')} className="pc-main-img-fit" />
-                                        ) : (
-                                            <div className="pc-upload-placeholder">
-                                                <CloudUploadOutlined className="pc-upload-icon" />
-                                                <p className="pc-upload-text">{t('admin_btn_upload')}</p>
-                                                <p className="pc-upload-subtext">JPG, PNG, WEBP</p>
-                                            </div>
-                                        )}
-                                    </Upload.Dragger>
-                                </Form.Item>
+                            {currentStep === 1 && !isPreview ? (
+                                <Upload.Dragger
+                                    maxCount={1}
+                                    beforeUpload={(file) => {
+                                        setSelectedImageFile(file);
+                                        return false;
+                                    }}
+                                    showUploadList={false}
+                                    className="pc-upload-dragger"
+                                >
+                                    {selectedImageFile ? (
+                                        <img src={previewImage} alt={t('product')} className="pc-main-img-fit" />
+                                    ) : (
+                                        <div className="pc-upload-placeholder">
+                                            <CloudUploadOutlined className="pc-upload-icon" />
+                                            <p className="pc-upload-text">{t('admin_btn_upload')}</p>
+                                            <p className="pc-upload-subtext">JPG, PNG, WEBP</p>
+                                        </div>
+                                    )}
+                                </Upload.Dragger>
                             ) : (
-                                <img src={previewImage} alt={t('product')} className="pc-main-img-fit" onError={(e) => { e.target.src = fallbackImg }} />
-                            )}
-                            {isPreview && discountPercent && (
-                                <div className="pc-discount-badge-main">-{discountPercent}%</div>
+                                <img src={isPreview ? variantImage : previewImage} alt={t('product')} className="pc-main-img-fit" onError={(e) => { e.target.src = fallbackImg }} />
                             )}
                         </div>
                     </div>
@@ -349,7 +293,7 @@ const ProductCreate = () => {
                     <div className="pc-product-info-side">
                         <div className="pc-info-header">
                             <div className="pc-brand-label">
-                                {brands.find(b => b.id === formBrandId)?.name || 'BKEUTY'}
+                                {brands.find(b => b.id === formBrandId)?.name}
                             </div>
                             <CButton
                                 type={isPreview ? 'primary' : 'outline'}
@@ -365,7 +309,7 @@ const ProductCreate = () => {
                         {isPreview ? (
                             <div className="pc-preview-content">
                                 <h1 className="pc-detail-title">
-                                    {currentVariant?.productVariantName || formName || t('admin_placeholder_product_name')}
+                                    {currentVariant ? currentVariant.productVariantName : (formName || t('admin_placeholder_product_name'))}
                                 </h1>
 
                                 {formCategories?.length > 0 && (
@@ -388,22 +332,34 @@ const ProductCreate = () => {
                                 </div>
 
                                 <div className="pc-detail-price-box">
-                                    <div className={`pc-detail-current-price-wrapper ${isPriceLoading ? 'pc-price-loading' : ''}`}>
+                                    <div className="pc-detail-current-price-wrapper">
                                         <div className="pc-detail-current-price">
-                                            {isPriceLoading ? '...' : `${shownPrice.toLocaleString('vi-VN')}đ`}
-                                            <span className="pc-vat-tag">{t('vat_included')}</span>
+                                            {`${shownPrice.toLocaleString('vi-VN')}đ`}
                                         </div>
-                                        {!isPriceLoading && hasDiscount && (
-                                            <div className="pc-detail-old-price-wrapper">
-                                                <span className="pc-detail-old-price-text">
-                                                    {originPrice.toLocaleString('vi-VN')}đ
-                                                </span>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
 
                                 {renderPreviewOptions()}
+
+                                {optionTypes.length > 0 && optionTypes[0].optionName !== '' && (
+                                    <>
+                                        {Object.keys(selectedOptions).length > 0 && (
+                                            <div className="admin-pd-selected-variant" style={{ marginTop: '16px' }}>
+                                                <span className="admin-pd-variant-label">{t('variant_selected_label')}: </span>
+                                                <strong className="admin-pd-variant-value">
+                                                    {optionTypes
+                                                        .map(opt => selectedOptions[opt.optionName])
+                                                        .filter(Boolean)
+                                                        .join(' - ') || t('not_selected', 'Chưa chọn')}
+                                                </strong>
+                                            </div>
+                                        )}
+
+                                        <div className="admin-pd-stock-info">
+                                            {t('in_stock_label')} <strong>{currentVariant?.stockQuantity || 0}</strong> {t('items_available')}
+                                        </div>
+                                    </>
+                                )}
 
                                 <div className="pc-actions-top">
                                     <CButton type="primary" block size="large" disabled className="pc-buy-btn">
@@ -471,7 +427,7 @@ const ProductCreate = () => {
                                             <div key={index} className="pc-option-group">
                                                 <div className="pc-option-header">
                                                     <CInput
-                                                        value={opt.name}
+                                                        value={opt.optionName}
                                                         onChange={(e) => handleOptionNameChange(index, e.target.value)}
                                                         placeholder={t('admin_placeholder_option_name')}
                                                         className="pc-w-60-modern"
@@ -484,7 +440,7 @@ const ProductCreate = () => {
                                                     mode="tags"
                                                     className="pc-select-modern pc-w-100"
                                                     placeholder={t('admin_placeholder_option_values_short')}
-                                                    value={opt.values}
+                                                    value={opt.optionValues}
                                                     onChange={(val) => handleOptionValuesChange(index, val)}
                                                     tokenSeparators={[',']}
                                                     open={false}
@@ -519,8 +475,10 @@ const ProductCreate = () => {
                                                             </Upload>
                                                         </div>
                                                         <div className="pc-variant-info-col">
-                                                            <div className="pc-variant-name">{record.displayVariantName || record.productVariantName}</div>
-                                                            <div className="pc-variant-inputs-row">
+                                                            <div className="pc-variant-header">
+                                                                <span className="pc-variant-name">{record.productVariantName}</span>
+                                                            </div>
+                                                            <div className="pc-variant-inputs-grid">
                                                                 <div className="pc-variant-input-col">
                                                                     <div className="pc-variant-input-label">{t('admin_label_price')}</div>
                                                                     <InputNumber
@@ -544,6 +502,16 @@ const ProductCreate = () => {
                                                                     />
                                                                 </div>
                                                             </div>
+                                                            <div className="pc-variant-desc-col">
+                                                                <div className="pc-variant-input-label">{t('admin_label_desc') || 'Mô tả phân loại'}</div>
+                                                                <CInput
+                                                                    multiline
+                                                                    rows={2}
+                                                                    placeholder={t('admin_placeholder_desc')}
+                                                                    value={record.description}
+                                                                    onChange={(e) => handleVariantChange(record.id, 'description', e.target.value)}
+                                                                />
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -564,24 +532,6 @@ const ProductCreate = () => {
                         )}
                     </div>
                 </div>
-
-                {!isPreview && (
-                    <div className="pc-product-description-bottom pc-mt-30">
-                        <div className="pc-tabs-style">
-                            <div className="pc-tab-header">{t('product_details')}</div>
-                            <div className="pc-tab-content">
-                                <CInput
-                                    multiline
-                                    value={formDescription}
-                                    readOnly
-                                    rows={6}
-                                    placeholder={t('admin_placeholder_desc')}
-                                    className="pc-description-read-only"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
