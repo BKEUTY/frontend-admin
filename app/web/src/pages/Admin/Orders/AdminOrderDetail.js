@@ -93,7 +93,7 @@ export default function AdminOrderDetail() {
     return (
         <PageWrapper noCard>
             <div className="admin-pd-breadcrumb">
-                <Link to="/admin/orders">{t('admin_orders')}</Link>
+                <Link to="/admin/orders">{t('admin_home_orders_title')}</Link>
                 <span className="admin-pd-divider">/</span>
                 <span className="admin-pd-current">Order #{id}</span>
             </div>

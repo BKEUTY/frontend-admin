@@ -15,27 +15,15 @@
     border-radius: 12px;
     border: 1px solid #f0f0f0;
     margin-bottom: 24px;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease;
 }
 
 .promo-form-section:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-}
-
-.promo-input-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .promo-submit-area {
     margin-top: 32px;
-}
-
-.pc-loading-icon {
-    font-size: 24px;
-    color: #1890ff;
 }
 
 .ant-form-item-label label {
@@ -43,16 +31,60 @@
     color: var(--text-color) !important;
 }
 
-.ant-picker-range {
-    width: 100%;
+@media (max-width: 992px) {
+    .promo-form-wrapper {
+        padding: 20px;
+    }
+
+    .promo-form-section {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .promo-submit-area {
+        margin-top: 24px;
+    }
 }
 
 @media (max-width: 768px) {
     .promo-form-wrapper {
         padding: 16px;
+        border-radius: 6px;
     }
 
     .promo-form-section {
         padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+
+    .promo-form-section:hover {
+        box-shadow: none;
+    }
+
+    .promo-submit-area {
+        margin-top: 16px;
+    }
+
+    .promo-form-wrapper .ant-input-affix-wrapper,
+    .promo-form-wrapper .ant-select-selector,
+    .promo-form-wrapper .ant-picker,
+    .promo-form-wrapper .ant-input-number {
+        font-size: 16px !important;
+    }
+
+    .promo-form-wrapper .ant-row {
+        row-gap: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .promo-form-wrapper {
+        padding: 12px;
+    }
+
+    .promo-form-section {
+        padding: 12px;
+        margin-bottom: 12px;
     }
 }

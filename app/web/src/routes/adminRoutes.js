@@ -10,6 +10,8 @@ const AdminOrderDetail = lazy(() => import('../pages/Admin/Orders/AdminOrderDeta
 const AdminHome = lazy(() => import('../pages/Admin/Home/Home'));
 const PromotionList = lazy(() => import('../pages/Admin/Promotions/PromotionList'));
 const PromotionCreate = lazy(() => import('../pages/Admin/Promotions/PromotionCreate'));
+const BrandList = lazy(() => import('../pages/Admin/Brands/BrandList'));
+const CategoryList = lazy(() => import('../pages/Admin/Categories/CategoryList'));
 
 export const adminRoutes = [
     {
@@ -19,6 +21,14 @@ export const adminRoutes = [
     {
         path: "dashboard",
         element: <Dashboard />
+    },
+    {
+        path: "orders",
+        element: <OrderList />
+    },
+    {
+        path: "orders/:id",
+        element: <AdminOrderDetail />
     },
     {
         path: "products",
@@ -33,6 +43,14 @@ export const adminRoutes = [
         element: <AdminProductDetail />
     },
     {
+        path: "categories",
+        element: <CategoryList />
+    },
+    {
+        path: "brands",
+        element: <BrandList />
+    },
+    {
         path: "promotions",
         element: <PromotionList />
     },
@@ -43,14 +61,6 @@ export const adminRoutes = [
     {
         path: "promotions/edit/:id",
         element: <PromotionCreate />
-    },
-    {
-        path: "orders",
-        element: <OrderList />
-    },
-    {
-        path: "orders/:id",
-        element: <AdminOrderDetail />
     },
     {
         path: "services",

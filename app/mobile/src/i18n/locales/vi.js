@@ -149,7 +149,6 @@ export default {
     services: "Dịch vụ",
     products: "Sản phẩm",
     revenue_overview: "Biểu đồ doanh thu",
-    admin_orders: "Đơn hàng",
     admin_services: "Dịch vụ",
     admin_appointments: "Lịch hẹn",
     admin_staff: "Nhân viên",
@@ -183,7 +182,6 @@ export default {
     admin_select_hint: "chọn",
     admin_close_hint: "đóng",
 
-    admin_product_list: "Danh sách sản phẩm",
     admin_product_create: "Tạo sản phẩm mới",
     admin_create_title: "Tạo sản phẩm mới",
     admin_create_desc: "Tạo sản phẩm mới bằng cách thực hiện các bước dưới đây.",

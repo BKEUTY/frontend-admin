@@ -1,8 +1,8 @@
 import BaseApi from './BaseApi';
 
-class AdminPromotionApi extends BaseApi {
+class AdminCategoryApi extends BaseApi {
     constructor() {
-        super('/api/admin/promotion');
+        super('/api/admin/category');
     }
 
     getAll(params = {}, config = {}) {
@@ -10,5 +10,5 @@ class AdminPromotionApi extends BaseApi {
     }
 }
 
-const adminPromotionApi = new AdminPromotionApi();
-export default adminPromotionApi;
+const adminCategoryApi = new AdminCategoryApi();
+export default adminCategoryApi;

@@ -10,7 +10,10 @@ import {
     ScheduleOutlined,
     UsergroupAddOutlined,
     PieChartOutlined,
-    ArrowRightOutlined
+    ArrowRightOutlined,
+    TagsOutlined,
+    AppstoreOutlined,
+    TagOutlined
 } from '@ant-design/icons';
 import './Home.css';
 
@@ -36,6 +39,24 @@ const AdminHome = () => {
             title: t('admin_home_products_title'),
             desc: t('admin_home_products_desc'),
             icon: <ShoppingOutlined />
+        },
+        {
+            key: 'categories',
+            title: t('admin_home_categories_title'),
+            desc: t('admin_home_categories_desc'),
+            icon: <AppstoreOutlined />
+        },
+        {
+            key: 'brands',
+            title: t('admin_home_brands_title'),
+            desc: t('admin_home_brands_desc'),
+            icon: <TagsOutlined />
+        },
+        {
+            key: 'promotions',
+            title: t('admin_home_promotions_title'),
+            desc: t('admin_home_promotions_desc'),
+            icon: <TagOutlined />
         },
         {
             key: 'services',

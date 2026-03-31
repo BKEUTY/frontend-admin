@@ -183,7 +183,7 @@ export default function AdminProductDetail() {
     return (
         <div className="admin-pd-page">
             <div className="admin-pd-breadcrumb">
-                <Link to={'/admin/products'} state={{ fromDetail: true }}>{t('admin_product_list')}</Link>
+                <Link to={'/admin/products'} state={{ fromDetail: true }}>{t('admin_home_products_title')}</Link>
                 <span className="admin-pd-divider">/</span>
                 <span className="admin-pd-current">{displayName}</span>
             </div>
@@ -207,7 +207,7 @@ export default function AdminProductDetail() {
                     <div className="admin-pd-brand-label">
                         {productData.brand}
                         {productData.status && (
-                            <Tag color={productData.status === 'ACTIVE' ? 'processing' : 'default'} style={{ marginLeft: 10 }}>
+                            <Tag color={productData.status === 'ACTIVE' ? 'processing' : 'error'} style={{ marginLeft: 10 }}>
                                 {productData.status}
                             </Tag>
                         )}

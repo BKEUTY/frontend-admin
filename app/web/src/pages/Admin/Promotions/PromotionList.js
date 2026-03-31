@@ -1,76 +1,65 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Table, Button, notification, Typography, Tooltip, Tag, Space, Modal } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import React, { useState, useMemo } from 'react';
+import { Table, Button, Typography, Tooltip, Tag, Space, Modal, Input } from 'antd';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import adminPromotionApi from '../../../api/adminPromotionApi';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAuth } from '../../../Context/AuthContext';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
-import './PromotionList.css';
+import { useAdminPromotions, useDeletePromotion } from '../../../hooks/useAdminPromotions';
+import '../../../Component/Admin/Common/List.css';
 
 const { Text } = Typography;
+const { Search } = Input;
+const { confirm } = Modal;
 
 const PromotionList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState([]);
+    const [inputValue, setInputValue] = useState('');
+    const [searchText, setSearchText] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalItems, setTotalItems] = useState(0);
-    const [actionModalVisible, setActionModalVisible] = useState(false);
-    const [selectedRecord, setSelectedRecord] = useState(null);
-    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const pageSize = 10;
 
-    const fetchPromotions = useCallback(async () => {
-        if (!isAuthenticated) return;
-        setLoading(true);
-        try {
-            const response = await adminPromotionApi.getAll(currentPage);
-            const items = response.data?.content || [];
-            setData(items);
-            setTotalPages(response.data?.totalPages || 0);
-            setTotalItems(response.data?.totalElements || 0);
-        } catch (error) {
-            if (!error?.isGlobalHandled) {
-                notification.error({ key: 'fetch_promotions_error', message: t('error'), description: t('api_error_fetch') });
-            }
-        } finally {
-            setLoading(false);
-        }
-    }, [isAuthenticated, currentPage, t]);
+    const { data, totalPages, totalItems, isLoading: loading, refetchPromotions } = useAdminPromotions(
+        { page: currentPage, size: pageSize },
+        { enabled: isAuthenticated }
+    );
+    const { mutateAsync: deletePromotion, isPending: isDeleting } = useDeletePromotion();
 
-    useEffect(() => {
-        if (isAuthenticated) fetchPromotions();
-    }, [fetchPromotions, isAuthenticated]);
+    const filteredPromotions = useMemo(() => {
+        return data.filter(p => (p.title || '').toLowerCase().includes(searchText.toLowerCase()));
+    }, [data, searchText]);
+
+    const handleSearch = (value) => {
+        setSearchText(value);
+        setCurrentPage(0);
+    };
+
+    const handleRefresh = () => {
+        setInputValue('');
+        setSearchText('');
+        setCurrentPage(0);
+        refetchPromotions();
+    };
 
     const handleEdit = (record) => {
         navigate(`/admin/promotions/edit/${record.id}`, { state: { promotion: record } });
-        setActionModalVisible(false);
     };
 
     const handleDeleteClick = (record) => {
-        setSelectedRecord(record);
-        setDeleteModalVisible(true);
-        setActionModalVisible(false);
-    };
-
-    const confirmDelete = async () => {
-        if (!selectedRecord) return;
-        setLoading(true);
-        try {
-            await adminPromotionApi.delete(selectedRecord.id);
-            notification.success({ message: t('success'), description: t('delete_success') });
-            fetchPromotions();
-        } catch (error) {
-            notification.error({ message: t('error'), description: t('delete_error') });
-        } finally {
-            setLoading(false);
-            setDeleteModalVisible(false);
-            setSelectedRecord(null);
-        }
+        confirm({
+            title: `${t('confirm_delete_title')} ${record.title}`,
+            icon: <ExclamationCircleOutlined />,
+            content: t('promo_confirm_delete'),
+            okText: t('delete'),
+            okType: 'danger',
+            cancelText: t('cancel'),
+            onOk: async () => {
+                await deletePromotion(record.id);
+                refetchPromotions();
+            }
+        });
     };
 
     const columns = [
@@ -94,8 +83,8 @@ const PromotionList = () => {
             key: 'discount',
             width: 150,
             render: (_, record) => (
-                <Tag color="volcano" className="discount-tag">
-                    {record.discountType === 'PERCENTAGE' ? `${record.discountValue}%` : `${record.discountValue.toLocaleString()}đ`}
+                <Tag color="volcano" className="discount-tag" style={{ margin: 0, padding: '4px 12px', fontSize: '13px' }}>
+                    {record.discountType === 'PERCENTAGE' ? `${record.discountValue}%` : `${record.discountValue?.toLocaleString()}đ`}
                 </Tag>
             )
         },
@@ -103,31 +92,51 @@ const PromotionList = () => {
             title: t('promo_col_type'),
             dataIndex: 'promotionType',
             key: 'type',
-            width: 120,
-            render: (type) => <Tag color="blue">{type || 'ALL'}</Tag>
+            width: 150,
+            render: (type) => <Tag color="blue" style={{ margin: 0 }}>{type === 'PRODUCT' ? 'Sản phẩm' : type || 'ALL'}</Tag>
         },
         {
-            title: t('promo_col_time'),
-            key: 'time',
-            width: 200,
-            render: (_, record) => (
-                <div className="promo-time-cell">
-                    <div>{new Date(record.startAt).toLocaleDateString('vi-VN')}</div>
-                    <div>{new Date(record.endAt).toLocaleDateString('vi-VN')}</div>
-                </div>
+            title: t('promo_col_start_time'), 
+            dataIndex: 'startAt',
+            key: 'startAt',
+            width: 160,
+            render: (date) => (
+                <span style={{ color: '#475569', fontSize: '13px' }}>
+                    {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                </span>
+            )
+        },
+        {
+            title: t('promo_col_end_time'), 
+            dataIndex: 'endAt',
+            key: 'endAt',
+            width: 160,
+            render: (date) => (
+                <span style={{ color: '#475569', fontSize: '13px' }}>
+                    {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                </span>
             )
         },
         {
             title: t('promo_col_status'),
             dataIndex: 'status',
             key: 'status',
-            width: 120,
+            width: 130,
             align: 'center',
-            render: (status) => (
-                <span className={`status-badge status-${status}`}>
-                    {t(`promo_status_${status}`)}
-                </span>
-            )
+            render: (status) => {
+                let color = 'default';
+                switch(status) {
+                    case 'STARTING': color = 'success'; break;
+                    case 'INCOMING': color = 'processing'; break;
+                    case 'ENDED': color = 'error'; break;
+                    case 'DISABLED': color = 'default'; break;
+                }
+                return (
+                    <Tag color={color} style={{ margin: 0, padding: '2px 10px', borderRadius: '4px' }}>
+                        {t(`promo_status_${status}`)}
+                    </Tag>
+                );
+            }
         },
         {
             title: t('actions_col'),
@@ -141,7 +150,7 @@ const PromotionList = () => {
                         <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); handleEdit(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} onClick={(e) => { e.stopPropagation(); handleDeleteClick(record); }} />
+                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDeleteClick(record); }} />
                     </Tooltip>
                 </Space>
             )
@@ -149,20 +158,42 @@ const PromotionList = () => {
     ];
 
     return (
-        <div className="admin-promotion-list-container">
+        <div className="admin-list-container">
             <PageWrapper
-                title={t('promo_list_title')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('promotion_items')}</>}
+                title={t('admin_home_promotions_title')}
+                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('promotion_items').toLowerCase()}</>}
                 extra={
-                    <Space size="large" wrap className="admin-space-btn">
-                        <CButton type="secondary" icon={<SyncOutlined />} onClick={() => { setCurrentPage(0); fetchPromotions(); }} loading={loading} className="admin-btn-responsive">{t('refresh')}</CButton>
-                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/promotions/create')} className="admin-btn-responsive">{t('admin_promotion_create')}</CButton>
-                    </Space>
+                    <div className="admin-header-buttons">
+                        <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={loading} className="admin-btn-responsive">
+                            {t('refresh')}
+                        </CButton>
+                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/promotions/create')} className="admin-btn-responsive">
+                            {t('admin_promotion_create')}
+                        </CButton>
+                    </div>
                 }
             >
+                <div className="admin-filter-bar">
+                    <Search
+                        placeholder={t('promo_search_placeholder')}
+                        allowClear
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onSearch={handleSearch}
+                        className="admin-toolbar-search"
+                        style={{ maxWidth: 400 }}
+                    />
+                </div>
+
                 <div className="admin-table-wrapper">
                     <Table
-                        columns={columns} dataSource={data} rowKey="id" className="beauty-table" pagination={false} loading={loading} scroll={{ x: 'max-content' }}
+                        columns={columns} 
+                        dataSource={filteredPromotions} 
+                        rowKey="id" 
+                        className="beauty-table" 
+                        pagination={false} 
+                        loading={loading} 
+                        scroll={{ x: 'max-content' }}
                         locale={{ emptyText: <EmptyState description={t('no_promos_found')} /> }}
                     />
                     {data.length > 0 && totalPages > 1 && (
@@ -181,19 +212,6 @@ const PromotionList = () => {
                     )}
                 </div>
             </PageWrapper>
-
-            <Modal
-                title={t('confirm_delete_title')}
-                open={deleteModalVisible}
-                onOk={confirmDelete}
-                onCancel={() => setDeleteModalVisible(false)}
-                okText={t('delete')}
-                cancelText={t('cancel')}
-                okButtonProps={{ danger: true, loading: loading }}
-            >
-                <p>{t('promo_confirm_delete')}</p>
-                {selectedRecord && <strong>{selectedRecord.title}</strong>}
-            </Modal>
         </div>
     );
 };

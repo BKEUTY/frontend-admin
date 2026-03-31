@@ -87,29 +87,30 @@ export const useAdminProducts = () => {
             const response = await adminProductApi.updateVariant(data);
             return response.data;
         },
-        onSuccess: invalidateProducts,
+        onSuccess: () => {
+            notification.success({ 
+                key: 'update_variant', 
+                message: t('success'), 
+                description: t('update_success')
+            });
+            invalidateProducts();
+        },
         onError: (error) => handleMutationError(error, 'update_variant'),
     });
 
     return {
         deleteVariant: deleteVariantMutation.mutateAsync,
         isDeleting: deleteVariantMutation.isPending,
-
         createProduct: createProductMutation.mutateAsync,
         isCreating: createProductMutation.isPending,
-
         updateProduct: updateProductMutation.mutateAsync,
         isUpdating: updateProductMutation.isPending,
-
         uploadProductImage: uploadProductImageMutation.mutateAsync,
         isUploadingImage: uploadProductImageMutation.isPending,
-
         createOption: createOptionMutation.mutateAsync,
         isCreatingOption: createOptionMutation.isPending,
-
         uploadSkuImage: uploadSkuImageMutation.mutateAsync,
         isUploadingSkuImage: uploadSkuImageMutation.isPending,
-
         updateVariant: updateVariantMutation.mutateAsync,
         isUpdatingVariant: updateVariantMutation.isPending,
     };

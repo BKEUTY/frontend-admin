@@ -149,7 +149,6 @@ export default {
     services: "Services",
     products: "Products",
     revenue_overview: "Revenue overview",
-    admin_orders: "Orders",
     admin_services: "Services",
     admin_appointments: "Appointments",
     admin_staff: "Staff",
@@ -183,7 +182,6 @@ export default {
     admin_select_hint: "select",
     admin_close_hint: "close",
 
-    admin_product_list: "Product list",
     admin_product_create: "Create new product",
     admin_create_title: "Create new product",
     admin_create_desc: "Create a new product by following the steps below.",

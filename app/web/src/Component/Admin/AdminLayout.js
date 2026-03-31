@@ -12,7 +12,9 @@ import {
     HomeOutlined,
     ArrowRightOutlined,
     SearchOutlined,
-    TagOutlined
+    TagOutlined,
+    TagsOutlined,
+    AppstoreOutlined
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
@@ -45,9 +47,7 @@ const AdminLayout = () => {
     }, []);
 
     React.useEffect(() => {
-        const handleResize = () => {
-        };
-
+        const handleResize = () => {};
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -97,6 +97,18 @@ const AdminLayout = () => {
             desc: t('admin_home_products_desc')
         },
         {
+            key: '/admin/categories',
+            icon: <AppstoreOutlined />,
+            label: t('categories'),
+            desc: t('admin_home_categories_desc')
+        },
+        {
+            key: '/admin/brands',
+            icon: <TagsOutlined />,
+            label: t('brands'),
+            desc: t('admin_home_brands_desc')
+        },
+        {
             key: '/admin/promotions',
             icon: <TagOutlined />,
             label: t('promotions'),
@@ -135,7 +147,6 @@ const AdminLayout = () => {
 
     return (
         <Layout className="admin-layout-container">
-
             <Header className="admin-header">
                 <div className="admin-header-left">
                     <div className="admin-logo-wrapper" onClick={() => navigate('/admin')} style={{ cursor: 'pointer' }}>
@@ -187,7 +198,6 @@ const AdminLayout = () => {
                 ))}
             </div>
 
-
             <Layout className="site-layout">
                 <Content className="site-layout-background admin-content">
                     <ErrorBoundary>
@@ -195,7 +205,6 @@ const AdminLayout = () => {
                     </ErrorBoundary>
                 </Content>
             </Layout>
-
 
             <Modal
                 open={isSearchOpen}

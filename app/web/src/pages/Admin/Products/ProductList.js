@@ -1,12 +1,13 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { Table, Button, notification, Typography, Tooltip, Tag, Space, Modal, Input, Select } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Typography, Tooltip, Tag, Space, Modal, Input, Select, Form, InputNumber } from 'antd';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { usePublicProducts } from '../../../hooks/usePublicProducts';
+import { useAdminProducts } from '../../../hooks/useAdminProducts';
 import { EmptyState, PageWrapper, CButton, Skeleton, Pagination } from '../../../Component/Common';
-import './ProductList.css';
+import '../../../Component/Admin/Common/List.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
 import dummy2 from '../../../Assets/Images/Products/product_dummy_2.jpg';
@@ -17,11 +18,13 @@ import dummy5 from '../../../Assets/Images/Products/product_dummy_5.svg';
 const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
 const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
 const { Text } = Typography;
-const { Search } = Input;
+const { Search, TextArea } = Input;
+const { confirm } = Modal;
 
 const ProductList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
+    const [editForm] = Form.useForm();
 
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
@@ -41,10 +44,12 @@ const ProductList = () => {
     }, [currentPage, pageSize, selectedCategories, sortOption, statusFilter, searchText]);
 
     const { products, totalPages, totalItems, isLoading, refetchProducts, categories } = usePublicProducts(queryParams);
+    const { deleteVariant, isDeleting, updateVariant, isUpdatingVariant } = useAdminProducts();
 
     const touchTimer = useRef(null);
     const isLongPressing = useRef(false);
     const [actionModalVisible, setActionModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
 
     const tableData = useMemo(() => products.map(p => ({
@@ -54,7 +59,7 @@ const ProductList = () => {
 
     const categoryOptions = useMemo(() =>
         categories.map(cat => ({ label: cat.categoryName, value: cat.id })),
-    [categories]);
+        [categories]);
 
     const sortOptions = [
         { label: t('sort_default'), value: 'default' },
@@ -92,14 +97,47 @@ const ProductList = () => {
         if (!isLongPressing.current) handlePreview(record);
     };
 
-    const handleEdit = () => {
-        notification.info({ key: 'info', message: t('info'), description: t('coming_soon') });
+    const handleEditClick = (record) => {
+        setSelectedRecord(record);
+        editForm.setFieldsValue({
+            price: record.discountPrice,
+            stockQuantity: record.stock,
+            status: record.status,
+            description: record.description
+        });
+        setEditModalVisible(true);
         setActionModalVisible(false);
     };
 
-    const handleDelete = () => {
-        notification.info({ key: 'info', message: t('info'), description: t('coming_soon') });
+    const handleEditSubmit = async (values) => {
+        await updateVariant({
+            id: selectedRecord.productId,
+            productVariantName: selectedRecord.variantName,
+            price: values.price,
+            stockQuantity: values.stockQuantity,
+            status: values.status,
+            description: values.description,
+            productImageUrl: selectedRecord.imageUrl || ''
+        });
+        setEditModalVisible(false);
+        refetchProducts();
+    };
+
+    const handleDeleteClick = (record) => {
+        setSelectedRecord(record);
         setActionModalVisible(false);
+        confirm({
+            title: `${t('confirm_delete_title')} ${record.variantName}`,
+            icon: <ExclamationCircleOutlined />,
+            content: t('confirm_delete_message'),
+            okText: t('delete'),
+            okType: 'danger',
+            cancelText: t('cancel'),
+            onOk: async () => {
+                await deleteVariant(record.productId);
+                refetchProducts();
+            }
+        });
     };
 
     const handleSearch = (value) => {
@@ -172,7 +210,7 @@ const ProductList = () => {
                 <Space direction="vertical" size={2}>
                     <Text strong className="admin-table-brand">{brand}</Text>
                     {record.status && (
-                        <Tag color={record.status === 'ACTIVE' ? 'processing' : 'default'} style={{ margin: 0, fontSize: '10px', lineHeight: '16px' }}>
+                        <Tag color={record.status === 'ACTIVE' ? 'processing' : 'error'} style={{ margin: 0, fontSize: '10px', lineHeight: '16px' }}>
                             {record.status}
                         </Tag>
                     )}
@@ -224,7 +262,7 @@ const ProductList = () => {
             render: (stock) => <Tag color={stock > 0 ? 'green' : 'red'}>{stock}</Tag>
         },
         {
-            title: t('admin_product_action'),
+            title: t('actions_col'),
             key: 'action',
             width: 100,
             align: 'center',
@@ -234,11 +272,11 @@ const ProductList = () => {
                 <Space size="small">
                     <Tooltip title={t('edit')}>
                         <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />}
-                            onClick={(e) => { e.stopPropagation(); setSelectedRecord(record); handleEdit(); }} />
+                            onClick={(e) => { e.stopPropagation(); handleEditClick(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />}
-                            onClick={(e) => { e.stopPropagation(); setSelectedRecord(record); handleDelete(); }} />
+                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting && selectedRecord?.productId === record.productId}
+                            onClick={(e) => { e.stopPropagation(); handleDeleteClick(record); }} />
                     </Tooltip>
                 </Space>
             )
@@ -246,10 +284,10 @@ const ProductList = () => {
     ];
 
     return (
-        <div className="admin-product-list-container">
+        <div className="admin-list-container">
             <PageWrapper
-                title={t('admin_product_list')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('product_items')}</>}
+                title={t('admin_home_products_title')}
+                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('product_items').toLowerCase()}</>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={handleResetFilters} loading={isLoading} className="admin-btn-responsive">
@@ -263,7 +301,7 @@ const ProductList = () => {
             >
                 <div className="admin-filter-bar" style={{ flexWrap: 'wrap' }}>
                     <Search
-                        placeholder={t('admin_search_products') || 'Tìm kiếm sản phẩm...'}
+                        placeholder={t('admin_search_products')}
                         allowClear
                         onSearch={handleSearch}
                         className="admin-toolbar-search"
@@ -273,13 +311,11 @@ const ProductList = () => {
                     <Select
                         showSearch
                         allowClear
-                        placeholder={t('categories') || 'Danh mục'}
+                        placeholder={t('categories')}
                         options={categoryOptions}
                         onChange={handleCategorySelect}
                         className="admin-toolbar-select"
-                        filterOption={(input, option) =>
-                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                        }
+                        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                         value={selectedCategories.length === 1 ? selectedCategories[0] : undefined}
                     />
                     <Select
@@ -291,7 +327,7 @@ const ProductList = () => {
                         value={statusFilter}
                     />
                     <Select
-                        placeholder="Sắp xếp"
+                        placeholder={t('sort_default')}
                         options={sortOptions}
                         onChange={handleSortChange}
                         className="admin-toolbar-select"
@@ -310,7 +346,7 @@ const ProductList = () => {
                         <Table
                             columns={columns}
                             dataSource={tableData}
-                            rowKey="key"
+                            rowKey="productId"
                             className="beauty-table"
                             pagination={false}
                             loading={isLoading}
@@ -352,9 +388,46 @@ const ProductList = () => {
                 width={320}
             >
                 <div className="admin-modal-action-wrap">
-                    <Button type="primary" size="large" icon={<FormOutlined />} onClick={handleEdit}>{t('edit')}</Button>
-                    <Button danger size="large" icon={<DeleteOutlined />} onClick={handleDelete}>{t('delete')}</Button>
+                    <Button type="primary" size="large" icon={<FormOutlined />} onClick={() => handleEditClick(selectedRecord)}>{t('edit')}</Button>
+                    <Button danger size="large" icon={<DeleteOutlined />} onClick={() => handleDeleteClick(selectedRecord)}>{t('delete')}</Button>
                 </div>
+            </Modal>
+
+            <Modal
+                open={editModalVisible}
+                onCancel={() => setEditModalVisible(false)}
+                title={`${t('edit')} ${selectedRecord?.variantName}`}
+                onOk={() => editForm.submit()}
+                confirmLoading={isUpdatingVariant}
+                centered
+                destroyOnClose
+                okText={t('save')}
+                cancelText={t('cancel')}
+            >
+                <Form form={editForm} layout="vertical" onFinish={handleEditSubmit} className="admin-edit-modal-form">
+                    <Form.Item name="price" label={t('admin_label_price')} rules={[{ required: true }]}>
+                        <InputNumber
+                            min={0}
+                            style={{ width: '100%' }}
+                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                        />
+                    </Form.Item>
+                    <Form.Item name="stockQuantity" label={t('admin_label_stock')} rules={[{ required: true }]}>
+                        <InputNumber min={0} style={{ width: '100%' }} />
+                    </Form.Item>
+
+                    <Form.Item name="description" label={t('admin_label_desc')}>
+                        <TextArea
+                            rows={3}
+                            placeholder={t('admin_placeholder_desc')}
+                        />
+                    </Form.Item>
+
+                    <Form.Item name="status" label={t('status')} rules={[{ required: true }]}>
+                        <Select options={statusOptions} />
+                    </Form.Item>
+                </Form>
             </Modal>
         </div>
     );

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAdminOrders, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
-import './OrderList.css';
+import '../../../Component/Admin/Common/List.css';
 
 const { Text } = Typography;
 
@@ -117,9 +117,9 @@ const OrderList = () => {
     ];
 
     return (
-        <div className="admin-order-list-container">
+        <div className="admin-list-container">
             <PageWrapper
-                title={t('admin_orders')}
+                title={t('admin_home_orders_title')}
                 subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('orders')?.toLowerCase()}</>}
                 extra={
                     <Space size="large" wrap className="admin-space-btn">

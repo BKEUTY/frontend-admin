@@ -107,7 +107,7 @@ const PromotionListScreen = ({ navigation }) => {
                 <Ionicons name="search" size={20} color={COLORS.textLight} style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder={t('search_placeholder') || "Tìm kiếm khuyến mãi..."}
+                    placeholder={t('search_placeholder')}
                     placeholderTextColor={COLORS.textLight}
                     value={searchQuery}
                     onChangeText={setSearchQuery}

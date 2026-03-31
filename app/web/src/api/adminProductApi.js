@@ -12,10 +12,6 @@ class AdminProductApi extends BaseApi {
         return this.client.get(`${this.resource}/variants/page`, { ...config, params });
     }
 
-    createOption(data, config = {}) {
-        return this.client.post(`${this.resource}/options`, data, config);
-    }
-
     getVariants(productId, config = {}) {
         return this.client.get(`${this.resource}/${productId}/variants`, config);
     }
@@ -24,13 +20,21 @@ class AdminProductApi extends BaseApi {
         return this.client.put(`${this.resource}/variants`, data, config);
     }
 
+    deleteVariant(id, config = {}) {
+        return this.client.delete(`${this.resource}/variants/${id}`, config);
+    }
+
+    createOption(data, config = {}) {
+        return this.client.post(`${this.resource}/options`, data, config);
+    }
+
     uploadProductImage(file, productId, config = {}) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('productId', productId || 'temp');
         return this.client.post('/api/files/upload/product', formData, {
             ...config,
-            headers: { 'Content-Type': 'multipart/form-data' }
+            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
         });
     }
 
@@ -40,7 +44,7 @@ class AdminProductApi extends BaseApi {
         formData.append('skuId', skuId || 'temp');
         return this.client.post('/api/files/upload/sku', formData, {
             ...config,
-            headers: { 'Content-Type': 'multipart/form-data' }
+            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
         });
     }
 }
