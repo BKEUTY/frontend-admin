@@ -1,0 +1,38 @@
+.review-text-admin {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+
+.review-images-admin {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.review-images-admin img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: zoom-in;
+    border: 1px solid #f1f5f9;
+}
+
+.admin-action-btn {
+    font-size: 18px;
+}
+
+.admin-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.edit-btn:hover {
+    color: #10b981 !important;
+}
+
+.delete-btn:hover {
+    color: #ef4444 !important;
+}

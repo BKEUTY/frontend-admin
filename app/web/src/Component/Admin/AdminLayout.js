@@ -14,7 +14,8 @@ import {
     SearchOutlined,
     TagOutlined,
     TagsOutlined,
-    AppstoreOutlined
+    AppstoreOutlined,
+    StarOutlined
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
@@ -137,6 +138,12 @@ const AdminLayout = () => {
             icon: <PieChartOutlined />,
             label: t('reports'),
             desc: t('admin_home_reports_desc')
+        },
+        {
+            key: '/admin/reviews',
+            icon: <StarOutlined />,
+            label: t('reviews'),
+            desc: t('admin_home_reviews_desc')
         },
     ];
 

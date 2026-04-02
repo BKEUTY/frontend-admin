@@ -12,6 +12,7 @@ const PromotionList = lazy(() => import('../pages/Admin/Promotions/PromotionList
 const PromotionCreate = lazy(() => import('../pages/Admin/Promotions/PromotionCreate'));
 const BrandList = lazy(() => import('../pages/Admin/Brands/BrandList'));
 const CategoryList = lazy(() => import('../pages/Admin/Categories/CategoryList'));
+const ReviewList = lazy(() => import('../pages/Admin/Reviews/ReviewList'));
 
 export const adminRoutes = [
     {
@@ -41,6 +42,10 @@ export const adminRoutes = [
     {
         path: "products/:slug",
         element: <AdminProductDetail />
+    },
+    {
+        path: "reviews",
+        element: <ReviewList />
     },
     {
         path: "categories",

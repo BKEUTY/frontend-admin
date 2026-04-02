@@ -85,8 +85,6 @@ export default function AdminProductDetail() {
 
                 const mergedData = {
                     ...responseData,
-                    rating: 4.8,
-                    reviews_count: 0,
                     content: {
                         en: {
                             details: responseData.description || 'High-quality BKEUTY skincare product.',
@@ -95,7 +93,6 @@ export default function AdminProductDetail() {
                             details: responseData.description || 'Sản phẩm chăm sóc da cao cấp từ BKEUTY.',
                         },
                     },
-                    reviews: [],
                 };
 
                 setProductData(mergedData);
@@ -296,11 +293,11 @@ export default function AdminProductDetail() {
                         <div className="admin-pd-tab-content">
                             <div className="admin-pd-review-dashboard">
                                 <div className="admin-pd-rating-overview">
-                                    <span className="admin-pd-big-score">{productData.rating}</span>
+                                    <span className="admin-pd-big-score">{productData.averageRating}</span>
                                     <div className="admin-pd-star-row">
                                         {[...Array(5)].map((_, i) => <StarFilled key={i} className="admin-pd-star" />)}
                                     </div>
-                                    <span className="admin-pd-total-reviews">{productData.reviews_count} {t('reviews')}</span>
+                                    <span className="admin-pd-total-reviews">{productData.reviewCount} {t('reviews')}</span>
                                 </div>
                             </div>
                             <div className="admin-pd-review-list">
@@ -317,7 +314,7 @@ export default function AdminProductDetail() {
                                     </div>
                                 ))}
                             </div>
-                            <Pagination page={reviewPage} totalPages={totalReviewPages} totalItems={productData.reviews.length} pageSize={reviewsPerPage} onPageChange={setReviewPage} />
+                            <Pagination page={reviewPage} totalPages={totalReviewPages} totalItems={productData.reviewCount} pageSize={reviewsPerPage} onPageChange={setReviewPage} />
                         </div>
                     )}
                 </div>
