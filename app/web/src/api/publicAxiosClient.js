@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import { getTranslation } from '../i18n/translate';
 import { notifyError } from '../utils/NotificationService';
 
-const SERVER_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const SERVER_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const publicAxiosClient = axios.create({
     baseURL: SERVER_URL,
@@ -42,3 +42,4 @@ publicAxiosClient.interceptors.response.use(
 );
 
 export default publicAxiosClient;
+

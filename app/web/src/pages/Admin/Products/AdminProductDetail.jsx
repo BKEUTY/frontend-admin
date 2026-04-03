@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { StarFilled } from '@ant-design/icons';
 import { Tag } from 'antd';
 import { useLanguage } from '../../../i18n/LanguageContext';
-import { Pagination, Skeleton } from "../../../Component/Common";
+import { Skeleton } from "../../../Component/Common";
 import publicProductApi from '../../../api/publicProductApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import NotFound from '../../../pages/ErrorPages/NotFound';
+import ReviewList from '../Reviews/ReviewList'; 
 import './AdminProductDetail.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
@@ -38,11 +38,8 @@ export default function AdminProductDetail() {
     const [selectedOptions, setSelectedOptions] = useState({});
     const [stockQuantity, setStockQuantity] = useState(0);
     const [mainImage, setMainImage] = useState(fallbackImg);
-    const [reviewPage, setReviewPage] = useState(0);
-    const reviewsPerPage = 5;
 
     const [currentPrice, setCurrentPrice] = useState({ originPrice: 0, promotionPrice: 0, hasDiscount: false });
-
     const galleryImages = useMemo(() => {
         if (!productData) return [];
         const variantImage = productData.variants?.find(v => v.id === productData.id)?.productImageUrl;
@@ -149,11 +146,6 @@ export default function AdminProductDetail() {
     const displayName = productData?.name;
     const shownPrice = currentPrice.hasDiscount ? currentPrice.promotionPrice : currentPrice.originPrice;
 
-    const totalReviewPages = productData?.reviews ? Math.ceil(productData.reviews.length / reviewsPerPage) : 0;
-    const displayedReviews = productData?.reviews
-        ? productData.reviews.slice(reviewPage * reviewsPerPage, (reviewPage + 1) * reviewsPerPage)
-        : [];
-
     const getLocalContent = (key) => productData?.content?.[language === 'vi' ? 'vi' : 'en']?.[key] || '';
 
     if (isError) return <NotFound />;
@@ -174,7 +166,7 @@ export default function AdminProductDetail() {
 
     const tabs = [
         { id: 'details', label: t('product_details') },
-        { id: 'reviews', label: `${t('reviews')} (${productData.reviews_count})` }
+        { id: 'reviews', label: `${t('reviews')} (${productData.reviewCount})` }
     ];
 
     return (
@@ -289,34 +281,11 @@ export default function AdminProductDetail() {
                             <p>{getLocalContent('details')}</p>
                         </div>
                     )}
-                    {activeTab === 'reviews' && (
-                        <div className="admin-pd-tab-content">
-                            <div className="admin-pd-review-dashboard">
-                                <div className="admin-pd-rating-overview">
-                                    <span className="admin-pd-big-score">{productData.averageRating}</span>
-                                    <div className="admin-pd-star-row">
-                                        {[...Array(5)].map((_, i) => <StarFilled key={i} className="admin-pd-star" />)}
-                                    </div>
-                                    <span className="admin-pd-total-reviews">{productData.reviewCount} {t('reviews')}</span>
-                                </div>
-                            </div>
-                            <div className="admin-pd-review-list">
-                                {displayedReviews.map((rev, i) => (
-                                    <div key={i} className="admin-pd-review-card">
-                                        <div className="admin-pd-review-avatar">{rev.user.charAt(0)}</div>
-                                        <div className="admin-pd-review-body">
-                                            <div className="admin-pd-review-header">
-                                                <strong>{rev.user}</strong>
-                                                <span>{rev.date}</span>
-                                            </div>
-                                            <div className="admin-pd-review-text">{rev.content}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <Pagination page={reviewPage} totalPages={totalReviewPages} totalItems={productData.reviewCount} pageSize={reviewsPerPage} onPageChange={setReviewPage} />
-                        </div>
-                    )}
+                    {activeTab === 'reviews' && (() => {
+                        return (
+                            <ReviewList variantId={productData.id} />
+                        );
+                    })()}
                 </div>
             </div>
         </div>

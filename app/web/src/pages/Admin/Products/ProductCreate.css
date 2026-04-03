@@ -356,10 +356,12 @@
 
 .pc-select-modern .ant-select-selector {
     border-radius: 10px !important;
-    height: 45px !important;
+    min-height: 45px !important;
     padding: 6px 12px !important;
     border: 1px solid #e2e8f0 !important;
     transition: all 0.2s !important;
+    display: flex;
+    align-items: center;
 }
 
 .pc-select-modern.ant-select-multiple .ant-select-selector {
@@ -475,16 +477,62 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     width: 100%;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .pc-option-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: flex-start !important;
+    gap: 12px;
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+}
+
+.pc-opt-select.ant-select .ant-select-selector {
+    height: 45px !important;
+    border-radius: 10px !important;
+    display: flex;
+    align-items: center;
+}
+
+.pc-opt-input .ant-input {
+    height: 45px !important;
+    border-radius: 10px !important;
+    width: 100%;
+}
+
+.pc-delete-opt-btn {
+    height: 45px !important;
+    width: 45px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #fff !important;
+    flex-shrink: 0;
+    padding: 0 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+}
+
+.pc-delete-opt-btn:hover {
+    border-color: #ef4444 !important;
+    background: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+
+@media (max-width: 768px) {
+    .pc-option-header {
+        flex-direction: row;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
 }
 
 .pc-w-100 {
@@ -493,8 +541,11 @@
 
 .pc-add-option-btn {
     width: 100%;
-    margin-top: 24px;
+    margin-top: 10px;
     margin-bottom: 8px;
+    height: 45px;
+    border-radius: 10px;
+    font-weight: 600;
 }
 
 .pc-mt-48 {
@@ -709,6 +760,32 @@
     flex-wrap: wrap;
 }
 
+.admin-pd-selected-variant {
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-pd-variant-label {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.admin-pd-variant-value {
+    color: var(--admin-primary);
+    font-size: 1.05rem;
+}
+
+.admin-pd-stock-info {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    color: #475569;
+}
+
 @media (max-width: 992px) {
     .pc-product-top-section {
         flex-direction: column;
@@ -819,5 +896,10 @@
     .pc-product-description-bottom {
         padding: 20px;
         border-radius: 16px;
+    }
+
+    .pc-option-header {
+        flex-direction: column;
+        align-items: stretch;
     }
 }

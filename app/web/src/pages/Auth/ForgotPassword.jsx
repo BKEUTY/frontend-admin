@@ -218,7 +218,7 @@ const ForgotPassword = () => {
                             </div>
 
                             <Form.Item>
-                                <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                                <Space orientation="vertical" style={{ width: '100%' }} size="middle">
                                     <Button
                                         type="primary"
                                         htmlType="submit"
@@ -290,7 +290,7 @@ const ForgotPassword = () => {
                             </Form.Item>
 
                             <Form.Item>
-                                <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                                <Space orientation="vertical" style={{ width: '100%' }} size="middle">
                                     <Button
                                         type="primary"
                                         htmlType="submit"

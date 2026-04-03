@@ -26,7 +26,7 @@ class ErrorBoundary extends Component {
                             {getTranslation('api_error_general')}
                         </p>
                         
-                        {process.env.NODE_ENV === 'development' && (
+                        {import.meta.env.DEV && (
                             <div style={{ marginTop: '20px', padding: '15px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', textAlign: 'left', overflowX: 'auto' }}>
                                 <code style={{ fontSize: '13px', color: '#9f1239', fontFamily: 'monospace' }}>
                                     {this.state.error?.toString()}
@@ -50,3 +50,4 @@ class ErrorBoundary extends Component {
 }
 
 export default ErrorBoundary;
+

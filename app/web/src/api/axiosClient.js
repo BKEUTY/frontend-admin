@@ -4,7 +4,7 @@ import { getTranslation } from '../i18n/translate';
 import { notifyError } from '../utils/NotificationService';
 import { getAccessToken, setAccessToken, clearAccessToken, clearUserSession } from './tokenStorage';
 
-const SERVER_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const SERVER_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const authClient = axios.create({
     baseURL: SERVER_URL,
@@ -131,3 +131,4 @@ export const getImageUrl = (imagePath) => {
 };
 
 export default axiosClient;
+

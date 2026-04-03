@@ -36,7 +36,7 @@ export default {
     write_review: "Viết đánh giá",
     filter_with_media: "Có hình ảnh/video",
     filter_5_star: "5 sao",
-    verified_purchase: "Mua hàng xác thực",
+    verified_purchase: "Đã mua hàng",
     like: "Thích",
     comment: "Bình luận",
     refresh: "Làm mới",

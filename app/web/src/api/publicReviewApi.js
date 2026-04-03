@@ -9,6 +9,10 @@ class PublicReviewApi extends BaseApi {
     getReviewsByVariantId(variantId, params) {
         return this.client.get(`${this.resource}/product/${variantId}`, { params });
     }
+
+    getStatsByVariantId(variantId) {
+        return this.client.get(`${this.resource}/product/${variantId}/stats`);
+    }
 }
 
 const publicReviewApi = new PublicReviewApi();

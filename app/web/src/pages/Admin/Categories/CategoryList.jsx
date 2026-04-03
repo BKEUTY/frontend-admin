@@ -184,7 +184,7 @@ const CategoryList = () => {
                 onOk={() => form.submit()}
                 confirmLoading={isSubmitting}
                 centered
-                destroyOnClose
+                destroyOnHidden
                 okText={t('save')}
                 cancelText={t('cancel')}
             >

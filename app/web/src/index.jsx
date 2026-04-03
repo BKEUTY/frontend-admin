@@ -34,7 +34,7 @@ root.render(
 
 reportWebVitals();
 
-if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js').then(registration => {
       console.log('SW registered: ', registration);
@@ -43,3 +43,4 @@ if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     });
   });
 }
+

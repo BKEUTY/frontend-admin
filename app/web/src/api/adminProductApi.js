@@ -28,6 +28,10 @@ class AdminProductApi extends BaseApi {
         return this.client.post(`${this.resource}/options`, data, config);
     }
 
+    getAllOptions(config = {}) {
+        return this.client.get(`${this.resource}/options`, config);
+    }
+
     uploadProductImage(file, productId, config = {}) {
         const formData = new FormData();
         formData.append('file', file);

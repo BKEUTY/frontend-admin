@@ -1,3 +1,15 @@
+.review-delete-btn {
+    color: #ff4d4f !important;
+    border: 1px solid #ffccc7 !important;
+    background: #fff2f0 !important;
+    border-radius: 4px !important;
+}
+
+.review-delete-btn:hover {
+    background: #ff4d4f !important;
+    color: white !important;
+}
+
 .review-text-admin {
     font-size: 14px;
     color: #4b5563;
@@ -10,6 +22,7 @@
     display: flex;
     gap: 8px;
     margin-top: 8px;
+    flex-wrap: wrap;
 }
 
 .review-images-admin img {
@@ -19,20 +32,185 @@
     border-radius: 8px;
     cursor: zoom-in;
     border: 1px solid #f1f5f9;
+    transition: transform 0.2s;
 }
 
-.admin-action-btn {
-    font-size: 18px;
+.review-images-admin img:hover {
+    transform: scale(1.05);
 }
 
-.admin-action-btn:hover {
-    transform: scale(1.1);
+/* Review Dashboard Statistics */
+.review-dashboard-admin {
+    display: flex;
+    background: #f8fafc;
+    padding: 24px;
+    border-radius: 16px;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 24px;
+    border: 1px solid #eef2f6;
 }
 
-.edit-btn:hover {
-    color: #10b981 !important;
+.rating-overview-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
 }
 
-.delete-btn:hover {
-    color: #ef4444 !important;
+.big-score-admin {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.star-stack-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.star-row-admin {
+    color: #f59e0b;
+    font-size: 1rem;
+}
+
+.total-reviews-admin {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.rating-bars-admin {
+    flex: 1;
+    max-width: 400px;
+}
+
+.bar-row-admin {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.bar-row-admin:hover {
+    opacity: 0.8;
+}
+
+.bar-row-admin.active {
+    color: #c2185b;
+}
+
+.star-label-admin {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 45px;
+}
+
+.progress-bg-admin {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fi-admin {
+    height: 100%;
+    background: #f59e0b;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* Review Filter Chips */
+.review-filters-admin {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-chip-admin {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    font-weight: 500;
+    color: #475569;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.filter-chip-admin.active,
+.filter-chip-admin:hover {
+    border-color: #c2185b;
+    color: #c2185b;
+    background: #fff0f6;
+}
+
+/* Informational Messages */
+.no-reviews-msg-admin {
+    padding: 40px 0;
+    text-align: center;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-radius: 12px;
+    font-style: italic;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Admin Reply Box Styles */
+.admin-reply-box-item {
+    background: #fdfaf3;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    border-left: 3px solid #f59e0b;
+}
+
+.admin-reply-header-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #92400e;
+}
+
+.admin-reply-content-item {
+    color: #92400e;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.verified-badge-admin {
+    font-size: 0.7rem;
+    color: #10b981;
+    background: #ecfdf5;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .review-dashboard-admin {
+        flex-direction: column;
+        gap: 20px;
+        padding: 16px;
+    }
+    
+    .rating-bars-admin {
+        width: 100%;
+    }
 }

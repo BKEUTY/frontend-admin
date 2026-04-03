@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { Table, Button, Typography, Tooltip, Tag, Space, Modal, Input, Select, Form, InputNumber } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, StarFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../../../api/axiosClient';
 import { useLanguage } from '../../../i18n/LanguageContext';
@@ -67,6 +67,10 @@ const ProductList = () => {
         { label: t('sort_price_desc'), value: 'price_desc' },
         { label: t('sort_stock_asc'), value: 'stock_asc' },
         { label: t('sort_stock_desc'), value: 'stock_desc' },
+        { label: t('sort_rating_asc'), value: 'rating_asc' },
+        { label: t('sort_rating_desc'), value: 'rating_desc' },
+        { label: t('sort_reviews_asc'), value: 'reviews_asc' },
+        { label: t('sort_reviews_desc'), value: 'reviews_desc' },
     ];
 
     const statusOptions = [
@@ -207,7 +211,7 @@ const ProductList = () => {
             key: 'brand',
             width: 120,
             render: (brand, record) => (
-                <Space direction="vertical" size={2}>
+                <Space orientation="vertical" size={2}>
                     <Text strong className="admin-table-brand">{brand}</Text>
                     {record.status && (
                         <Tag color={record.status === 'ACTIVE' ? 'processing' : 'error'} style={{ margin: 0, fontSize: '10px', lineHeight: '16px' }}>
@@ -252,6 +256,19 @@ const ProductList = () => {
                     </div>
                 );
             }
+        },
+        {
+            title: t('reviews'),
+            key: 'reviews',
+            width: 120,
+            align: 'center',
+            render: (_, record) => (
+                <Space size="small" align="center">
+                    <Text strong>{Number(record.averageRating || 0).toFixed(1)}</Text>
+                    <StarFilled style={{ color: '#f59e0b', fontSize: '12px' }} />
+                    <Text type="secondary" style={{ fontSize: '12px' }}>({record.reviewCount || 0})</Text>
+                </Space>
+            )
         },
         {
             title: t('admin_label_stock'),
@@ -400,7 +417,7 @@ const ProductList = () => {
                 onOk={() => editForm.submit()}
                 confirmLoading={isUpdatingVariant}
                 centered
-                destroyOnClose
+                destroyOnHidden
                 okText={t('save')}
                 cancelText={t('cancel')}
             >

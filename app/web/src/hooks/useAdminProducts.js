@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
 import { useLanguage } from '../i18n/LanguageContext';
 import adminProductApi from '../api/adminProductApi';
@@ -21,7 +21,17 @@ export const useAdminProducts = () => {
         queryClient.invalidateQueries({ queryKey: ['publicProducts'] });
         queryClient.invalidateQueries({ queryKey: ['productDetail'] });
         queryClient.invalidateQueries({ queryKey: ['productDetailByName'] });
+        queryClient.invalidateQueries({ queryKey: ['adminProductOptions'] });
     };
+
+    const optionsQuery = useQuery({
+        queryKey: ['adminProductOptions'],
+        queryFn: async () => {
+            const response = await adminProductApi.getAllOptions();
+            return response.data || {};
+        },
+        staleTime: 5 * 60 * 1000, 
+    });
 
     const deleteVariantMutation = useMutation({
         mutationFn: async (id) => {
@@ -71,6 +81,9 @@ export const useAdminProducts = () => {
             const response = await adminProductApi.createOption(data);
             return response.data;
         },
+        onSuccess: () => {
+             queryClient.invalidateQueries({ queryKey: ['adminProductOptions'] });
+        },
         onError: (error) => handleMutationError(error, 'create_option'),
     });
 
@@ -99,6 +112,8 @@ export const useAdminProducts = () => {
     });
 
     return {
+        availableOptions: optionsQuery.data,
+        isLoadingOptions: optionsQuery.isLoading,
         deleteVariant: deleteVariantMutation.mutateAsync,
         isDeleting: deleteVariantMutation.isPending,
         createProduct: createProductMutation.mutateAsync,

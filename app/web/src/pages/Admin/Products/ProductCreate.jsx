@@ -28,7 +28,6 @@ import dummy4 from '../../../Assets/Images/Products/product_dummy_4.jpg';
 import dummy5 from '../../../Assets/Images/Products/product_dummy_5.svg';
 
 const { Option } = Select;
-const { Dragger } = Upload;
 const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
 const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
 
@@ -41,24 +40,28 @@ const ProductCreate = () => {
     const [loading, setLoading] = useState(false);
     const [isPreview, setIsPreview] = useState(false);
 
-    const [optionTypes, setOptionTypes] = useState([{ optionName: '', optionValues: [] }]);
+    const [formValues, setFormValues] = useState({
+        name: '',
+        categories: [],
+        brandId: null,
+        description: ''
+    });
+
+    const [optionTypes, setOptionTypes] = useState([{ optionName: '', optionValues: [], isCustomName: false }]);
     const [variants, setVariants] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
-
-    const fallbackImg = useMemo(() => getRandomImage(), []);
-
-    const formName = Form.useWatch('name', form);
-    const formCategories = Form.useWatch('categories', form);
-    const formBrandId = Form.useWatch('brandId', form);
     const [selectedImageFile, setSelectedImageFile] = useState(null);
 
+    const fallbackImg = useMemo(() => getRandomImage(), []);
     const previewImage = selectedImageFile ? URL.createObjectURL(selectedImageFile) : fallbackImg;
 
     const { categories } = usePublicProducts();
     const {
+        availableOptions = {},
         createProduct, updateProduct, uploadProductImage,
         createOption, uploadSkuImage, updateVariant
     } = useAdminProducts();
+    const optionKeys = Object.keys(availableOptions);
 
     const { data: brands = [] } = useQuery({
         queryKey: ['brands'],
@@ -96,10 +99,10 @@ const ProductCreate = () => {
             if (uploadRes.data?.url) {
                 await updateProduct({
                     id: createdProductId,
-                    name: form.getFieldValue('name'),
-                    description: form.getFieldValue('description'),
-                    productCategories: form.getFieldValue('categories').map(Number),
-                    brandId: form.getFieldValue('brandId'),
+                    name: formValues.name,
+                    description: formValues.description,
+                    productCategories: formValues.categories?.map(Number) || [],
+                    brandId: formValues.brandId,
                     image: uploadRes.data.url
                 });
                 notification.success({ message: t('success'), description: t('admin_msg_upload_success') });
@@ -112,14 +115,84 @@ const ProductCreate = () => {
         }
     };
 
-    const handleAddOptionType = () => setOptionTypes([...optionTypes, { optionName: '', optionValues: [] }]);
-    const handleRemoveOptionType = (index) => setOptionTypes(prev => prev.filter((_, i) => i !== index));
-    const handleOptionNameChange = (index, val) => setOptionTypes(prev => prev.map((opt, i) => i === index ? { ...opt, optionName: val } : opt));
-    const handleOptionValuesChange = (index, val) => setOptionTypes(prev => prev.map((opt, i) => i === index ? { ...opt, optionValues: val } : opt));
+    const handleAddOptionType = () => setOptionTypes([...optionTypes, { optionName: '', optionValues: [], isCustomName: false }]);
     
+    const handleRemoveOptionType = (index) => {
+        setOptionTypes(prev => {
+            const newTypes = prev.filter((_, i) => i !== index);
+            if (selectedOptions[prev[index].optionName]) {
+                const newSelected = { ...selectedOptions };
+                delete newSelected[prev[index].optionName];
+                setSelectedOptions(newSelected);
+            }
+            return newTypes;
+        });
+    };
+
+    const handleOptionSelectChange = (index, val) => {
+        setOptionTypes(prev => prev.map((opt, i) => {
+            if (i === index) {
+                if (selectedOptions[opt.optionName]) {
+                    const newSelected = { ...selectedOptions };
+                    delete newSelected[opt.optionName];
+                    setSelectedOptions(newSelected);
+                }
+                if (val === 'OTHER_CUSTOM') return { ...opt, optionName: '', isCustomName: true, optionValues: [] };
+                return { ...opt, optionName: val, isCustomName: false, optionValues: [] };
+            }
+            return opt;
+        }));
+    };
+
+    const handleOptionNameChange = (index, val) => {
+        setOptionTypes(prev => {
+            const newTypes = [...prev];
+            const oldName = newTypes[index].optionName;
+            newTypes[index].optionName = val;
+            
+            if (selectedOptions[oldName]) {
+                const newSelected = { ...selectedOptions };
+                newSelected[val] = newSelected[oldName];
+                delete newSelected[oldName];
+                setSelectedOptions(newSelected);
+            }
+            return newTypes;
+        });
+    };
+
+    const handleOptionValuesChange = (index, val) => {
+        setOptionTypes(prev => {
+            const newTypes = [...prev];
+            newTypes[index].optionValues = val;
+            
+            const optName = newTypes[index].optionName;
+            if (selectedOptions[optName] && !val.includes(selectedOptions[optName])) {
+                const newSelected = { ...selectedOptions };
+                delete newSelected[optName];
+                setSelectedOptions(newSelected);
+            }
+            return newTypes;
+        });
+    };
+
     const handleSubmitOptions = async () => {
         if (!createdProductId) return;
-        const validOptions = optionTypes.filter(o => o.optionName?.trim() && o.optionValues?.length);
+
+        const names = optionTypes.map(o => o.optionName?.trim().toLowerCase()).filter(Boolean);
+        const uniqueNames = new Set(names);
+        if (names.length !== uniqueNames.size) {
+            return notification.warning({ message: t('warning'), description: t('admin_error_duplicate_options', 'Các thuộc tính không được trùng tên nhau!') });
+        }
+
+        const hasConflict = optionTypes.some(o => o.isCustomName && optionKeys.map(k => k.toLowerCase()).includes(o.optionName?.trim().toLowerCase()));
+        if (hasConflict) {
+            return notification.warning({ message: t('warning'), description: t('admin_error_custom_exists', 'Tên thuộc tính tạo mới đã có sẵn trong hệ thống, vui lòng chọn từ danh sách!') });
+        }
+
+        const validOptions = optionTypes.filter(o => o.optionName?.trim() && o.optionValues?.length).map(o => ({
+            optionName: o.optionName,
+            optionValues: o.optionValues
+        }));
 
         if (!validOptions.length) {
             return notification.warning({ message: t('info'), description: t('admin_error_at_least_one_option') });
@@ -181,7 +254,9 @@ const ProductCreate = () => {
         if (isPreview && optionTypes.length > 0 && Object.keys(selectedOptions).length === 0) {
             const initialOptions = {};
             optionTypes.forEach(opt => {
-                if (opt.optionValues?.length) initialOptions[opt.optionName] = opt.optionValues[0];
+                if (opt.optionName && opt.optionValues?.length) {
+                    initialOptions[opt.optionName] = opt.optionValues[0];
+                }
             });
             setSelectedOptions(initialOptions);
         }
@@ -293,7 +368,7 @@ const ProductCreate = () => {
                     <div className="pc-product-info-side">
                         <div className="pc-info-header">
                             <div className="pc-brand-label">
-                                {brands.find(b => b.id === formBrandId)?.name}
+                                {brands.find(b => b.id === formValues.brandId)?.name || ''}
                             </div>
                             <CButton
                                 type={isPreview ? 'primary' : 'outline'}
@@ -309,14 +384,14 @@ const ProductCreate = () => {
                         {isPreview ? (
                             <div className="pc-preview-content">
                                 <h1 className="pc-detail-title">
-                                    {currentVariant ? currentVariant.productVariantName : (formName || t('admin_placeholder_product_name'))}
+                                    {currentVariant ? currentVariant.productVariantName : (formValues.name || t('admin_placeholder_product_name'))}
                                 </h1>
 
-                                {formCategories?.length > 0 && (
+                                {formValues.categories?.length > 0 && (
                                     <div className="pc-detail-categories">
                                         <span className="pc-categories-label">{t('categories')}: </span>
                                         <Space wrap>
-                                            {formCategories.map(catId => {
+                                            {formValues.categories.map(catId => {
                                                 const cat = categories.find(c => c.id === catId);
                                                 return cat ? <span key={catId} className="pc-category-tag">{cat.categoryName}</span> : null;
                                             })}
@@ -327,7 +402,7 @@ const ProductCreate = () => {
                                 <div className="pc-detail-tags">
                                     <div className="pc-rating-container">
                                         <StarFilled className="pc-star-icon" />
-                                        <strong>4.8</strong>/5 (124 {t('reviews')})
+                                        <strong>0.0</strong>/5 (0 {t('reviews')})
                                     </div>
                                 </div>
 
@@ -350,7 +425,7 @@ const ProductCreate = () => {
                                                     {optionTypes
                                                         .map(opt => selectedOptions[opt.optionName])
                                                         .filter(Boolean)
-                                                        .join(' - ') || t('not_selected', 'Chưa chọn')}
+                                                        .join(' - ') || t('not_selected')}
                                                 </strong>
                                             </div>
                                         )}
@@ -370,7 +445,15 @@ const ProductCreate = () => {
                         ) : (
                             <div className="pc-edit-content">
                                 {currentStep === 0 && (
-                                    <Form form={form} layout="vertical" onFinish={handleCreateProduct} requiredMark={false} className="pc-form-full">
+                                    <Form 
+                                        form={form} 
+                                        layout="vertical" 
+                                        onFinish={handleCreateProduct} 
+                                        initialValues={formValues}
+                                        onValuesChange={(_, allValues) => setFormValues(allValues)}
+                                        requiredMark={false} 
+                                        className="pc-form-full"
+                                    >
                                         <Form.Item name="name" rules={[{ required: true, message: t('admin_error_name_required') }]} className="pc-mb-16">
                                             <CInput className="pc-preview-title-input" placeholder={t('admin_placeholder_product_name')} />
                                         </Form.Item>
@@ -385,9 +468,9 @@ const ProductCreate = () => {
                                                 </Form.Item>
                                             </Col>
                                             <Col xs={24} md={12}>
-                                                <div className="pc-input-label">Thương hiệu</div>
-                                                <Form.Item name="brandId" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu' }]} className="pc-mb-0">
-                                                    <Select className="pc-select-modern" placeholder="Chọn thương hiệu">
+                                                <div className="pc-input-label">{t('admin_label_brand')}</div>
+                                                <Form.Item name="brandId" rules={[{ required: true, message: t('admin_error_brand_required') }]} className="pc-mb-0">
+                                                    <Select className="pc-select-modern" placeholder={t('admin_placeholder_brand')}>
                                                         {brands.map(brand => <Option key={brand.id} value={brand.id}>{brand.name}</Option>)}
                                                     </Select>
                                                 </Form.Item>
@@ -423,31 +506,67 @@ const ProductCreate = () => {
                                 {currentStep === 2 && (
                                     <div className="pc-product-options-section">
                                         <h3 className="pc-step-title">{t('admin_step_3')}</h3>
-                                        {optionTypes.map((opt, index) => (
-                                            <div key={index} className="pc-option-group">
-                                                <div className="pc-option-header">
-                                                    <CInput
-                                                        value={opt.optionName}
-                                                        onChange={(e) => handleOptionNameChange(index, e.target.value)}
-                                                        placeholder={t('admin_placeholder_option_name')}
-                                                        className="pc-w-60-modern"
+                                        {optionTypes.map((opt, index) => {
+                                            const isDuplicateError = opt.isCustomName && optionKeys.map(k=>k.toLowerCase()).includes(opt.optionName?.trim().toLowerCase());
+                                            return (
+                                                <div key={index} className="pc-option-group">
+                                                    <div className="pc-option-header">
+                                                        <Select
+                                                            value={opt.isCustomName ? 'OTHER_CUSTOM' : (opt.optionName || undefined)}
+                                                            onChange={(val) => handleOptionSelectChange(index, val)}
+                                                            placeholder={t('admin_placeholder_option_name')}
+                                                            className="pc-select-modern pc-opt-select"
+                                                            style={{ flex: 2}}
+                                                        >
+                                                            {optionKeys.map(k => (
+                                                                <Option 
+                                                                    key={k} 
+                                                                    value={k} 
+                                                                    disabled={optionTypes.some((o, i) => i !== index && o.optionName === k)}
+                                                                    style={{ padding: '6px 3px' }}
+                                                                >
+                                                                    {k}
+                                                                </Option>
+                                                            ))}
+                                                            <Option value="OTHER_CUSTOM" style={{ color: 'var(--color_main)', fontWeight: 600, padding: '6px 3px' }}>
+                                                                + {t('other')}
+                                                            </Option>
+                                                        </Select>
+
+                                                        {opt.isCustomName && (
+                                                            <div style={{ flex: 2, position: 'relative' }}>
+                                                                <CInput
+                                                                    value={opt.optionName}
+                                                                    onChange={(e) => handleOptionNameChange(index, e.target.value)}
+                                                                    placeholder={t('admin_placeholder_option_name_custom')}
+                                                                    className="pc-opt-input"
+                                                                    style={{ borderColor: isDuplicateError ? 'red' : undefined }}
+                                                                />
+                                                                {isDuplicateError && (
+                                                                    <div style={{ color: 'red', fontSize: '11px', position: 'absolute', bottom: '-18px', left: '4px' }}>
+                                                                        {t('admin_error_option_name_duplicate')}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {index > 0 && (
+                                                            <CButton type="text" danger icon={<DeleteOutlined />} onClick={() => handleRemoveOptionType(index)} className="pc-delete-opt-btn" />
+                                                        )}
+                                                    </div>
+                                                    <Select
+                                                        mode="tags"
+                                                        className="pc-select-modern pc-w-100"
+                                                        placeholder={t('admin_placeholder_option_values_short')}
+                                                        value={opt.optionValues}
+                                                        onChange={(val) => handleOptionValuesChange(index, val)}
+                                                        tokenSeparators={[',']}
+                                                        options={(!opt.isCustomName && availableOptions[opt.optionName]) ? availableOptions[opt.optionName].map(v => ({ value: v, label: v })) : []}
                                                     />
-                                                    {index > 0 && (
-                                                        <CButton type="text" danger icon={<DeleteOutlined />} onClick={() => handleRemoveOptionType(index)} />
-                                                    )}
                                                 </div>
-                                                <Select
-                                                    mode="tags"
-                                                    className="pc-select-modern pc-w-100"
-                                                    placeholder={t('admin_placeholder_option_values_short')}
-                                                    value={opt.optionValues}
-                                                    onChange={(val) => handleOptionValuesChange(index, val)}
-                                                    tokenSeparators={[',']}
-                                                    open={false}
-                                                />
-                                            </div>
-                                        ))}
-                                        <CButton type="dashed" onClick={handleAddOptionType} icon={<PlusOutlined />} className="pc-add-option-btn">
+                                            );
+                                        })}
+                                        <CButton type="dashed" onClick={handleAddOptionType} icon={<PlusOutlined />} className="pc-add-option-btn" style={{ marginTop: '10px' }}>
                                             {t('admin_btn_add_option')}
                                         </CButton>
                                         <div className="pc-actions-flex pc-mt-48">
@@ -503,7 +622,7 @@ const ProductCreate = () => {
                                                                 </div>
                                                             </div>
                                                             <div className="pc-variant-desc-col">
-                                                                <div className="pc-variant-input-label">{t('admin_label_desc') || 'Mô tả phân loại'}</div>
+                                                                <div className="pc-variant-input-label">{t('admin_label_desc')}</div>
                                                                 <CInput
                                                                     multiline
                                                                     rows={2}

@@ -36,7 +36,7 @@ export default {
     write_review: "Write a review",
     filter_with_media: "With media",
     filter_5_star: "5 stars",
-    verified_purchase: "Verified purchase",
+    verified_purchase: "Purchased",
     like: "Like",
     comment: "Comment",
     refresh: "Refresh",

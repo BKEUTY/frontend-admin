@@ -139,12 +139,6 @@ const AdminLayout = () => {
             label: t('reports'),
             desc: t('admin_home_reports_desc')
         },
-        {
-            key: '/admin/reviews',
-            icon: <StarOutlined />,
-            label: t('reviews'),
-            desc: t('admin_home_reviews_desc')
-        },
     ];
 
     const filteredItems = items.filter(item =>

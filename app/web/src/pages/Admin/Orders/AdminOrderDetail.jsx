@@ -125,7 +125,7 @@ export default function AdminOrderDetail() {
 
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
-                    <Card title={t('order_items')} bordered={false} className="bkeuty-admin-card shadow-card">
+                    <Card title={t('order_items')} variant="outlined" className="bkeuty-admin-card shadow-card">
                         <Table 
                             columns={columns} 
                             dataSource={orderDetail.items || []} 
@@ -151,7 +151,7 @@ export default function AdminOrderDetail() {
                 </Col>
 
                 <Col xs={24} lg={8}>
-                    <Card title={t('customer_info')} bordered={false} className="bkeuty-admin-card shadow-card" style={{ marginBottom: 24 }}>
+                    <Card title={t('customer_info')} variant="outlined" className="bkeuty-admin-card shadow-card" style={{ marginBottom: 24 }}>
                         <Descriptions column={1} labelStyle={{ color: '#6b7280' }}>
                             <Descriptions.Item label={t('username')}>
                                 <Text strong>{orderDetail.userId}</Text>
@@ -162,7 +162,7 @@ export default function AdminOrderDetail() {
                         </Descriptions>
                     </Card>
 
-                    <Card title={t('shipping_address')} bordered={false} className="bkeuty-admin-card shadow-card">
+                    <Card title={t('shipping_address')} variant="outlined" className="bkeuty-admin-card shadow-card">
                         <Text style={{ color: '#334155' }}>{orderDetail.address}</Text>
                     </Card>
                 </Col>
