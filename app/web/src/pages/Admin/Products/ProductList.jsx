@@ -7,6 +7,7 @@ import { useLanguage } from '../../../i18n/LanguageContext';
 import { usePublicProducts } from '../../../hooks/usePublicProducts';
 import { useAdminProducts } from '../../../hooks/useAdminProducts';
 import { EmptyState, PageWrapper, CButton, Skeleton, Pagination } from '../../../Component/Common';
+import { generateSlug } from '../../../utils/helpers';
 import '../../../Component/Admin/Common/List.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
@@ -79,7 +80,8 @@ const ProductList = () => {
     ];
 
     const handlePreview = (record) => {
-        navigate(`/admin/products/${record.variantName}`, {
+        const slug = generateSlug(record.variantName, record.productId);
+        navigate(`/admin/products/${slug}`, {
             state: { productId: record.productId }
         });
     };

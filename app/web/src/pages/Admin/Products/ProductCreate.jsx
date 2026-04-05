@@ -19,6 +19,7 @@ import { CButton, CInput } from '../../../Component/Common';
 import { useAdminProducts } from '../../../hooks/useAdminProducts';
 import { usePublicProducts } from '../../../hooks/usePublicProducts';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import { generateSlug } from '../../../utils/helpers';
 import './ProductCreate.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
@@ -232,7 +233,8 @@ const ProductCreate = () => {
                 updateVariant({ id, productVariantName, price, stockQuantity, productImageUrl, description, status: 'ACTIVE' })
             ));
             notification.success({ message: t('success'), description: t('admin_msg_variants_success') });
-            navigate(`/admin/products/${variants[0].productVariantName}`);
+            const slug = generateSlug(variants[0].productVariantName, variants[0].id);
+            navigate(`/admin/products/${slug}`);
         } catch {
             notification.error({ message: t('error'), description: t('admin_error_options_save') });
         } finally {

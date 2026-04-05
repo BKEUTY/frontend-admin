@@ -7,6 +7,7 @@ import publicProductApi from '../../../api/publicProductApi';
 import { getImageUrl } from '../../../api/axiosClient';
 import NotFound from '../../../pages/ErrorPages/NotFound';
 import ReviewList from '../Reviews/ReviewList'; 
+import { generateSlug, getIdFromSlug } from '../../../utils/helpers';
 import './AdminProductDetail.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
@@ -24,7 +25,7 @@ export default function AdminProductDetail() {
     const navigate = useNavigate();
     const { t } = useLanguage();
 
-    const productId = location.state?.productId ?? null;
+    const productId = location.state?.productId ?? getIdFromSlug(slug);
     const fallbackImg = useMemo(() => getRandomImage(), []);
 
     const resolveHasDiscount = (originPrice, promotionPrice) =>
@@ -61,17 +62,16 @@ export default function AdminProductDetail() {
 
     useEffect(() => {
         const fetchProduct = async () => {
+            if (!productId) {
+                setIsError(true);
+                setIsLoading(false);
+                return;
+            }
             setIsError(false);
             setIsLoading(true);
             try {
-                let responseData = null;
-                if (productId) {
-                    responseData = (await publicProductApi.getById(productId)).data;
-                } else if (slug) {
-                    responseData = (await publicProductApi.getByName(slug)).data;
-                }
-
-                if (!responseData) throw new Error('Product not found');
+                const responseData = (await publicProductApi.getById(productId)).data;
+                if (!responseData) throw new Error("Not found");
 
                 setCurrentPrice({
                     originPrice: responseData.originPrice,
@@ -79,21 +79,23 @@ export default function AdminProductDetail() {
                     hasDiscount: resolveHasDiscount(responseData.originPrice, responseData.promotionPrice),
                 });
 
-                setProductData(responseData);
-
                 const targetVariant = responseData.variants?.find(v => v.id === responseData.id) || responseData.variants?.[0];
+                const correctSlug = generateSlug(targetVariant.productVariantName, productId);
+                if (slug && slug !== correctSlug) {
+                    throw new Error('Invalid product slug'); 
+                }
+                setProductData(responseData);
                 setSelectedOptions(targetVariant?.variantOptions || {});
                 setStockQuantity(targetVariant?.stockQuantity || 0);
-
+                
             } catch (err) {
                 setIsError(true);
             } finally {
                 setIsLoading(false);
             }
         };
-
         fetchProduct();
-    }, [productId, slug, fallbackImg]);
+    }, [productId]);
 
     const findMatchedVariant = (options) => {
         if (!productData?.variants) return null;
@@ -119,7 +121,8 @@ export default function AdminProductDetail() {
             
             if (matchedVariant.id !== productData.id) {
                 const combinedName = matchedVariant.productVariantName || productData.name;
-                navigate(`/admin/products/${combinedName}`, {
+                const newSlug = generateSlug(combinedName, matchedVariant.id);
+                navigate(`/admin/products/${newSlug}`, {
                     replace: true,
                     state: {
                         ...location.state,
