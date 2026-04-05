@@ -319,6 +319,7 @@ export default {
     promo_subtitle: "Ưu đãi lên đến 50% cho tất cả sản phẩm chăm sóc da. Đừng bỏ lỡ!",
     brand_story: "Hành trình mang đến vẻ đẹp thuần khiết",
     brand_desc: "Bkeuty tự hào là người bạn đồng hành tin cậy, thấu hiểu và nâng tầm làn da Việt.",
+    brand_tagline: "Nâng tầm vẻ đẹp của bạn",
 
     all_products: "Tất cả sản phẩm",
     coming_soon: "Sắp ra mắt",

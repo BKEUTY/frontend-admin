@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Table, Button, Typography, Tooltip, Space, Modal, Input, Form, Upload, Select, Tag } from 'antd';
+import { Table, Button, Typography, Tooltip, Space, Modal, Input, Form, Upload, Select } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
@@ -146,9 +146,9 @@ const BrandList = () => {
             width: 120,
             align: 'center',
             render: (status) => (
-                <Tag color={status === 'ACTIVE' ? 'processing' : 'error'} style={{ margin: 0, fontSize: '10px', lineHeight: '16px' }}>
+                <span className={`admin-status-badge ${status === 'ACTIVE' ? 'success' : 'danger'}`}>
                     {status === 'ACTIVE' ? t('active') : t('inactive')}
-                </Tag>
+                </span>
             )
         },
         {

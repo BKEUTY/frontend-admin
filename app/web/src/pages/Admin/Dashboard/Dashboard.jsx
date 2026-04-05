@@ -138,9 +138,9 @@ const Dashboard = () => {
                         <Spin size="large" />
                     </div>
                 ) : (
-                    <>
+                    <div className="dashboard-main-layout">
                         <Row gutter={[24, 24]}>
-                            <Col xs={24} lg={16}>
+                            <Col xs={24} xl={16}>
                                 <div className="beauty-card chart-card">
                                     <div className="chart-header">
                                         <span className="chart-title">{t('revenue_overview')}</span>
@@ -165,28 +165,30 @@ const Dashboard = () => {
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={8}>
+                            <Col xs={24} xl={8}>
                                 <div className="stat-cards-container">
                                     {stats.map((stat, index) => (
                                         <StatsCard key={index} {...stat} />
                                     ))}
                                 </div>
                             </Col>
-                        </Row>
 
-                        <div className="table-card beauty-card">
-                            <div className="chart-header">
-                                <span className="chart-title">{t('admin_top_products')}</span>
-                            </div>
-                            <Table
-                                columns={columns}
-                                dataSource={products}
-                                pagination={false}
-                                className="admin-modern-table"
-                                scroll={{ x: 'max-content' }}
-                            />
-                        </div>
-                    </>
+                            <Col xs={24}>
+                                <div className="table-card beauty-card">
+                                    <div className="chart-header">
+                                        <span className="chart-title">{t('admin_top_products')}</span>
+                                    </div>
+                                    <Table
+                                        columns={columns}
+                                        dataSource={products}
+                                        pagination={false}
+                                        className="admin-modern-table"
+                                        scroll={{ x: 'max-content' }}
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
+                    </div>
                 )}
             </PageWrapper>
         </div>

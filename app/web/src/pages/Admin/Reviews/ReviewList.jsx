@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Modal, Input, message, Rate, Avatar, Space, Tooltip, Select } from 'antd';
+import { Table, Modal, Input, message, Rate, Avatar, Space, Tooltip, Select } from 'antd';
 import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, ClockCircleOutlined, StarFilled } from '@ant-design/icons';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAdminReviews } from '../../../hooks/useAdminReviews';
@@ -114,10 +114,10 @@ const ReviewList = ({ variantId }) => {
             width: 200,
             render: (name, record) => (
                 <Space>
-                    <Avatar style={{ backgroundColor: '#f56a00' }}>{name?.charAt(0) || 'U'}</Avatar>
+                    <Avatar style={{ backgroundColor: 'var(--color_main_title, #c2185b)' }}>{name?.charAt(0) || 'U'}</Avatar>
                     <div>
-                        <div style={{ fontWeight: 'bold' }}>{name || 'User'}</div>
-                        <div style={{ fontSize: '11px', color: '#888' }}>
+                        <div className="admin-table-product-name">{name || 'User'}</div>
+                        <div style={{ fontSize: '11px', color: '#64748b' }}>
                             {record.createdAt ? new Date(record.createdAt).toLocaleDateString('vi-VN') : ''}
                         </div>
                     </div>
@@ -131,8 +131,8 @@ const ReviewList = ({ variantId }) => {
             width: 150,
             render: (rating) => (
                 <div>
-                    <Rate disabled defaultValue={rating} style={{ fontSize: '14px' }} />
-                    <span className="verified-badge-admin">{t('verified_purchase')}</span>
+                    <Rate disabled defaultValue={rating} style={{ fontSize: '14px', color: '#f59e0b' }} />
+                    <div className="verified-badge-admin">{t('verified_purchase')}</div>
                 </div>
             )
         },
@@ -165,12 +165,13 @@ const ReviewList = ({ variantId }) => {
         {
             title: t('admin_review_status'),
             key: 'status',
-            width: 120,
+            width: 150,
             align: 'center',
             render: (_, record) => (
-                record.replied ? 
-                <Tag icon={<CheckCircleOutlined />} color="success">{t('admin_review_replied')}</Tag> : 
-                <Tag icon={<ClockCircleOutlined />} color="warning">{t('admin_review_not_replied')}</Tag>
+                <span className={`admin-status-badge ${record.replied ? 'success' : 'warning'}`}>
+                    {record.replied ? <CheckCircleOutlined style={{ marginRight: 4 }} /> : <ClockCircleOutlined style={{ marginRight: 4 }} />}
+                    {record.replied ? t('admin_review_replied') : t('admin_review_not_replied')}
+                </span>
             )
         },
         {
@@ -181,33 +182,31 @@ const ReviewList = ({ variantId }) => {
             render: (_, record) => (
                 <Space>
                     <Tooltip title={record.replied ? t('admin_review_edit_reply') : t('admin_review_reply_btn')}>
-                        <Button 
-                            type="text" 
-                            icon={<MessageOutlined />} 
-                            onClick={() => handleReply(record)} 
+                        <button 
                             className="admin-action-btn edit-btn"
-                        />
+                            onClick={() => handleReply(record)} 
+                        >
+                            <MessageOutlined />
+                        </button>
                     </Tooltip>
                     <Space size="small">
                         {record.reply && (
                             <Tooltip title={t('admin_review_delete_reply')}>
-                                <Button 
-                                    type="text" 
-                                    danger 
-                                    icon={<DeleteOutlined />} 
-                                    onClick={() => handleDeleteReply(record.reply.id)} 
+                                <button 
                                     className="admin-action-btn delete-btn"
-                                />
+                                    onClick={() => handleDeleteReply(record.reply.id)} 
+                                >
+                                    <DeleteOutlined />
+                                </button>
                             </Tooltip>
                         )}
                         <Tooltip title={t('admin_review_delete_review')}>
-                            <Button 
-                                type="text" 
-                                danger 
-                                icon={<DeleteOutlined style={{ fontWeight: 800 }} />} 
+                            <button 
+                                className="admin-action-btn delete-btn"
                                 onClick={() => handleDeleteReview(record.id)} 
-                                className="admin-action-btn delete-btn review-delete-btn"
-                            />
+                            >
+                                <DeleteOutlined style={{ fontWeight: 800 }} />
+                            </button>
                         </Tooltip>
                     </Space>
                 </Space>
@@ -218,13 +217,16 @@ const ReviewList = ({ variantId }) => {
     return (
         <div className="admin-list-container">
             {!variantId && (
-                <div className="admin-list-header" style={{ marginBottom: '24px' }}>
-                    <h2 className="admin-list-title">{t('admin_review_management_title')}</h2>
+                <div className="admin-filter-bar" style={{ marginBottom: '24px', justifyContent: 'space-between' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#0f172a' }}>
+                        {t('admin_review_management_title')}
+                    </h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontWeight: 600 }}>{t('product')}:</span>
+                        <span style={{ fontWeight: 600, color: '#475569' }}>{t('product')}:</span>
                         <Select
                             showSearch
-                            style={{ width: 400 }}
+                            className="admin-toolbar-select"
+                            style={{ width: 350 }}
                             placeholder={t('admin_review_product_select')}
                             optionFilterProp="children"
                             onChange={(val) => { 
@@ -248,12 +250,8 @@ const ReviewList = ({ variantId }) => {
 
             {selectedVariantId && (
                 <>
-                    <div className="review-dashboard-admin" style={{ position: 'relative' }}>
-                        <div 
-                            className="rating-overview-admin" 
-                            onClick={() => setIsViewReviews(true)} 
-                            style={{ cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
+                    <div className="review-dashboard-admin">
+                        <div className="rating-overview-admin">
                             <span className="big-score-admin">{isStatsLoading ? '...' : averageRating}</span>
                             <div className="star-stack-admin">
                                 <div className="star-row-admin">
@@ -266,7 +264,6 @@ const ReviewList = ({ variantId }) => {
                                 </div>
                                 <span className="total-reviews-admin">
                                     {isStatsLoading ? '...' : reviewCount} {t('reviews').toLowerCase()}
-                                    {!isViewReviews && " (Click để xem)"}
                                 </span>
                             </div>
                         </div>
@@ -298,70 +295,71 @@ const ReviewList = ({ variantId }) => {
                     </div>
 
                     {isViewReviews ? (
-                            <>
-                                <div className="review-filters-admin">
-                                    <button 
-                                        className={`filter-chip-admin ${!ratingFilter && !hasImageFilter ? 'active' : ''}`}
-                                        onClick={() => { setRatingFilter(null); setHasImageFilter(null); setPage(0); }}
-                                    >
-                                        {t('admin_review_all')}
-                                    </button>
-                                    <button 
-                                        className={`filter-chip-admin ${hasImageFilter ? 'active' : ''}`}
-                                        onClick={handleFilterMedia}
-                                    >
-                                        {t('admin_review_with_images')}
-                                    </button>
-                                    {[5, 4, 3, 2, 1].map(star => (
-                                        <button 
-                                            key={star}
-                                            className={`filter-chip-admin ${ratingFilter === star ? 'active' : ''}`}
-                                            onClick={() => handleFilterRating(star)}
-                                        >
-                                            {t('admin_review_star').replace('{star}', star)}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <div className="admin-table-wrapper">
-                                    <Table
-                                        columns={columns}
-                                        dataSource={reviewsData?.content || []}
-                                        rowKey="id"
-                                        loading={isReviewsLoading}
-                                        locale={{ emptyText: t('admin_review_no_data') }}
-                                        pagination={false}
-                                        className="beauty-table"
-                                    />
-                                    {reviewsData?.content?.length > 0 && reviewsData?.totalPages > 1 && (
-                                        <div className="admin-custom-pagination">
-                                            <Pagination
-                                                page={page}
-                                                totalPages={reviewsData.totalPages}
-                                                totalItems={reviewsData.totalElements}
-                                                pageSize={pageSize}
-                                                onPageChange={(p) => {
-                                                    setPage(p);
-                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                                }}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </>
-                        ) : (
-                            <div className="load-reviews-prompt-container" style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                                <CButton 
-                                    type="primary" 
-                                    size="large" 
-                                    icon={<MessageOutlined />}
-                                    onClick={() => setIsViewReviews(true)}
-                                    style={{ margin: '0 auto' }}
+                        <>
+                            <div className="review-filters-admin">
+                                <button 
+                                    className={`filter-chip-admin ${!ratingFilter && !hasImageFilter ? 'active' : ''}`}
+                                    onClick={() => { setRatingFilter(null); setHasImageFilter(null); setPage(0); }}
                                 >
-                                    {t('admin_review_view_btn')}
-                                </CButton>
+                                    {t('admin_review_all')}
+                                </button>
+                                <button 
+                                    className={`filter-chip-admin ${hasImageFilter ? 'active' : ''}`}
+                                    onClick={handleFilterMedia}
+                                >
+                                    {t('admin_review_with_images')}
+                                </button>
+                                {[5, 4, 3, 2, 1].map(star => (
+                                    <button 
+                                        key={star}
+                                        className={`filter-chip-admin ${ratingFilter === star ? 'active' : ''}`}
+                                        onClick={() => handleFilterRating(star)}
+                                    >
+                                        {t('admin_review_star').replace('{star}', star)}
+                                    </button>
+                                ))}
                             </div>
-                        )}
+
+                            <div className="admin-table-wrapper">
+                                <Table
+                                    columns={columns}
+                                    dataSource={reviewsData?.content || []}
+                                    rowKey="id"
+                                    loading={isReviewsLoading}
+                                    locale={{ emptyText: t('admin_review_no_data') }}
+                                    pagination={false}
+                                    className="beauty-table"
+                                    scroll={{ x: 'max-content' }}
+                                />
+                                {reviewsData?.content?.length > 0 && reviewsData?.totalPages > 1 && (
+                                    <div className="admin-custom-pagination">
+                                        <Pagination
+                                            page={page}
+                                            totalPages={reviewsData.totalPages}
+                                            totalItems={reviewsData.totalElements}
+                                            pageSize={pageSize}
+                                            onPageChange={(p) => {
+                                                setPage(p);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="load-reviews-prompt-container" style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                            <CButton 
+                                type="primary" 
+                                size="large" 
+                                icon={<MessageOutlined />}
+                                onClick={() => setIsViewReviews(true)}
+                                style={{ margin: '0 auto' }}
+                            >
+                                {t('admin_review_view_btn')}
+                            </CButton>
+                        </div>
+                    )}
                 </>
             )}
 
@@ -379,26 +377,27 @@ const ReviewList = ({ variantId }) => {
                 okText={t('save')}
                 cancelText={t('cancel')}
                 confirmLoading={isReplying || isUpdatingReply}
+                centered
             >
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
-                    <Avatar size={48} style={{ backgroundColor: '#f56a00' }}>{selectedReview?.userName?.charAt(0) || 'U'}</Avatar>
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', alignItems: 'center' }}>
+                    <Avatar size={48} style={{ backgroundColor: 'var(--color_main_title, #c2185b)' }}>{selectedReview?.userName?.charAt(0) || 'U'}</Avatar>
                     <div>
-                        <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{selectedReview?.userName || 'User'}</div>
-                        <Rate disabled defaultValue={selectedReview?.rating} style={{ fontSize: '14px' }} />
+                        <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#0f172a' }}>{selectedReview?.userName || 'User'}</div>
+                        <Rate disabled defaultValue={selectedReview?.rating} style={{ fontSize: '14px', color: '#f59e0b' }} />
                     </div>
                 </div>
                 <div style={{ 
-                    padding: '12px', 
-                    background: '#f9fafb', 
+                    padding: '12px 16px', 
+                    background: '#f8fafc', 
                     borderRadius: '8px', 
                     marginBottom: '20px',
                     fontStyle: 'italic',
-                    color: '#4b5563',
-                    borderLeft: '4px solid #d1d5db'
+                    color: '#475569',
+                    borderLeft: '4px solid #cbd5e1'
                 }}>
                     "{selectedReview?.comment}"
                 </div>
-                <div style={{ fontWeight: 600, marginBottom: '8px' }}>{t('admin_review_reply_label')}</div>
+                <div style={{ fontWeight: 600, marginBottom: '8px', color: '#334155' }}>{t('admin_review_reply_label')}</div>
                 <TextArea
                     rows={5}
                     value={replyComment}

@@ -179,7 +179,7 @@ const ProductList = () => {
             title: t('admin_variant_id'),
             dataIndex: 'productId',
             key: 'productId',
-            width: 100,
+            width: 90,
             align: 'center',
             render: (id) => <span className="admin-table-id">#{id}</span>
         },
@@ -202,7 +202,7 @@ const ProductList = () => {
             title: t('admin_product_name'),
             dataIndex: 'variantName',
             key: 'variantName',
-            width: 250,
+            width: 220,
             render: (variantName) => <span className="admin-table-product-name">{variantName}</span>
         },
         {
@@ -210,16 +210,7 @@ const ProductList = () => {
             dataIndex: 'brand',
             key: 'brand',
             width: 120,
-            render: (brand, record) => (
-                <Space orientation="vertical" size={2}>
-                    <Text strong className="admin-table-brand">{brand}</Text>
-                    {record.status && (
-                        <Tag color={record.status === 'ACTIVE' ? 'processing' : 'error'} style={{ margin: 0, fontSize: '10px', lineHeight: '16px' }}>
-                            {record.status}
-                        </Tag>
-                    )}
-                </Space>
-            )
+            render: (brand) => <Text strong className="admin-table-brand">{brand}</Text>
         },
         {
             title: t('admin_product_category'),
@@ -240,33 +231,30 @@ const ProductList = () => {
             dataIndex: 'discountPrice',
             key: 'discountPrice',
             width: 150,
-            render: (discountPrice, record) => {
-                return (
-                    <div className="admin-price-wrapper">
-                        {record.hasDiscount && (
-                            <div className="admin-old-price-row">
-                                <Text delete className="admin-old-price">
-                                    {record.originPrice.toLocaleString('vi-VN')}đ
-                                </Text>
-                            </div>
-                        )}
-                        <Text className={`admin-current-price ${record.hasDiscount ? 'is-sale' : ''}`}>
-                            {discountPrice.toLocaleString('vi-VN')}đ
-                        </Text>
-                    </div>
-                );
-            }
+            render: (discountPrice, record) => (
+                <div className="admin-price-wrapper">
+                    {record.hasDiscount && (
+                        <div className="admin-old-price-row">
+                            <Text delete className="admin-old-price">
+                                {record.originPrice.toLocaleString('vi-VN')}đ
+                            </Text>
+                        </div>
+                    )}
+                    <Text className={`admin-current-price ${record.hasDiscount ? 'is-sale' : ''}`}>
+                        {discountPrice.toLocaleString('vi-VN')}đ
+                    </Text>
+                </div>
+            )
         },
         {
             title: t('reviews'),
             key: 'reviews',
-            width: 120,
+            width: 100,
             align: 'center',
             render: (_, record) => (
                 <Space size="small" align="center">
                     <Text strong>{Number(record.averageRating || 0).toFixed(1)}</Text>
                     <StarFilled style={{ color: '#f59e0b', fontSize: '12px' }} />
-                    <Text type="secondary" style={{ fontSize: '12px' }}>({record.reviewCount || 0})</Text>
                 </Space>
             )
         },
@@ -274,9 +262,25 @@ const ProductList = () => {
             title: t('admin_label_stock'),
             dataIndex: 'stock',
             key: 'stock',
-            width: 100,
+            width: 90,
             align: 'center',
-            render: (stock) => <Tag color={stock > 0 ? 'green' : 'red'}>{stock}</Tag>
+            render: (stock) => (
+                <span className={`admin-status-badge ${stock > 0 ? 'success' : 'danger'}`}>
+                    {stock}
+                </span>
+            )
+        },
+        {
+            title: t('status'),
+            dataIndex: 'status',
+            key: 'status',
+            width: 110,
+            align: 'center',
+            render: (status) => (
+                <span className={`admin-status-badge ${status === 'ACTIVE' ? 'success' : 'danger'}`}>
+                    {status === 'ACTIVE' ? t('active') : t('inactive')}
+                </span>
+            )
         },
         {
             title: t('actions_col'),
@@ -284,7 +288,6 @@ const ProductList = () => {
             width: 100,
             align: 'center',
             fixed: 'right',
-            responsive: ['md'],
             render: (_, record) => (
                 <Space size="small">
                     <Tooltip title={t('edit')}>
@@ -316,7 +319,7 @@ const ProductList = () => {
                     </div>
                 }
             >
-                <div className="admin-filter-bar" style={{ flexWrap: 'wrap' }}>
+                <div className="admin-filter-bar">
                     <Search
                         placeholder={t('admin_search_products')}
                         allowClear
@@ -405,8 +408,8 @@ const ProductList = () => {
                 width={320}
             >
                 <div className="admin-modal-action-wrap">
-                    <Button type="primary" size="large" icon={<FormOutlined />} onClick={() => handleEditClick(selectedRecord)}>{t('edit')}</Button>
-                    <Button danger size="large" icon={<DeleteOutlined />} onClick={() => handleDeleteClick(selectedRecord)}>{t('delete')}</Button>
+                    <Button type="primary" block size="large" icon={<FormOutlined />} onClick={() => handleEditClick(selectedRecord)}>{t('edit')}</Button>
+                    <Button danger block size="large" icon={<DeleteOutlined />} onClick={() => handleDeleteClick(selectedRecord)}>{t('delete')}</Button>
                 </div>
             </Modal>
 
@@ -435,10 +438,7 @@ const ProductList = () => {
                     </Form.Item>
 
                     <Form.Item name="description" label={t('admin_label_desc')}>
-                        <TextArea
-                            rows={3}
-                            placeholder={t('admin_placeholder_desc')}
-                        />
+                        <TextArea rows={3} placeholder={t('admin_placeholder_desc')} />
                     </Form.Item>
 
                     <Form.Item name="status" label={t('status')} rules={[{ required: true }]}>

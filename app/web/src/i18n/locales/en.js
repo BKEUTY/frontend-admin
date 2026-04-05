@@ -318,6 +318,7 @@ export default {
     promo_subtitle: "Up to 50% off on all skincare products. Don't miss out!",
     brand_story: "The journey to pure beauty",
     brand_desc: "Bkeuty is proud to be a trusted companion, understanding and elevating Vietnamese skin.",
+    brand_tagline: "Elevate your beauty",
 
     all_products: "All products",
     coming_soon: "Coming soon",

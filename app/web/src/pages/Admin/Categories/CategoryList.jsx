@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Table, Button, Typography, Tooltip, Space, Modal, Input, Form } from 'antd';
+import { Table, Button, Tooltip, Space, Modal, Input, Form } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
@@ -7,7 +7,6 @@ import { useAdminCategories, useCreateCategory, useUpdateCategory, useDeleteCate
 import { useAuth } from '../../../Context/AuthContext';
 import '../../../Component/Admin/Common/List.css';
 
-const { Text } = Typography;
 const { Search } = Input;
 const { confirm } = Modal;
 
@@ -15,6 +14,7 @@ const CategoryList = () => {
     const { t } = useLanguage();
     const { isAuthenticated } = useAuth();
     const [form] = Form.useForm();
+    const [inputValue, setInputValue] = useState('');
     const [searchText, setSearchText] = useState('');
     const [currentPage, setCurrentPage] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -39,6 +39,7 @@ const CategoryList = () => {
     };
 
     const handleRefresh = () => {
+        setInputValue('');
         setSearchText('');
         setCurrentPage(0);
         refetchCategories();
@@ -127,7 +128,7 @@ const CategoryList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_categories_title')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('categories').toLowerCase()}</>}
+                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('categories').toLowerCase()}</>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={isLoading}>
@@ -143,6 +144,8 @@ const CategoryList = () => {
                     <Search
                         placeholder={t('admin_category_search')}
                         allowClear
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
                         onSearch={handleSearch}
                         className="admin-toolbar-search"
                         style={{ maxWidth: 400 }}

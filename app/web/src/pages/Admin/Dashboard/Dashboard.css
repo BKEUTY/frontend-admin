@@ -1,6 +1,7 @@
 .dashboard-content {
     max-width: 1600px;
     margin: 0 auto;
+    padding-bottom: 24px;
 }
 
 .dashboard-loading-wrap {
@@ -11,23 +12,19 @@
     min-height: 400px;
 }
 
-.dashboard-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--admin-text-main);
-    margin: 0;
-    letter-spacing: -1px;
-}
-
 .stat-cards-container {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
     height: 100%;
 }
 
 .chart-card {
-    padding: 24px 32px;
+    padding: 24px;
+    height: 100%;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
 }
 
 .chart-header {
@@ -48,12 +45,13 @@
 
 .chart-container {
     width: 100%;
-    margin-top: 20px;
 }
 
 .table-card {
-    margin-top: 24px;
-    padding: 24px 32px;
+    padding: 24px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
 }
 
 .admin-modern-table .ant-table {
@@ -65,14 +63,14 @@
     color: #64748b !important;
     font-weight: 600 !important;
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 0.05em;
     padding: 16px !important;
     border-bottom: 1px solid #f1f5f9 !important;
 }
 
 .admin-modern-table .ant-table-tbody > tr > td {
-    padding: 20px 16px !important;
+    padding: 16px !important;
     border-bottom: 1px solid #f8fafc !important;
 }
 
@@ -83,7 +81,7 @@
 .product-name-cell {
     font-weight: 700 !important;
     color: #0f172a !important;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .category-tag-modern {
@@ -92,45 +90,58 @@
     border: none !important;
     border-radius: 6px !important;
     font-weight: 700 !important;
-    padding: 4px 12px !important;
+    padding: 4px 10px !important;
     text-transform: uppercase;
-    font-size: 11px !important;
+    font-size: 10px !important;
 }
 
 .price-cell {
     color: #475569 !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
+    font-size: 14px;
 }
 
 .sold-count-badge {
     background: #f1f5f9;
-    color: var(--admin-primary);
+    color: #0f172a;
     font-weight: 800;
-    padding: 6px 14px;
+    padding: 6px 12px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
     .stat-cards-container {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    .stat-card {
-        min-width: calc(50% - 12px);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
+    .dashboard-content {
+        padding: 0;
+    }
+    
+    .stat-cards-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .chart-card, .table-card {
+        padding: 16px;
+    }
+
+    .big-score-admin {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
     .chart-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        flex-direction: row;
+        align-items: center;
     }
-    .stat-card {
-        min-width: 100%;
-    }
-    .table-card {
-        padding: 20px;
+    
+    .chart-title {
+        font-size: 16px;
     }
 }

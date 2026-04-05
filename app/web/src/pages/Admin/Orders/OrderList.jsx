@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Table, Typography, Space, Tooltip, Tag, Select, Button } from 'antd';
+import { Table, Tooltip, Space, Select, Button } from 'antd';
 import { SyncOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAdminOrders, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
 import '../../../Component/Admin/Common/List.css';
-
-const { Text } = Typography;
 
 const OrderList = () => {
     const { t } = useLanguage();
@@ -31,13 +29,13 @@ const OrderList = () => {
         } catch (error) {}
     };
 
-    const getStatusColor = (status) => {
+    const getStatusClass = (status) => {
         switch (status?.toUpperCase()) {
             case 'PAID':
             case 'COMPLETED': return 'success';
             case 'UNPAID':
             case 'PENDING': return 'warning';
-            case 'CANCELLED': return 'error';
+            case 'CANCELLED': return 'danger';
             default: return 'default';
         }
     };
@@ -56,28 +54,28 @@ const OrderList = () => {
             dataIndex: 'userId',
             key: 'customer',
             width: 200,
-            render: (userId) => <Text strong>{userId || t('guest')}</Text>,
+            render: (userId) => <span className="admin-table-product-name">{userId || t('guest')}</span>,
         },
         {
             title: t('admin_date'),
             dataIndex: 'orderDate',
             key: 'orderDate',
             width: 150,
-            render: (date) => <Text>{new Date(date).toLocaleDateString('vi-VN')}</Text>,
+            render: (date) => <span style={{ color: '#64748b' }}>{new Date(date).toLocaleDateString('vi-VN')}</span>,
         },
         {
             title: t('payment_method'),
             dataIndex: 'paymentMethod',
             key: 'paymentMethod',
             width: 150,
-            render: (method) => <Tag color="blue">{method}</Tag>,
+            render: (method) => <span className="admin-table-tag">{method}</span>,
         },
         {
             title: t('admin_total'),
             dataIndex: 'total',
             key: 'total',
             width: 150,
-            render: (total) => <Text strong style={{ color: '#10b981' }}>{(total || 0).toLocaleString("vi-VN")}đ</Text>,
+            render: (total) => <span className="admin-current-price" style={{ color: '#10b981' }}>{(total || 0).toLocaleString("vi-VN")}đ</span>,
         },
         {
             title: t('status'),
@@ -85,19 +83,22 @@ const OrderList = () => {
             key: 'status',
             width: 180,
             render: (status, record) => (
-                <Select
-                    value={status}
-                    style={{ width: 140 }}
-                    onChange={(val) => handleStatusChange(record.id, val)}
-                    options={[
-                        { value: 'PENDING', label: t('status_pending') },
-                        { value: 'UNPAID', label: t('status_unpaid') },
-                        { value: 'PAID', label: t('status_paid') },
-                        { value: 'COMPLETED', label: t('status_completed') },
-                        { value: 'CANCELLED', label: t('status_cancelled') }
-                    ]}
-                    className={`status-select ${getStatusColor(status)}`}
-                />
+                <div className={`admin-status-badge ${getStatusClass(status)}`} style={{ padding: '0', display: 'inline-block' }}>
+                    <Select
+                        value={status}
+                        bordered={false}
+                        variant="borderless"
+                        style={{ width: 140, fontWeight: 600 }}
+                        onChange={(val) => handleStatusChange(record.id, val)}
+                        options={[
+                            { value: 'PENDING', label: t('status_pending') },
+                            { value: 'UNPAID', label: t('status_unpaid') },
+                            { value: 'PAID', label: t('status_paid') },
+                            { value: 'COMPLETED', label: t('status_completed') },
+                            { value: 'CANCELLED', label: t('status_cancelled') }
+                        ]}
+                    />
+                </div>
             ),
         },
         {
@@ -120,9 +121,9 @@ const OrderList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_orders_title')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('orders')?.toLowerCase()}</>}
+                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('orders')?.toLowerCase()}</>}
                 extra={
-                    <Space size="large" wrap className="admin-space-btn">
+                    <div className="admin-header-buttons">
                         <CButton
                             type="secondary"
                             icon={<SyncOutlined />}
@@ -135,7 +136,7 @@ const OrderList = () => {
                         >
                             {t('refresh')}
                         </CButton>
-                    </Space>
+                    </div>
                 }
             >
                 <div className="admin-table-wrapper">

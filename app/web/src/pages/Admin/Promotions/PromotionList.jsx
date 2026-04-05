@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Table, Button, Typography, Tooltip, Tag, Space, Modal, Input } from 'antd';
+import { Table, Button, Typography, Tooltip, Space, Modal, Input } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../i18n/LanguageContext';
@@ -83,9 +83,9 @@ const PromotionList = () => {
             key: 'discount',
             width: 150,
             render: (_, record) => (
-                <Tag color="volcano" className="discount-tag" style={{ margin: 0, padding: '4px 12px', fontSize: '13px' }}>
+                <span className="admin-current-price is-sale">
                     {record.discountType === 'PERCENTAGE' ? `${record.discountValue}%` : `${record.discountValue?.toLocaleString()}đ`}
-                </Tag>
+                </span>
             )
         },
         {
@@ -93,7 +93,7 @@ const PromotionList = () => {
             dataIndex: 'promotionType',
             key: 'type',
             width: 150,
-            render: (type) => <Tag color="blue" style={{ margin: 0 }}>{type === 'PRODUCT' ? 'Sản phẩm' : type || 'ALL'}</Tag>
+            render: (type) => <span className="admin-table-tag">{type === 'PRODUCT' ? 'Sản phẩm' : type || 'ALL'}</span>
         },
         {
             title: t('promo_col_start_time'), 
@@ -101,7 +101,7 @@ const PromotionList = () => {
             key: 'startAt',
             width: 160,
             render: (date) => (
-                <span style={{ color: '#475569', fontSize: '13px' }}>
+                <span style={{ color: '#64748b' }}>
                     {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
             )
@@ -112,7 +112,7 @@ const PromotionList = () => {
             key: 'endAt',
             width: 160,
             render: (date) => (
-                <span style={{ color: '#475569', fontSize: '13px' }}>
+                <span style={{ color: '#64748b' }}>
                     {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
             )
@@ -124,17 +124,17 @@ const PromotionList = () => {
             width: 130,
             align: 'center',
             render: (status) => {
-                let color = 'default';
+                let badgeClass = 'default';
                 switch(status) {
-                    case 'STARTING': color = 'success'; break;
-                    case 'INCOMING': color = 'processing'; break;
-                    case 'ENDED': color = 'error'; break;
-                    case 'DISABLED': color = 'default'; break;
+                    case 'STARTING': badgeClass = 'success'; break;
+                    case 'INCOMING': badgeClass = 'info'; break;
+                    case 'ENDED': badgeClass = 'danger'; break;
+                    case 'DISABLED': badgeClass = 'default'; break;
                 }
                 return (
-                    <Tag color={color} style={{ margin: 0, padding: '2px 10px', borderRadius: '4px' }}>
+                    <span className={`admin-status-badge ${badgeClass}`}>
                         {t(`promo_status_${status}`)}
-                    </Tag>
+                    </span>
                 );
             }
         },
@@ -161,7 +161,7 @@ const PromotionList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_promotions_title')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('promotion_items').toLowerCase()}</>}
+                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('promotion_items').toLowerCase()}</>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={loading} className="admin-btn-responsive">

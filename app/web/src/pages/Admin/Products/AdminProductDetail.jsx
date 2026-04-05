@@ -22,7 +22,7 @@ export default function AdminProductDetail() {
     const { slug } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
 
     const productId = location.state?.productId ?? null;
     const fallbackImg = useMemo(() => getRandomImage(), []);
@@ -40,6 +40,7 @@ export default function AdminProductDetail() {
     const [mainImage, setMainImage] = useState(fallbackImg);
 
     const [currentPrice, setCurrentPrice] = useState({ originPrice: 0, promotionPrice: 0, hasDiscount: false });
+
     const galleryImages = useMemo(() => {
         if (!productData) return [];
         const variantImage = productData.variants?.find(v => v.id === productData.id)?.productImageUrl;
@@ -70,9 +71,7 @@ export default function AdminProductDetail() {
                     responseData = (await publicProductApi.getByName(slug)).data;
                 }
 
-                if (!responseData) {
-                    throw new Error('Product not found');
-                }
+                if (!responseData) throw new Error('Product not found');
 
                 setCurrentPrice({
                     originPrice: responseData.originPrice,
@@ -80,21 +79,9 @@ export default function AdminProductDetail() {
                     hasDiscount: resolveHasDiscount(responseData.originPrice, responseData.promotionPrice),
                 });
 
-                const mergedData = {
-                    ...responseData,
-                    content: {
-                        en: {
-                            details: responseData.description || 'High-quality BKEUTY skincare product.',
-                        },
-                        vi: {
-                            details: responseData.description || 'Sản phẩm chăm sóc da cao cấp từ BKEUTY.',
-                        },
-                    },
-                };
+                setProductData(responseData);
 
-                setProductData(mergedData);
-
-                const targetVariant = mergedData.variants?.find(v => v.id === mergedData.id) || mergedData.variants?.[0];
+                const targetVariant = responseData.variants?.find(v => v.id === responseData.id) || responseData.variants?.[0];
                 setSelectedOptions(targetVariant?.variantOptions || {});
                 setStockQuantity(targetVariant?.stockQuantity || 0);
 
@@ -145,8 +132,6 @@ export default function AdminProductDetail() {
 
     const displayName = productData?.name;
     const shownPrice = currentPrice.hasDiscount ? currentPrice.promotionPrice : currentPrice.originPrice;
-
-    const getLocalContent = (key) => productData?.content?.[language === 'vi' ? 'vi' : 'en']?.[key] || '';
 
     if (isError) return <NotFound />;
     if (isLoading || !productData) return (
@@ -269,23 +254,28 @@ export default function AdminProductDetail() {
             <div className="admin-pd-tabs-container">
                 <div className="admin-pd-tab-headers">
                     {tabs.map(tab => (
-                        <button key={tab.id} className={`admin-pd-tab-btn ${activeTab === tab.id ? 'active' : ''}`} onClick={() => setActiveTab(tab.id)}>
+                        <button 
+                            key={tab.id} 
+                            className={`admin-pd-tab-btn ${activeTab === tab.id ? 'active' : ''}`} 
+                            onClick={() => setActiveTab(tab.id)}
+                        >
                             {tab.label}
                         </button>
                     ))}
                 </div>
                 <div className="admin-pd-tab-body">
                     {activeTab === 'details' && (
-                        <div className="admin-pd-tab-content">
-                            <h3>{t('product_details')}</h3>
-                            <p>{getLocalContent('details')}</p>
+                        <div className="admin-pd-tab-content animate-fade-in">
+                            <p className="admin-pd-description-text">
+                                {productData.description}
+                            </p>
                         </div>
                     )}
-                    {activeTab === 'reviews' && (() => {
-                        return (
+                    {activeTab === 'reviews' && (
+                        <div className="admin-pd-reviews-wrapper animate-fade-in">
                             <ReviewList variantId={productData.id} />
-                        );
-                    })()}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
