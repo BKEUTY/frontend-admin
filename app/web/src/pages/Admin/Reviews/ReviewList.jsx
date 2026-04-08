@@ -239,7 +239,7 @@ const ReviewList = ({ variantId }) => {
                                                     <div className="admin-pr-card-header">
                                                         <span className="admin-pr-user-name">{rev.userName || 'User'}</span>
                                                         <span className="admin-pr-post-date">
-                                                            {formatDateTime(rev.updatedAt)}
+                                                            {formatDateTime(rev.createdAt)}
                                                         </span>
                                                     </div>
                                                     <div className="admin-pr-rating-meta">
@@ -258,7 +258,7 @@ const ReviewList = ({ variantId }) => {
                                                         <div className="admin-reply-box-item">
                                                             <div className="admin-reply-header-item">
                                                                 <span>{rev.reply.adminName || 'Admin'}</span>
-                                                                <span>{formatDateTime(rev.reply.updatedAt)}</span>
+                                                                <span>{formatDateTime(rev.reply.repliedAt)}</span>
                                                             </div>
                                                             <div className="admin-reply-content-item">{rev.reply.comment}</div>
                                                             <div className="admin-reply-actions">

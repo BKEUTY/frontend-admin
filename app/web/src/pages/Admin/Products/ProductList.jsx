@@ -262,7 +262,7 @@ const ProductList = () => {
             render: (_, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
                     <Text strong style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                        {record.averageRating}
+                        {Number(record.averageRating).toFixed(1)}
                         <StarFilled style={{ color: '#f59e0b', fontSize: '12px', marginTop: '-1px' }} />
                     </Text>
                     <Text type="secondary" strong>({record.reviewCount})</Text>

@@ -1,22 +1,23 @@
 import React from 'react';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { useLanguage } from '../../../i18n/LanguageContext';
 import './StatsCard.css';
 
 const StatsCard = ({ title, value, icon, trend, trendType }) => {
+    const { t } = useLanguage();
     return (
-        <div className="beauty-card stat-card">
-            <div className="stat-card-content">
-                <div className="stat-card-left">
-                    <div className="card-icon-wrapper">
-                        {icon}
-                    </div>
-                    <div className="card-stat-label">{title}</div>
-                    <div className="card-stat-value">{value}</div>
-                </div>
-                {trend && (
-                    <div className={`trend-pill ${trendType === 'up' ? 'trend-up' : 'trend-down'}`}>
+        <div className="admin-stat-card-modern">
+            <div className="stat-icon-wrapper">
+                {icon}
+            </div>
+            <div className="stat-content">
+                <p className="stat-label">{title}</p>
+                <h3 className="stat-value">{value}</h3>
+                {trend !== undefined && (
+                    <div className={`stat-trend ${trendType}`}>
                         {trendType === 'up' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-                        {Math.abs(trend)}%
+                        <span>{Math.abs(trend)}%</span>
+                        <small>{t('vs_last_period')}</small>
                     </div>
                 )}
             </div>

@@ -9,7 +9,10 @@ const SERVER_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const authClient = axios.create({
     baseURL: SERVER_URL,
     withCredentials: true,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 
+        'Content-Type': 'application/json',
+        'X-Client-Type': 'ADMIN'
+    }
 });
 
 let isRefreshing = false;
@@ -39,7 +42,10 @@ const createAxiosClient = () => {
     const client = axios.create({
         baseURL: SERVER_URL,
         withCredentials: true,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'X-Client-Type': 'ADMIN'
+        },
         paramsSerializer: params => queryString.stringify(params),
     });
 

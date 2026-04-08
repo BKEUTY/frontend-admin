@@ -5,8 +5,9 @@ class AdminUserApi extends BaseApi {
         super('/api/admin/user');
     }
 
-    getUsers(config = {}) {
-        return this.client.get(this.resource, config);
+    getUsers(role, config = {}) {
+        const params = role ? { role } : {};
+        return this.client.get(this.resource, { params, ...config });
     }
 }
 

@@ -13,6 +13,8 @@ const PromotionCreate = lazy(() => import('../pages/Admin/Promotions/PromotionCr
 const BrandList = lazy(() => import('../pages/Admin/Brands/BrandList'));
 const CategoryList = lazy(() => import('../pages/Admin/Categories/CategoryList'));
 const ReviewList = lazy(() => import('../pages/Admin/Reviews/ReviewList'));
+const UserList = lazy(() => import('../pages/Admin/Users/UserList'));
+const Reports = lazy(() => import('../pages/Admin/Reports/Reports'));
 
 export const adminRoutes = [
     {
@@ -64,6 +66,10 @@ export const adminRoutes = [
         element: <PromotionCreate />
     },
     {
+        path: "users",
+        element: <UserList />
+    },
+    {
         path: "promotions/edit/:id",
         element: <PromotionCreate />
     },
@@ -81,6 +87,6 @@ export const adminRoutes = [
     },
     {
         path: "reports",
-        element: <DevelopingState title="Reports & Analytics" />
+        element: <Reports />
     }
 ];

@@ -31,6 +31,14 @@
     flex-wrap: wrap;
 }
 
+.admin-filter-bar.advanced-filters {
+    display: block;
+}
+
+.filter-item-wrap {
+    width: 100%;
+}
+
 .admin-toolbar-search {
     flex: 2;
     min-width: 250px;
@@ -178,6 +186,35 @@
 .admin-filter-bar .ant-select-clear:hover {
     color: #64748b;
 }
+
+.admin-filter-bar .ant-picker-range {
+    height: 44px;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    transition: all 0.3s ease !important;
+    flex: 1.5;
+    min-width: 280px;
+}
+
+.admin-filter-bar .ant-picker-range:hover {
+    border-color: var(--color_main_title, #1890ff) !important;
+}
+
+.admin-filter-bar .ant-picker-range.ant-picker-focused {
+    border-color: var(--color_main_title, #1890ff) !important;
+    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.05) !important;
+}
+
+.admin-filter-bar .ant-picker-range .ant-picker-input > input::placeholder {
+    color: #94a3b8 !important;
+    font-size: 0.95rem;
+}
+
+.admin-filter-bar .ant-picker-range .ant-picker-suffix {
+    color: #94a3b8;
+}
+
 
 .admin-list-container .admin-table-wrapper {
     border-radius: 16px;

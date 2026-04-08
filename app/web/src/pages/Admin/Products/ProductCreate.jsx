@@ -178,7 +178,7 @@ const ProductCreate = () => {
         if (!createdProductId) return;
         const names = optionTypes.map(o => o.optionName?.trim().toLowerCase()).filter(Boolean);
         if (names.length !== new Set(names).size) {
-            return notification.warning({ message: t('warning'), description: t('admin_error_duplicate_options') });
+            return notification.warning({ message: t('warning'), description: t('admin_error_option_name_duplicate') });
         }
         const hasConflict = optionTypes.some(o => o.isCustomName && optionKeys.map(k => k.toLowerCase()).includes(o.optionName?.trim().toLowerCase()));
         if (hasConflict) {

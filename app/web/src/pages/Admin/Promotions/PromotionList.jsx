@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Typography, Tooltip, Space, Modal, Input } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Table, Button, Typography, Tooltip, Space, Modal, Input, Select, DatePicker, Row, Col } from 'antd';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, FilterOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAuth } from '../../../Context/AuthContext';
@@ -20,33 +22,59 @@ const PromotionList = () => {
     const { isAuthenticated } = useAuth();
     const [query, setQuery] = useQueryParams();
 
-    const searchTerm = query.search || '';
+    const titleTerm = query.title || '';
+    const statusFilter = query.status || null;
+    const startAtParam = query.startAt || null;
+    const endAtParam = query.endAt || null;
     const currentPage = query.page ? Number(query.page) - 1 : 0;
     const pageSize = 10;
 
-    const [searchInput, setSearchInput] = useState(searchTerm);
+    const [searchInput, setSearchInput] = useState(titleTerm);
     const debouncedSearch = useDebounce(searchInput, 500);
 
     const { data: promotions, totalPages, totalItems, isLoading: loading, refetchPromotions } = useAdminPromotions(
-        { page: currentPage, size: pageSize, search: searchTerm },
+        { 
+            page: currentPage, 
+            size: pageSize, 
+            title: titleTerm, 
+            status: statusFilter, 
+            startAt: startAtParam, 
+            endAt: endAtParam 
+        },
         { enabled: isAuthenticated }
     );
     const { mutateAsync: deletePromotion, isPending: isDeleting } = useDeletePromotion();
 
     useEffect(() => {
-        setSearchInput(searchTerm);
-    }, [searchTerm]);
+        setSearchInput(titleTerm);
+    }, [titleTerm]);
 
     useEffect(() => {
-        if (debouncedSearch !== searchTerm) {
-            setQuery({ search: debouncedSearch || null, page: 1 });
+        if (debouncedSearch !== titleTerm) {
+            setQuery({ title: debouncedSearch || null, page: 1 });
         }
-    }, [debouncedSearch, searchTerm, setQuery]);
+    }, [debouncedSearch, titleTerm, setQuery]);
 
     const handleRefresh = () => {
-        setQuery({ search: null, page: null });
+        setQuery({ title: null, status: null, startAt: null, endAt: null, page: null });
         setSearchInput('');
         refetchPromotions();
+    };
+
+    const handleStatusChange = (val) => {
+        setQuery({ status: val || null, page: 1 });
+    };
+
+    const handleDateRangeChange = (dates) => {
+        if (dates) {
+            setQuery({ 
+                startAt: dates[0].toISOString(), 
+                endAt: dates[1].toISOString(), 
+                page: 1 
+            });
+        } else {
+            setQuery({ startAt: null, endAt: null, page: 1 });
+        }
     };
 
     const handleEdit = (record) => {
@@ -180,16 +208,51 @@ const PromotionList = () => {
                     </div>
                 }
             >
-                <div className="admin-filter-bar">
-                    <Search
-                        placeholder={t('promo_search_placeholder')}
-                        allowClear
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        onSearch={(v) => setQuery({ search: v || null, page: 1 })}
-                        className="admin-toolbar-search"
-                        style={{ maxWidth: 400 }}
-                    />
+                <div className="admin-filter-bar advanced-filters">
+                    <Row gutter={[12, 12]} align="middle" style={{ width: '100%' }}>
+                        <Col xs={24} md={10} lg={8}>
+                            <div className="filter-item-wrap">
+                                <Search
+                                    placeholder={t('promo_search_placeholder')}
+                                    allowClear
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    onSearch={(v) => setQuery({ title: v || null, page: 1 })}
+                                    className="admin-toolbar-search"
+                                />
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={12} md={6} lg={4}>
+                            <div className="filter-item-wrap">
+                                <Select
+                                    placeholder={t('promo_col_status')}
+                                    allowClear
+                                    style={{ width: '100%' }}
+                                    value={statusFilter}
+                                    onChange={handleStatusChange}
+                                    className="admin-toolbar-select"
+                                >
+                                    <Select.Option value="STARTING">{t('promo_status_STARTING')}</Select.Option>
+                                    <Select.Option value="INCOMING">{t('promo_status_INCOMING')}</Select.Option>
+                                    <Select.Option value="ENDED">{t('promo_status_ENDED')}</Select.Option>
+                                    <Select.Option value="DISABLED">{t('promo_status_DISABLED')}</Select.Option>
+                                </Select>
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={12} md={8} lg={6}>
+                            <div className="filter-item-wrap">
+                                <DatePicker.RangePicker
+                                    style={{ width: '100%' }}
+                                    showTime
+                                    format="DD/MM/YYYY HH:mm"
+                                    value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
+                                    onChange={handleDateRangeChange}
+                                    placeholder={[t('promo_col_start_time'), t('promo_col_end_time')]}
+                                    className="admin-date-picker-range"
+                                />
+                            </div>
+                        </Col>
+                    </Row>
                 </div>
 
                 <div className="admin-table-wrapper">

@@ -128,10 +128,10 @@ const AdminLayout = () => {
             desc: t('admin_home_appointments_desc')
         },
         {
-            key: '/admin/staff',
+            key: '/admin/users',
             icon: <UsergroupAddOutlined />,
-            label: t('staff'),
-            desc: t('admin_home_staff_desc')
+            label: t('admin_dashboard_users'),
+            desc: t('admin_users_title')
         },
         {
             key: '/admin/reports',
