@@ -28,9 +28,6 @@ export default function AdminProductDetail() {
     const productId = location.state?.productId ?? getIdFromSlug(slug);
     const fallbackImg = useMemo(() => getRandomImage(), []);
 
-    const resolveHasDiscount = (originPrice, promotionPrice) =>
-        originPrice > 0 && promotionPrice > 0 && promotionPrice < originPrice;
-
     const [productData, setProductData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
@@ -76,7 +73,7 @@ export default function AdminProductDetail() {
                 setCurrentPrice({
                     originPrice: responseData.originPrice,
                     promotionPrice: responseData.promotionPrice,
-                    hasDiscount: resolveHasDiscount(responseData.originPrice, responseData.promotionPrice),
+                    hasDiscount: responseData.promotionPrice < responseData.originPrice,
                 });
 
                 const targetVariant = responseData.variants?.find(v => v.id === responseData.id) || responseData.variants?.[0];

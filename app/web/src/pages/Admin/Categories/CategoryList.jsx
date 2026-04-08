@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Tooltip, Space, Modal, Input, Form } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
 import { useAdminCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../../../hooks/useAdminCategories';
 import { useAuth } from '../../../Context/AuthContext';
+import { useQueryParams } from '../../../hooks/useQueryParams';
+import { useDebounce } from '../../../hooks/useDebounce';
 import '../../../Component/Admin/Common/List.css';
 
 const { Search } = Input;
@@ -14,43 +16,46 @@ const CategoryList = () => {
     const { t } = useLanguage();
     const { isAuthenticated } = useAuth();
     const [form] = Form.useForm();
-    const [inputValue, setInputValue] = useState('');
-    const [searchText, setSearchText] = useState('');
-    const [currentPage, setCurrentPage] = useState(0);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [editingCategory, setEditingCategory] = useState(null);
+    const [query, setQuery] = useQueryParams();
+
+    const searchTerm = query.search || '';
+    const currentPage = query.page ? Number(query.page) - 1 : 0;
     const pageSize = 10;
 
+    const [searchInput, setSearchInput] = useState(searchTerm);
+    const debouncedSearch = useDebounce(searchInput, 500);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [editingCategory, setEditingCategory] = useState(null);
+
     const { categories, totalPages, totalItems, isLoading, refetchCategories } = useAdminCategories(
-        { page: currentPage, size: pageSize },
+        { page: currentPage, size: pageSize, search: searchTerm },
         { enabled: isAuthenticated }
     );
     const { mutateAsync: createCategory, isPending: isCreating } = useCreateCategory();
     const { mutateAsync: updateCategory, isPending: isUpdating } = useUpdateCategory();
     const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory();
 
-    const filteredCategories = useMemo(() => {
-        return categories.filter(c => (c.categoryName || '').toLowerCase().includes(searchText.toLowerCase()));
-    }, [categories, searchText]);
+    useEffect(() => {
+        setSearchInput(searchTerm);
+    }, [searchTerm]);
 
-    const handleSearch = (value) => {
-        setSearchText(value);
-        setCurrentPage(0);
-    };
+    useEffect(() => {
+        if (debouncedSearch !== searchTerm) {
+            setQuery({ search: debouncedSearch || null, page: 1 });
+        }
+    }, [debouncedSearch, searchTerm, setQuery]);
 
     const handleRefresh = () => {
-        setInputValue('');
-        setSearchText('');
-        setCurrentPage(0);
+        setQuery({ search: null, page: null });
+        setSearchInput('');
         refetchCategories();
     };
 
     const openModal = (category = null) => {
         setEditingCategory(category);
         if (category) {
-            form.setFieldsValue({
-                name: category.categoryName
-            });
+            form.setFieldsValue({ name: category.categoryName });
         } else {
             form.resetFields();
         }
@@ -58,9 +63,7 @@ const CategoryList = () => {
     };
 
     const handleSubmit = async (values) => {
-        const payload = {
-            categoryName: values.name
-        };
+        const payload = { categoryName: values.name };
 
         try {
             if (editingCategory) {
@@ -70,8 +73,7 @@ const CategoryList = () => {
             }
             setIsModalVisible(false);
             refetchCategories();
-        } catch (error) {
-        }
+        } catch (error) {}
     };
 
     const handleDelete = (category) => {
@@ -144,9 +146,9 @@ const CategoryList = () => {
                     <Search
                         placeholder={t('admin_category_search')}
                         allowClear
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onSearch={handleSearch}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onSearch={(v) => setQuery({ search: v || null, page: 1 })}
                         className="admin-toolbar-search"
                         style={{ maxWidth: 400 }}
                     />
@@ -155,7 +157,7 @@ const CategoryList = () => {
                 <div className="admin-table-wrapper">
                     <Table
                         columns={columns}
-                        dataSource={filteredCategories}
+                        dataSource={categories}
                         rowKey="id"
                         className="beauty-table"
                         pagination={false}
@@ -171,7 +173,7 @@ const CategoryList = () => {
                                 totalItems={totalItems}
                                 pageSize={pageSize}
                                 onPageChange={(page) => {
-                                    setCurrentPage(page);
+                                    setQuery({ page: page + 1 });
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
                             />

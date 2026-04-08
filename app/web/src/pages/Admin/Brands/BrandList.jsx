@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Typography, Tooltip, Space, Modal, Input, Form, Upload, Select } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../../i18n/LanguageContext';
@@ -6,6 +6,8 @@ import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component
 import { getImageUrl } from '../../../api/axiosClient';
 import { useAdminBrands, useCreateBrand, useUpdateBrand, useDeleteBrand } from '../../../hooks/useAdminBrands';
 import { useAuth } from '../../../Context/AuthContext';
+import { useQueryParams } from '../../../hooks/useQueryParams';
+import { useDebounce } from '../../../hooks/useDebounce';
 import '../../../Component/Admin/Common/List.css';
 
 const { Text } = Typography;
@@ -17,34 +19,39 @@ const BrandList = () => {
     const { t } = useLanguage();
     const { isAuthenticated } = useAuth();
     const [form] = Form.useForm();
-    const [inputValue, setInputValue] = useState('');
-    const [searchText, setSearchText] = useState('');
-    const [currentPage, setCurrentPage] = useState(0);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [editingBrand, setEditingBrand] = useState(null);
+    const [query, setQuery] = useQueryParams();
+
+    const searchTerm = query.search || '';
+    const currentPage = query.page ? Number(query.page) - 1 : 0;
     const pageSize = 10;
 
+    const [searchInput, setSearchInput] = useState(searchTerm);
+    const debouncedSearch = useDebounce(searchInput, 500);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [editingBrand, setEditingBrand] = useState(null);
+
     const { brands, totalPages, totalItems, isLoading, refetchBrands } = useAdminBrands(
-        { page: currentPage, size: pageSize },
+        { page: currentPage, size: pageSize, search: searchTerm },
         { enabled: isAuthenticated }
     );
     const { mutateAsync: createBrand, isPending: isCreating } = useCreateBrand();
     const { mutateAsync: updateBrand, isPending: isUpdating } = useUpdateBrand();
     const { mutateAsync: deleteBrand, isPending: isDeleting } = useDeleteBrand();
 
-    const filteredBrands = useMemo(() => {
-        return brands.filter(b => (b.name || '').toLowerCase().includes(searchText.toLowerCase()));
-    }, [brands, searchText]);
+    useEffect(() => {
+        setSearchInput(searchTerm);
+    }, [searchTerm]);
 
-    const handleSearch = (value) => {
-        setSearchText(value);
-        setCurrentPage(0);
-    };
+    useEffect(() => {
+        if (debouncedSearch !== searchTerm) {
+            setQuery({ search: debouncedSearch || null, page: 1 });
+        }
+    }, [debouncedSearch, searchTerm, setQuery]);
 
     const handleRefresh = () => {
-        setInputValue('');
-        setSearchText('');
-        setCurrentPage(0);
+        setQuery({ search: null, page: null });
+        setSearchInput('');
         refetchBrands();
     };
 
@@ -83,8 +90,7 @@ const BrandList = () => {
             }
             setIsModalVisible(false);
             refetchBrands();
-        } catch (error) {
-        }
+        } catch (error) {}
     };
 
     const handleDelete = (brand) => {
@@ -189,9 +195,9 @@ const BrandList = () => {
                     <Search
                         placeholder={t('admin_brand_search')}
                         allowClear
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onSearch={handleSearch}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onSearch={(v) => setQuery({ search: v || null, page: 1 })}
                         className="admin-toolbar-search"
                         style={{ maxWidth: 400 }}
                     />
@@ -200,7 +206,7 @@ const BrandList = () => {
                 <div className="admin-table-wrapper">
                     <Table
                         columns={columns}
-                        dataSource={filteredBrands}
+                        dataSource={brands}
                         rowKey="id"
                         className="beauty-table"
                         pagination={false}
@@ -216,7 +222,7 @@ const BrandList = () => {
                                 totalItems={totalItems}
                                 pageSize={pageSize}
                                 onPageChange={(page) => { 
-                                    setCurrentPage(page); 
+                                    setQuery({ page: page + 1 }); 
                                     window.scrollTo({ top: 0, behavior: 'smooth' }); 
                                 }} 
                             />

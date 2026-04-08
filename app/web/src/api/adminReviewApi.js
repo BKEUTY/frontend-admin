@@ -5,16 +5,20 @@ class AdminReviewApi extends BaseApi {
         super('/api/admin/reviews');
     }
 
-    replyToReview(reviewId, data) {
-        return this.client.post(`${this.resource}/${reviewId}/reply`, data);
+    replyToReview(reviewId, comment, config = {}) {
+        return this.client.post(`${this.resource}/${reviewId}/reply`, { comment }, config);
     }
 
-    updateReply(replyId, data) {
-        return this.client.put(`${this.resource}/replies/${replyId}`, data);
+    updateReply(replyId, comment, config = {}) {
+        return this.client.put(`${this.resource}/replies/${replyId}`, { comment }, config);
     }
 
-    deleteReply(replyId) {
-        return this.client.delete(`${this.resource}/replies/${replyId}`);
+    deleteReply(replyId, config = {}) {
+        return this.client.delete(`${this.resource}/replies/${replyId}`, config);
+    }
+
+    delete(reviewId, config = {}) {
+        return this.client.delete(`${this.resource}/${reviewId}`, config);
     }
 }
 

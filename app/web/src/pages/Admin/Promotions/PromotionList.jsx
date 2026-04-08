@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Typography, Tooltip, Space, Modal, Input } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,8 @@ import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAuth } from '../../../Context/AuthContext';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
 import { useAdminPromotions, useDeletePromotion } from '../../../hooks/useAdminPromotions';
+import { useQueryParams } from '../../../hooks/useQueryParams';
+import { useDebounce } from '../../../hooks/useDebounce';
 import '../../../Component/Admin/Common/List.css';
 
 const { Text } = Typography;
@@ -16,30 +18,34 @@ const PromotionList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const [inputValue, setInputValue] = useState('');
-    const [searchText, setSearchText] = useState('');
-    const [currentPage, setCurrentPage] = useState(0);
+    const [query, setQuery] = useQueryParams();
+
+    const searchTerm = query.search || '';
+    const currentPage = query.page ? Number(query.page) - 1 : 0;
     const pageSize = 10;
 
-    const { data, totalPages, totalItems, isLoading: loading, refetchPromotions } = useAdminPromotions(
-        { page: currentPage, size: pageSize },
+    const [searchInput, setSearchInput] = useState(searchTerm);
+    const debouncedSearch = useDebounce(searchInput, 500);
+
+    const { data: promotions, totalPages, totalItems, isLoading: loading, refetchPromotions } = useAdminPromotions(
+        { page: currentPage, size: pageSize, search: searchTerm },
         { enabled: isAuthenticated }
     );
     const { mutateAsync: deletePromotion, isPending: isDeleting } = useDeletePromotion();
 
-    const filteredPromotions = useMemo(() => {
-        return data.filter(p => (p.title || '').toLowerCase().includes(searchText.toLowerCase()));
-    }, [data, searchText]);
+    useEffect(() => {
+        setSearchInput(searchTerm);
+    }, [searchTerm]);
 
-    const handleSearch = (value) => {
-        setSearchText(value);
-        setCurrentPage(0);
-    };
+    useEffect(() => {
+        if (debouncedSearch !== searchTerm) {
+            setQuery({ search: debouncedSearch || null, page: 1 });
+        }
+    }, [debouncedSearch, searchTerm, setQuery]);
 
     const handleRefresh = () => {
-        setInputValue('');
-        setSearchText('');
-        setCurrentPage(0);
+        setQuery({ search: null, page: null });
+        setSearchInput('');
         refetchPromotions();
     };
 
@@ -130,6 +136,7 @@ const PromotionList = () => {
                     case 'INCOMING': badgeClass = 'info'; break;
                     case 'ENDED': badgeClass = 'danger'; break;
                     case 'DISABLED': badgeClass = 'default'; break;
+                    default: badgeClass = 'default';
                 }
                 return (
                     <span className={`admin-status-badge ${badgeClass}`}>
@@ -177,9 +184,9 @@ const PromotionList = () => {
                     <Search
                         placeholder={t('promo_search_placeholder')}
                         allowClear
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onSearch={handleSearch}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onSearch={(v) => setQuery({ search: v || null, page: 1 })}
                         className="admin-toolbar-search"
                         style={{ maxWidth: 400 }}
                     />
@@ -188,7 +195,7 @@ const PromotionList = () => {
                 <div className="admin-table-wrapper">
                     <Table
                         columns={columns} 
-                        dataSource={filteredPromotions} 
+                        dataSource={promotions} 
                         rowKey="id" 
                         className="beauty-table" 
                         pagination={false} 
@@ -196,7 +203,7 @@ const PromotionList = () => {
                         scroll={{ x: 'max-content' }}
                         locale={{ emptyText: <EmptyState description={t('no_promos_found')} /> }}
                     />
-                    {data.length > 0 && totalPages > 1 && (
+                    {promotions.length > 0 && totalPages > 1 && (
                         <div className="admin-custom-pagination">
                             <Pagination 
                                 page={currentPage} 
@@ -204,7 +211,7 @@ const PromotionList = () => {
                                 totalItems={totalItems}
                                 pageSize={pageSize}
                                 onPageChange={(page) => { 
-                                    setCurrentPage(page); 
+                                    setQuery({ page: page + 1 }); 
                                     window.scrollTo({ top: 0, behavior: 'smooth' }); 
                                 }} 
                             />

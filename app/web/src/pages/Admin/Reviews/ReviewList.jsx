@@ -106,113 +106,16 @@ const ReviewList = ({ variantId }) => {
         setPage(0);
     };
 
-    const columns = [
-        {
-            title: t('admin_review_customer'),
-            dataIndex: 'userName',
-            key: 'userName',
-            width: 200,
-            render: (name, record) => (
-                <Space>
-                    <Avatar style={{ backgroundColor: 'var(--color_main_title, #c2185b)' }}>{name?.charAt(0) || 'U'}</Avatar>
-                    <div>
-                        <div className="admin-table-product-name">{name || 'User'}</div>
-                        <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            {record.createdAt ? new Date(record.createdAt).toLocaleDateString('vi-VN') : ''}
-                        </div>
-                    </div>
-                </Space>
-            )
-        },
-        {
-            title: t('admin_review_rating'),
-            dataIndex: 'rating',
-            key: 'rating',
-            width: 150,
-            render: (rating) => (
-                <div>
-                    <Rate disabled defaultValue={rating} style={{ fontSize: '14px', color: '#f59e0b' }} />
-                    <div className="verified-badge-admin">{t('verified_purchase')}</div>
-                </div>
-            )
-        },
-        {
-            title: t('admin_review_content_media'),
-            dataIndex: 'comment',
-            key: 'comment',
-            render: (text, record) => (
-                <div>
-                    <div className="review-text-admin">{text}</div>
-                    {record.images && record.images.length > 0 && (
-                        <div className="review-images-admin">
-                            {record.images.filter(img => img && img.trim() !== "").map((img, i) => (
-                                <img key={i} src={img} alt="rev" onClick={() => window.open(img, '_blank')} />
-                            ))}
-                        </div>
-                    )}
-                    {record.reply && (
-                        <div className="admin-reply-box-item">
-                            <div className="admin-reply-header-item">
-                                <span>{t('admin_portal').toUpperCase()} {t('comment').toUpperCase()}</span>
-                                <span>{record.reply.repliedAt ? new Date(record.reply.repliedAt).toLocaleDateString('vi-VN') : ''}</span>
-                            </div>
-                            <div className="admin-reply-content-item">{record.reply.comment}</div>
-                        </div>
-                    )}
-                </div>
-            )
-        },
-        {
-            title: t('admin_review_status'),
-            key: 'status',
-            width: 150,
-            align: 'center',
-            render: (_, record) => (
-                <span className={`admin-status-badge ${record.replied ? 'success' : 'warning'}`}>
-                    {record.replied ? <CheckCircleOutlined style={{ marginRight: 4 }} /> : <ClockCircleOutlined style={{ marginRight: 4 }} />}
-                    {record.replied ? t('admin_review_replied') : t('admin_review_not_replied')}
-                </span>
-            )
-        },
-        {
-            title: t('actions_col'),
-            key: 'action',
-            width: 120,
-            align: 'center',
-            render: (_, record) => (
-                <Space>
-                    <Tooltip title={record.replied ? t('admin_review_edit_reply') : t('admin_review_reply_btn')}>
-                        <button 
-                            className="admin-action-btn edit-btn"
-                            onClick={() => handleReply(record)} 
-                        >
-                            <MessageOutlined />
-                        </button>
-                    </Tooltip>
-                    <Space size="small">
-                        {record.reply && (
-                            <Tooltip title={t('admin_review_delete_reply')}>
-                                <button 
-                                    className="admin-action-btn delete-btn"
-                                    onClick={() => handleDeleteReply(record.reply.id)} 
-                                >
-                                    <DeleteOutlined />
-                                </button>
-                            </Tooltip>
-                        )}
-                        <Tooltip title={t('admin_review_delete_review')}>
-                            <button 
-                                className="admin-action-btn delete-btn"
-                                onClick={() => handleDeleteReview(record.id)} 
-                            >
-                                <DeleteOutlined style={{ fontWeight: 800 }} />
-                            </button>
-                        </Tooltip>
-                    </Space>
-                </Space>
-            )
-        }
-    ];
+    const formatDateTime = (dateString) => {
+        if (!dateString) return '';
+        return new Date(dateString).toLocaleString('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
 
     return (
         <div className="admin-list-container">
@@ -321,16 +224,64 @@ const ReviewList = ({ variantId }) => {
                             </div>
 
                             <div className="admin-table-wrapper">
-                                <Table
-                                    columns={columns}
-                                    dataSource={reviewsData?.content || []}
-                                    rowKey="id"
-                                    loading={isReviewsLoading}
-                                    locale={{ emptyText: t('admin_review_no_data') }}
-                                    pagination={false}
-                                    className="beauty-table"
-                                    scroll={{ x: 'max-content' }}
-                                />
+                                <div className="admin-pr-list">
+                                    {isReviewsLoading ? (
+                                        <div style={{ textAlign: 'center', padding: '40px' }}>Loading...</div>
+                                    ) : (!reviewsData?.content || reviewsData.content.length === 0) ? (
+                                        <div className="admin-pr-empty-state">{t('admin_review_no_data')}</div>
+                                    ) : (
+                                        reviewsData.content.map((rev) => (
+                                            <div key={rev.id} className="admin-pr-card">
+                                                <Avatar size={48} className="admin-pr-user-avatar" style={{ backgroundColor: 'var(--color_main_title, #c2185b)' }}>
+                                                    {rev.userName?.charAt(0) || 'U'}
+                                                </Avatar>
+                                                <div className="admin-pr-main-content">
+                                                    <div className="admin-pr-card-header">
+                                                        <span className="admin-pr-user-name">{rev.userName || 'User'}</span>
+                                                        <span className="admin-pr-post-date">
+                                                            {formatDateTime(rev.updatedAt)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="admin-pr-rating-meta">
+                                                        <Rate disabled defaultValue={rev.rating} style={{ fontSize: '13px', color: '#f59e0b' }} />
+                                                        <span className="verified-badge-admin"><CheckCircleOutlined style={{ marginRight: '4px' }} />{t('verified_purchase')}</span>
+                                                    </div>
+                                                    <div className="admin-pr-comment-text">{rev.comment}</div>
+                                                    {rev.images?.length > 0 && (
+                                                        <div className="admin-pr-image-gallery">
+                                                            {rev.images.filter(img => img && img.trim() !== "").map((img, idx) => (
+                                                                <img key={idx} src={img} alt="review" className="admin-pr-review-img" onClick={() => window.open(img, '_blank')} />
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    {rev.reply && (
+                                                        <div className="admin-reply-box-item">
+                                                            <div className="admin-reply-header-item">
+                                                                <span>{rev.reply.adminName || 'Admin'}</span>
+                                                                <span>{formatDateTime(rev.reply.updatedAt)}</span>
+                                                            </div>
+                                                            <div className="admin-reply-content-item">{rev.reply.comment}</div>
+                                                            <div className="admin-reply-actions">
+                                                                <button className="reply-action-btn edit" onClick={() => handleReply(rev)}>{t('edit')}</button>
+                                                                <button className="reply-action-btn delete" onClick={() => handleDeleteReply(rev.reply.id)}>{t('delete')}</button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    <div className="admin-pr-card-actions">
+                                                        {!rev.reply && (
+                                                            <CButton type="outline" onClick={() => handleReply(rev)} icon={<MessageOutlined />}>
+                                                                {t('admin_review_reply_btn')}
+                                                            </CButton>
+                                                        )}
+                                                        <CButton danger type="outline" onClick={() => handleDeleteReview(rev.id)} icon={<DeleteOutlined />}>
+                                                            {t('delete')}
+                                                        </CButton>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                                 {reviewsData?.content?.length > 0 && reviewsData?.totalPages > 1 && (
                                     <div className="admin-custom-pagination">
                                         <Pagination

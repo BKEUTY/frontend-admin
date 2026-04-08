@@ -5,6 +5,7 @@ import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAdminOrderDetail, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
 import { Skeleton, PageWrapper, CButton } from '../../../Component/Common';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { generateSlug } from '../../../utils/helpers';
 import './AdminOrderDetail.css';
 
 const { Text, Title } = Typography;
@@ -27,8 +28,8 @@ export default function AdminOrderDetail() {
         switch (status?.toUpperCase()) {
             case 'PAID':
             case 'COMPLETED': return 'success';
-            case 'UNPAID':
-            case 'PENDING': return 'warning';
+            case 'IN_PROGRESS':
+            case 'UNPAID': return 'warning';
             case 'CANCELLED': return 'error';
             default: return 'default';
         }
@@ -57,7 +58,9 @@ export default function AdminOrderDetail() {
                         style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }} 
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/50'; }}
                     />
-                    <Text strong>{text}</Text>
+                    <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`}>
+                        <Text strong style={{ color: 'var(--admin-primary)', cursor: 'pointer' }}>{text}</Text>
+                    </Link>
                 </div>
             )
         },
@@ -112,9 +115,9 @@ export default function AdminOrderDetail() {
                         style={{ width: 140 }}
                         onChange={handleStatusChange}
                         options={[
-                            { value: 'PENDING', label: t('status_pending') },
                             { value: 'UNPAID', label: t('status_unpaid') },
                             { value: 'PAID', label: t('status_paid') },
+                            { value: 'IN_PROGRESS', label: t('status_in_progress') },
                             { value: 'COMPLETED', label: t('status_completed') },
                             { value: 'CANCELLED', label: t('status_cancelled') }
                         ]}
@@ -137,12 +140,12 @@ export default function AdminOrderDetail() {
                             <div style={{ width: '300px' }}>
                                 <Row justify="space-between" style={{ marginBottom: 12 }}>
                                     <Text type="secondary">{t('shipping_fee')}</Text>
-                                    <Text>0đ</Text> 
+                                    <Text>{(orderDetail.shippingFee).toLocaleString('vi-VN')}đ</Text> 
                                 </Row>
                                 <Row justify="space-between" align="middle">
                                     <Text strong style={{ fontSize: '16px' }}>{t('total')}</Text>
                                     <Text strong style={{ fontSize: '24px', color: 'var(--admin-primary)' }}>
-                                        {(orderDetail.total || 0).toLocaleString('vi-VN')}đ
+                                        {(orderDetail.total).toLocaleString('vi-VN')}đ
                                     </Text>
                                 </Row>
                             </div>
@@ -154,7 +157,10 @@ export default function AdminOrderDetail() {
                     <Card title={t('customer_info')} variant="outlined" className="bkeuty-admin-card shadow-card" style={{ marginBottom: 24 }}>
                         <Descriptions column={1} labelStyle={{ color: '#6b7280' }}>
                             <Descriptions.Item label={t('username')}>
-                                <Text strong>{orderDetail.userId}</Text>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <Text strong>{orderDetail.userName || 'Guest'}</Text>
+                                    <Text type="secondary" style={{ fontSize: '12px' }}>{orderDetail.userId}</Text>
+                                </div>
                             </Descriptions.Item>
                             <Descriptions.Item label={t('order_date')}>
                                 {orderDetail.orderDate ? new Date(orderDetail.orderDate).toLocaleDateString('vi-VN') : '---'}
@@ -163,7 +169,7 @@ export default function AdminOrderDetail() {
                     </Card>
 
                     <Card title={t('shipping_address')} variant="outlined" className="bkeuty-admin-card shadow-card">
-                        <Text style={{ color: '#334155' }}>{orderDetail.address}</Text>
+                        <Text style={{ color: '#334155' }}>{orderDetail.address ? orderDetail.address.split('|')[0] : ''}</Text>
                     </Card>
                 </Col>
             </Row>

@@ -33,8 +33,8 @@ const OrderList = () => {
         switch (status?.toUpperCase()) {
             case 'PAID':
             case 'COMPLETED': return 'success';
-            case 'UNPAID':
-            case 'PENDING': return 'warning';
+            case 'IN_PROGRESS':
+            case 'UNPAID': return 'warning';
             case 'CANCELLED': return 'danger';
             default: return 'default';
         }
@@ -51,10 +51,14 @@ const OrderList = () => {
         },
         {
             title: t('admin_customer'),
-            dataIndex: 'userId',
             key: 'customer',
             width: 200,
-            render: (userId) => <span className="admin-table-product-name">{userId || t('guest')}</span>,
+            render: (_, record) => (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span className="admin-table-product-name">{record.userName || t('guest')}</span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>{record.userId || ''}</span>
+                </div>
+            ),
         },
         {
             title: t('admin_date'),
@@ -72,10 +76,14 @@ const OrderList = () => {
         },
         {
             title: t('admin_total'),
-            dataIndex: 'total',
             key: 'total',
             width: 150,
-            render: (total) => <span className="admin-current-price" style={{ color: '#10b981' }}>{(total || 0).toLocaleString("vi-VN")}đ</span>,
+            render: (_, record) => (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString("vi-VN")}đ</span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString("vi-VN")}đ</span>
+                </div>
+            ),
         },
         {
             title: t('status'),
@@ -91,9 +99,9 @@ const OrderList = () => {
                         style={{ width: 140, fontWeight: 600 }}
                         onChange={(val) => handleStatusChange(record.id, val)}
                         options={[
-                            { value: 'PENDING', label: t('status_pending') },
                             { value: 'UNPAID', label: t('status_unpaid') },
                             { value: 'PAID', label: t('status_paid') },
+                            { value: 'IN_PROGRESS', label: t('status_in_progress') },
                             { value: 'COMPLETED', label: t('status_completed') },
                             { value: 'CANCELLED', label: t('status_cancelled') }
                         ]}

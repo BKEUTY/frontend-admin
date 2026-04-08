@@ -11,10 +11,11 @@ export const useAdminReviews = (page, pageSize, selectedVariantId, ratingFilter,
 
     const handleMutationError = (error, actionKey) => {
         if (!error?.isGlobalHandled) {
+            const status = error.response?.status;
             notification.error({
                 key: actionKey,
                 message: t('error'),
-                description: t('api_error_general')
+                description: (status === 403 || status === 400) ? t('review_not_eligible_msg') : (error.response?.data?.message || t('api_error_general'))
             });
         }
     };
@@ -22,6 +23,7 @@ export const useAdminReviews = (page, pageSize, selectedVariantId, ratingFilter,
     const invalidateReviews = () => {
         queryClient.invalidateQueries({ queryKey: ['adminReviews'] });
         queryClient.invalidateQueries({ queryKey: ['adminReviewStats'] });
+        queryClient.invalidateQueries({ queryKey: ['adminProductsList'] });
     };
 
     const productsQuery = useQuery({
@@ -59,7 +61,7 @@ export const useAdminReviews = (page, pageSize, selectedVariantId, ratingFilter,
 
     const replyMutation = useMutation({
         mutationFn: async ({ reviewId, comment }) => {
-            const response = await adminReviewApi.replyToReview(reviewId, comment);
+            const response = await adminReviewApi.replyToReview(reviewId, comment, { skipGlobalErrorHandler: true });
             return response.data;
         },
         onSuccess: invalidateReviews,
@@ -68,7 +70,7 @@ export const useAdminReviews = (page, pageSize, selectedVariantId, ratingFilter,
 
     const updateReplyMutation = useMutation({
         mutationFn: async ({ replyId, comment }) => {
-            const response = await adminReviewApi.updateReply(replyId, comment);
+            const response = await adminReviewApi.updateReply(replyId, comment, { skipGlobalErrorHandler: true });
             return response.data;
         },
         onSuccess: invalidateReviews,
@@ -77,7 +79,7 @@ export const useAdminReviews = (page, pageSize, selectedVariantId, ratingFilter,
 
     const deleteReplyMutation = useMutation({
         mutationFn: async (replyId) => {
-            const response = await adminReviewApi.deleteReply(replyId);
+            const response = await adminReviewApi.deleteReply(replyId, { skipGlobalErrorHandler: true });
             return response.data;
         },
         onSuccess: invalidateReviews,
@@ -86,7 +88,7 @@ export const useAdminReviews = (page, pageSize, selectedVariantId, ratingFilter,
 
     const deleteReviewMutation = useMutation({
         mutationFn: async (reviewId) => {
-            const response = await adminReviewApi.delete(reviewId);
+            const response = await adminReviewApi.delete(reviewId, { skipGlobalErrorHandler: true });
             return response.data;
         },
         onSuccess: invalidateReviews,

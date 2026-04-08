@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Table, Button, Typography, Tooltip, Tag, Space, Modal, Input, Select, Form, InputNumber } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, StarFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,8 @@ import { usePublicProducts } from '../../../hooks/usePublicProducts';
 import { useAdminProducts } from '../../../hooks/useAdminProducts';
 import { EmptyState, PageWrapper, CButton, Skeleton, Pagination } from '../../../Component/Common';
 import { generateSlug } from '../../../utils/helpers';
+import { useQueryParams } from '../../../hooks/useQueryParams';
+import { useDebounce } from '../../../hooks/useDebounce';
 import '../../../Component/Admin/Common/List.css';
 
 import dummy1 from '../../../Assets/Images/Products/product_dummy_1.jpg';
@@ -26,23 +28,25 @@ const ProductList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const [editForm] = Form.useForm();
-
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [sortOption, setSortOption] = useState('default');
-    const [statusFilter, setStatusFilter] = useState(undefined);
-    const [searchText, setSearchText] = useState('');
-    const [inputValue, setInputValue] = useState('');
+    const [query, setQuery] = useQueryParams();
+    
+    const currentPage = query.page ? Number(query.page) - 1 : 0;
+    const sortOption = query.sort || 'default';
+    const statusFilter = query.status || undefined;
+    const searchText = query.search || '';
+    const selectedCategoryId = query.categoryId ? Number(query.categoryId) : undefined;
     const pageSize = 10;
+    const [searchInput, setSearchInput] = useState(searchText);
+    const debouncedSearch = useDebounce(searchInput, 500);
 
     const queryParams = useMemo(() => {
         const params = { page: currentPage, size: pageSize };
-        if (selectedCategories.length > 0) params.categoryId = selectedCategories.join(',');
+        if (selectedCategoryId) params.categoryId = selectedCategoryId;
         if (sortOption !== 'default') params.sort = sortOption;
         if (statusFilter) params.status = statusFilter;
         if (searchText) params.search = searchText;
         return params;
-    }, [currentPage, pageSize, selectedCategories, sortOption, statusFilter, searchText]);
+    }, [currentPage, pageSize, selectedCategoryId, sortOption, statusFilter, searchText]);
 
     const { products, totalPages, totalItems, isLoading, refetchProducts, categories } = usePublicProducts(queryParams);
     const { deleteVariant, isDeleting, updateVariant, isUpdatingVariant } = useAdminProducts();
@@ -53,9 +57,19 @@ const ProductList = () => {
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
 
+    useEffect(() => {
+        setSearchInput(searchText);
+    }, [searchText]);
+
+    useEffect(() => {
+        if (debouncedSearch !== searchText) {
+            setQuery({ search: debouncedSearch || null, page: 1 });
+        }
+    }, [debouncedSearch, searchText, setQuery]);
+
     const tableData = useMemo(() => products.map(p => ({
         ...p,
-        hasDiscount: p.originPrice > 0 && p.discountPrice > 0 && p.discountPrice < p.originPrice,
+        hasDiscount: p.discountPrice < p.originPrice,
     })), [products]);
 
     const categoryOptions = useMemo(() =>
@@ -146,33 +160,25 @@ const ProductList = () => {
         });
     };
 
-    const handleSearch = (value) => {
-        setSearchText(value);
-        setCurrentPage(0);
-    };
-
     const handleCategorySelect = (value) => {
-        setSelectedCategories(value ? [value] : []);
-        setCurrentPage(0);
+        setQuery({ categoryId: value || null, page: 1 });
     };
 
     const handleSortChange = (value) => {
-        setSortOption(value);
-        setCurrentPage(0);
+        setQuery({ sort: value === 'default' ? null : value, page: 1 });
     };
 
     const handleStatusChange = (value) => {
-        setStatusFilter(value);
-        setCurrentPage(0);
+        setQuery({ status: value || null, page: 1 });
+    };
+
+    const handleSearch = (value) => {
+        setQuery({ search: value || null, page: 1 });
     };
 
     const handleResetFilters = () => {
-        setCurrentPage(0);
-        setSortOption('default');
-        setStatusFilter(undefined);
-        setSearchText('');
-        setInputValue('');
-        setSelectedCategories([]);
+        setQuery({ page: null, sort: null, status: null, search: null, categoryId: null });
+        setSearchInput('');
         refetchProducts();
     };
 
@@ -251,13 +257,16 @@ const ProductList = () => {
         {
             title: t('reviews'),
             key: 'reviews',
-            width: 100,
+            width: 110,
             align: 'center',
             render: (_, record) => (
-                <Space size="small" align="center">
-                    <Text strong>{Number(record.averageRating || 0).toFixed(1)}</Text>
-                    <StarFilled style={{ color: '#f59e0b', fontSize: '12px' }} />
-                </Space>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+                    <Text strong style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                        {record.averageRating}
+                        <StarFilled style={{ color: '#f59e0b', fontSize: '12px', marginTop: '-1px' }} />
+                    </Text>
+                    <Text type="secondary" strong>({record.reviewCount})</Text>
+                </div>
             )
         },
         {
@@ -325,10 +334,10 @@ const ProductList = () => {
                     <Search
                         placeholder={t('admin_search_products')}
                         allowClear
-                        onSearch={handleSearch}
                         className="admin-toolbar-search"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onSearch={handleSearch}
                     />
                     <Select
                         showSearch
@@ -338,7 +347,7 @@ const ProductList = () => {
                         onChange={handleCategorySelect}
                         className="admin-toolbar-select"
                         filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                        value={selectedCategories.length === 1 ? selectedCategories[0] : undefined}
+                        value={selectedCategoryId}
                     />
                     <Select
                         allowClear
@@ -392,7 +401,7 @@ const ProductList = () => {
                                 totalItems={totalItems}
                                 pageSize={pageSize}
                                 onPageChange={(page) => {
-                                    setCurrentPage(page);
+                                    setQuery({ page: page + 1 });
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
                             />
