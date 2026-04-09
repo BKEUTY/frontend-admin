@@ -85,4 +85,29 @@
     .shadow-card {
         border-radius: 12px;
     }
+    
+    .admin-mb30 {
+        margin-bottom: 20px;
+    }
+    
+    .admin-pd-breadcrumb {
+        margin-bottom: 15px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-mb30 .ant-col {
+        width: 100%;
+    }
+    
+    .admin-mb30 Row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .status-select {
+        width: 100% !important;
+    }
 }

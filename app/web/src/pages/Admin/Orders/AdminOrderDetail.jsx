@@ -4,8 +4,10 @@ import { Typography, Tag, Select, Row, Col, Card, Table, Descriptions } from 'an
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAdminOrderDetail, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
 import { Skeleton, PageWrapper, CButton } from '../../../Component/Common';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
 import { generateSlug } from '../../../utils/helpers';
+import OrderProgress from '../../../Component/Order/OrderProgress';
+import generateInvoice from '../../../utils/InvoiceService';
 import './AdminOrderDetail.css';
 
 const { Text, Title } = Typography;
@@ -107,6 +109,13 @@ export default function AdminOrderDetail() {
                         <CButton type="outline" icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/orders')} />
                         <Title level={4} style={{ margin: 0, color: 'var(--admin-text-main)' }}>{t('order_detail')} #{orderDetail.id || id}</Title>
                         <Tag color="cyan" style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '6px' }}>{orderDetail.paymentMethod}</Tag>
+                        <CButton 
+                            type="outline" 
+                            icon={<DownloadOutlined />} 
+                            onClick={() => generateInvoice(orderDetail, t)}
+                        >
+                            {t('invoice')}
+                        </CButton>
                     </div>
                 </Col>
                 <Col>
@@ -125,6 +134,8 @@ export default function AdminOrderDetail() {
                     />
                 </Col>
             </Row>
+
+            <OrderProgress currentStatus={orderDetail.status} />
 
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
