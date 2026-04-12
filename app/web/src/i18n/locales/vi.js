@@ -495,5 +495,9 @@ export default {
     admin_dashboard_traffic_email: "Email Marketing",
     admin_dashboard_revenue: "Doanh thu",
     admin_dashboard_profit: "Lợi nhuận",
-    admin_dashboard_orders_count: "Số lượng đơn hàng"
+    admin_dashboard_orders_count: "Số lượng đơn hàng",
+    time_newest: "Thời gian: Mới nhất",
+    time_oldest: "Thời gian: Cũ nhất",
+    startDate: "Ngày bắt đầu",
+    endDate: "Ngày kết thúc"
 };

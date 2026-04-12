@@ -493,5 +493,9 @@ export default {
     admin_dashboard_traffic_email: "Email Marketing",
     admin_dashboard_revenue: "Revenue",
     admin_dashboard_profit: "Profit",
-    admin_dashboard_orders_count: "Order Count"
+    admin_dashboard_orders_count: "Order Count",
+    time_newest: "Time: Newest",
+    time_oldest: "Time: Oldest",
+    startDate: "Start Date",
+    endDate: "End Date"
 };

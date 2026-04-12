@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
-import { Table, Tooltip, Space, Select, Button } from 'antd';
-import { SyncOutlined, EyeOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Table, Tooltip, Space, Select, Button, DatePicker } from 'antd';
+import { SyncOutlined, EyeOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useAdminOrders, useUpdateOrderStatus } from '../../../hooks/useAdminOrders';
 import { EmptyState, PageWrapper, CButton, Pagination } from '../../../Component/Common';
+import useQueryParams from '../../../hooks/useQueryParams';
 import '../../../Component/Admin/Common/List.css';
+
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const OrderList = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(0);
+    const [query, setQuery] = useQueryParams();
+    
+    const page = query.page ? Number(query.page) : 0;
     const pageSize = 10;
+    const status = query.status || 'ALL';
+    const sort = query.sort || 'date_desc';
+    const startDate = query.startDate || null;
+    const endDate = query.endDate || null;
+
+    const filterParams = {
+        page,
+        size: pageSize,
+        status: status === 'ALL' ? null : status,
+        sort,
+        startDate,
+        endDate,
+    };
 
     const { 
         orders, 
@@ -19,7 +39,7 @@ const OrderList = () => {
         totalPages, 
         isLoading, 
         refetchOrders 
-    } = useAdminOrders({ page: currentPage, size: pageSize });
+    } = useAdminOrders(filterParams);
 
     const { mutateAsync: updateOrderStatus, isPending: isUpdating } = useUpdateOrderStatus();
 
@@ -27,6 +47,10 @@ const OrderList = () => {
         try {
             await updateOrderStatus({ id: orderId, status: value });
         } catch (error) {}
+    };
+
+    const handleFilterChange = (newParams) => {
+        setQuery({ ...newParams, page: 0 });
     };
 
     const getStatusClass = (status) => {
@@ -65,21 +89,24 @@ const OrderList = () => {
             dataIndex: 'orderDate',
             key: 'orderDate',
             width: 150,
-            render: (date) => <span style={{ color: '#64748b' }}>{new Date(date).toLocaleDateString('vi-VN')}</span>,
+            align: 'center',
+            render: (date) => <span style={{ color: '#64748b' }}>{dayjs(date).format('DD/MM/YYYY')}</span>,
         },
         {
             title: t('payment_method'),
             dataIndex: 'paymentMethod',
             key: 'paymentMethod',
             width: 150,
+            align: 'center',
             render: (method) => <span className="admin-table-tag">{method}</span>,
         },
         {
             title: t('admin_total'),
             key: 'total',
-            width: 150,
+            width: 180,
+            align: 'center',
             render: (_, record) => (
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString("vi-VN")}đ</span>
                     <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString("vi-VN")}đ</span>
                 </div>
@@ -90,11 +117,11 @@ const OrderList = () => {
             dataIndex: 'status',
             key: 'status',
             width: 180,
+            align: 'center',
             render: (status, record) => (
                 <div className={`admin-status-badge ${getStatusClass(status)}`} style={{ padding: '0', display: 'inline-block' }}>
                     <Select
                         value={status}
-                        bordered={false}
                         variant="borderless"
                         style={{ width: 140, fontWeight: 600 }}
                         onChange={(val) => handleStatusChange(record.id, val)}
@@ -135,10 +162,7 @@ const OrderList = () => {
                         <CButton
                             type="secondary"
                             icon={<SyncOutlined />}
-                            onClick={() => {
-                                setCurrentPage(0);
-                                refetchOrders();
-                            }}
+                            onClick={() => refetchOrders()}
                             loading={isLoading || isUpdating}
                             className="admin-btn-responsive"
                         >
@@ -147,6 +171,52 @@ const OrderList = () => {
                     </div>
                 }
             >
+                <div className="admin-filter-bar" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', background: '#fff', padding: '16px 24px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                    <Space size="large" wrap>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <FilterOutlined style={{ color: '#64748b', fontSize: '16px' }} />
+                            <Select 
+                                value={status} 
+                                onChange={(val) => handleFilterChange({ status: val })} 
+                                style={{ width: 160 }}
+                                placeholder={t('status')}
+                            >
+                                <Option value="ALL">{t('all')}</Option>
+                                <Option value="UNPAID">{t('status_unpaid')}</Option>
+                                <Option value="PAID">{t('status_paid')}</Option>
+                                <Option value="IN_PROGRESS">{t('status_in_progress')}</Option>
+                                <Option value="COMPLETED">{t('status_completed')}</Option>
+                                <Option value="CANCELLED">{t('status_cancelled')}</Option>
+                            </Select>
+                            <RangePicker 
+                                value={startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null}
+                                onChange={(dates) => {
+                                    handleFilterChange({
+                                        startDate: dates ? dates[0].format('YYYY-MM-DD') : null,
+                                        endDate: dates ? dates[1].format('YYYY-MM-DD') : null
+                                    });
+                                }}
+                                style={{ width: 260 }}
+                                placeholder={[t('startDate') || 'Bắt đầu', t('endDate') || 'Kết thúc']}
+                            />
+                        </div>
+                    </Space>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <SortAscendingOutlined style={{ color: '#64748b', fontSize: '16px' }} />
+                        <Select 
+                            value={sort} 
+                            onChange={(val) => handleFilterChange({ sort: val })} 
+                            style={{ width: 180 }}
+                        >
+                            <Option value="date_desc">{t('time_newest')}</Option>
+                            <Option value="date_asc">{t('time_oldest')}</Option>
+                            <Option value="total_desc">{t('sort_price_desc')}</Option>
+                            <Option value="total_asc">{t('sort_price_asc')}</Option>
+                        </Select>
+                    </div>
+                </div>
+
                 <div className="admin-table-wrapper">
                     <Table
                         columns={columns}
@@ -161,14 +231,11 @@ const OrderList = () => {
                     {orders && orders.length > 0 && totalPages > 1 && (
                         <div className="admin-custom-pagination">
                             <Pagination 
-                                page={currentPage} 
+                                page={page} 
                                 totalPages={totalPages} 
                                 totalItems={totalItems}
                                 pageSize={pageSize}
-                                onPageChange={(page) => {
-                                    setCurrentPage(page);
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }} 
+                                onPageChange={(p) => setQuery({ page: p })} 
                             />
                         </div>
                     )}
@@ -179,3 +246,4 @@ const OrderList = () => {
 };
 
 export default OrderList;
+

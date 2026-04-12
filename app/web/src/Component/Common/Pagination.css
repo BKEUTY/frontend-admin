@@ -2,9 +2,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin-top: 30px;
-    padding-bottom: 20px;
+    gap: 16px;
+    margin-top: 32px;
+    padding: 16px 24px;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
 }
 
 @media (min-width: 768px) {
@@ -15,54 +17,63 @@
 }
 
 .pagination-info {
-    font-family: var(--inter_font);
-    font-size: 0.9rem;
-    color: #666;
+    font-family: var(--inter_font, 'Inter', sans-serif);
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 500;
 }
 
 .pagination-info strong {
-    color: #111;
-    font-weight: 600;
+    color: #0f172a;
+    font-weight: 700;
 }
 
 .pagination {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .page-btn {
-    background: white;
-    border: 1px solid #ddd;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.9rem;
-    color: #555;
+    font-size: 14px;
+    color: #475569;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s;
-    font-family: var(--inter_font);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--inter_font, 'Inter', sans-serif);
+    font-weight: 600;
 }
 
 .page-btn:disabled {
-    color: #ccc;
+    color: #cbd5e1;
+    background: #f8fafc;
     cursor: not-allowed;
-    border-color: #eee;
+    border-color: #f1f5f9;
 }
 
 .page-btn:hover:not(:disabled) {
     border-color: var(--color_main_title);
     color: var(--color_main_title);
+    background: #fffafa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .page-btn.active {
     background-color: var(--color_main_title);
-    color: white;
+    color: #ffffff;
     border-color: var(--color_main_title);
-    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(194, 24, 91, 0.2);
+}
+
+.page-btn.active:hover {
+    transform: translateY(-2px);
 }

@@ -121,7 +121,7 @@ const ProductList = () => {
         setSelectedRecord(record);
         editForm.setFieldsValue({
             price: record.discountPrice,
-            stockQuantity: record.stock,
+            stockQuantity: record.stockQuantity,
             status: record.status,
             description: record.description
         });
@@ -271,13 +271,13 @@ const ProductList = () => {
         },
         {
             title: t('admin_label_stock'),
-            dataIndex: 'stock',
-            key: 'stock',
+            dataIndex: 'stockQuantity',
+            key: 'stockQuantity',
             width: 90,
             align: 'center',
-            render: (stock) => (
-                <span className={`admin-status-badge ${stock > 0 ? 'success' : 'danger'}`}>
-                    {stock}
+            render: (stockQuantity) => (
+                <span className={`admin-status-badge ${stockQuantity > 0 ? 'success' : 'danger'}`}>
+                    {stockQuantity}
                 </span>
             )
         },
