@@ -112,13 +112,14 @@ const createAxiosClient = () => {
 
                 const errorData = error.response?.data;
                 const apiMessage = typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error || '');
-                let description = apiMessage || getTranslation(fallbackKey);
+                const description = originalRequest.customErrorMsg || apiMessage || getTranslation(fallbackKey);
 
                 if (error.message === 'Network Error') {
-                    description = getTranslation('api_error_network') || 'Network Error';
+                    notifyError('error', getTranslation('api_error_network') || 'Network Error');
+                } else {
+                    notifyError(originalRequest.customErrorTitle || 'error', description);
                 }
-
-                notifyError(originalRequest.errorMessage || 'error', description);
+                error.isGlobalHandled = true;
             }
 
             return Promise.reject(error);
