@@ -27,11 +27,11 @@ class AdminApi extends BaseApi {
         }
     }
 
-    getAllProducts(page = 0, size = 10, config = {}) {
+    getAllProducts(page = 1, size = 10, config = {}) {
         return this.client.get(`/api/admin/product?page=${page}&size=${size}`, config);
     }
 
-    getAllOrders(page = 0, size = 10, config = {}) {
+    getAllOrders(page = 1, size = 10, config = {}) {
         return this.client.get(`/api/admin/order?page=${page}&size=${size}`, config);
     }
 
@@ -59,7 +59,6 @@ class AdminApi extends BaseApi {
         return this.client.put('/api/admin/product/variants', data, config);
     }
 
-    // For mobile, we use the same endpoints
     async uploadProductImage(fileUri, productId, config = {}) {
         const formData = new FormData();
         const filename = fileUri.split('/').pop();

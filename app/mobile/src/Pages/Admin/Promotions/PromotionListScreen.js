@@ -21,7 +21,7 @@ const PromotionListScreen = ({ navigation }) => {
     );
 
     const onRefresh = () => {
-        fetchPromotions(1);
+        fetchPromotions(1, true);
     };
 
     const filteredPromotions = promotions.filter(p =>

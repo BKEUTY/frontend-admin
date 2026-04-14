@@ -20,8 +20,7 @@ const OrderListScreen = () => {
     );
 
     const onRefresh = () => {
-        setRefreshing(true);
-        fetchOrders(1, 10);
+        fetchOrders(1, 10, true);
     };
 
     const getStatusColor = (status) => {

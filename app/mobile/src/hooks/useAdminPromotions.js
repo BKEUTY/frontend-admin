@@ -10,8 +10,10 @@ export const useAdminPromotions = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 30, total: 0 });
 
-    const fetchPromotions = useCallback(async (page = 1) => {
-        setLoading(true);
+    const fetchPromotions = useCallback(async (page = 1, isRefresh = false) => {
+        if (isRefresh) setRefreshing(true);
+        else setLoading(true);
+        
         try {
             const res = await promotionApi.getAll({ page });
             const data = res.data || res;

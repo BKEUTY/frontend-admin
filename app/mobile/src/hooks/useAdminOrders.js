@@ -10,8 +10,10 @@ export const useAdminOrders = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
-    const fetchOrders = useCallback(async (page = 1, size = 10) => {
-        setLoading(true);
+    const fetchOrders = useCallback(async (page = 1, size = 10, isRefresh = false) => {
+        if (isRefresh) setRefreshing(true);
+        else setLoading(true);
+
         try {
             const res = await orderApi.getAllOrders(page, size);
             const data = res.data || res;
