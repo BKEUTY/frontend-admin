@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Avatar, Dropdown } from 'antd';
 import { SearchOutlined, HomeOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -26,19 +26,19 @@ const AdminHeader = ({ onSearchOpen }) => {
     return (
         <div className='admin-header'>
             <div className='admin-header-left'>
-                <div className='admin-logo-wrapper' onClick={() => navigate('/admin')} style={{ cursor: 'pointer' }}>
+                <button className='admin-logo-wrapper' onClick={() => navigate('/admin')}>
                     <img src={logo_image} alt='BKEUTY' className='admin-sider-logo' />
-                </div>
+                </button>
             </div>
 
             <div className='admin-header-center'>
-                <div className='admin-search-trigger' onClick={onSearchOpen}>
+                <button className='admin-search-trigger' onClick={onSearchOpen}>
                     <span className='search-text'>
                         <SearchOutlined style={{ marginRight: '8px' }} />
                         {t('admin_search_command')}
                     </span>
                     <span className='kbd'>Ctrl K</span>
-                </div>
+                </button>
             </div>
 
             <div className='admin-header-right'>
@@ -49,12 +49,12 @@ const AdminHeader = ({ onSearchOpen }) => {
                     trigger={['click']}
                     className='admin-user-dropdown'
                 >
-                    <div className='admin-user-profile'>
+                    <button className='admin-user-profile'>
                         <Avatar size={28} style={{ backgroundColor: 'var(--admin-primary)' }}>
                             {user?.name?.[0]?.toUpperCase() || 'A'}
                         </Avatar>
                         <span className='admin-username'>{user?.name || 'Admin'}</span>
-                    </div>
+                    </button>
                 </Dropdown>
             </div>
         </div>

@@ -1,10 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import React, { Suspense } from 'react';
+import React from 'react';
 import AdminRoute from '@/components/auth/AdminRoute';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { authRoutes, errorRoutes } from './authRoutes';
 import { adminRoutes } from './adminRoutes';
-import { Skeleton } from '@/components/common';
 
 export { authRoutes, errorRoutes } from './authRoutes';
 export { adminRoutes } from './adminRoutes';

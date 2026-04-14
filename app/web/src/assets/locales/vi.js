@@ -98,6 +98,8 @@ export default {
     forgot_password_desc_1: "Nhập email để nhận mã OTP",
     forgot_password_desc_2: "Nhập mã OTP đã gửi đến email",
     forgot_password_desc_3: "Tạo mật khẩu mới cho tài khoản",
+    admin_msg_reset_link_sent: "Yêu cầu của bạn đã được gửi. Vui lòng kiểm tra email để lấy lại mật khẩu.",
+    admin_error_general: "Có lỗi xảy ra, vui lòng thử lại sau.",
     back_to_login: "Quay lại đăng nhập",
     full_name: "Họ và tên",
     username: "Tên hiển thị",

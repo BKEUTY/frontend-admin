@@ -107,6 +107,8 @@
     cursor: pointer;
     border: 1px solid #e2e8f0;
     transition: all 0.2s ease;
+    outline: none;
+    font: inherit;
 }
 
 .admin-search-trigger:hover {
@@ -235,6 +237,9 @@
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
+    border: none;
+    background: none;
+    padding: 0;
 }
 
 .dock-item:hover {
@@ -315,6 +320,10 @@
     align-items: center;
     gap: 14px;
     transition: all 0.2s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
 }
 
 .command-item:hover,
@@ -697,6 +706,17 @@
     gap: 12px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
     white-space: nowrap !important;
+    outline: none !important;
+    font: inherit !important;
+}
+
+.admin-logo-wrapper {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .admin-layout-container .admin-user-profile:hover {

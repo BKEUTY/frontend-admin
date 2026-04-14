@@ -37,8 +37,9 @@ const CommandPalette = ({ open, onCancel, items, searchQuery, setSearchQuery }) 
             <div className='command-results'>
                 {filteredItems.length > 0 ? (
                     filteredItems.map((item) => (
-                        <div
+                        <button
                             key={item.key}
+                            type="button"
                             className='command-item'
                             onClick={() => { navigate(item.key); onCancel(); setSearchQuery(''); }}
                         >
@@ -50,7 +51,7 @@ const CommandPalette = ({ open, onCancel, items, searchQuery, setSearchQuery }) 
                                 <p>{item.desc}</p>
                             </div>
                             <ArrowRightOutlined style={{ opacity: 0.3 }} />
-                        </div>
+                        </button>
                     ))
                 ) : (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>

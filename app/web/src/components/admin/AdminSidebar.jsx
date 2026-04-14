@@ -8,14 +8,15 @@ const AdminSidebar = ({ items }) => {
     return (
         <div className='admin-floating-dock'>
             {items.map(item => (
-                <div
+                <button
                     key={item.key}
+                    type="button"
                     className={`dock-item ${location.pathname === item.key ? 'active' : ''}`}
                     onClick={() => navigate(item.key)}
                 >
                     {item.icon}
                     <span className='dock-tooltip'>{item.label}</span>
-                </div>
+                </button>
             ))}
         </div>
     );

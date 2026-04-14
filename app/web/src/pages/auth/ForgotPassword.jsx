@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, Modal } from 'antd';
 import { MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
@@ -12,9 +12,27 @@ const ForgotPassword = () => {
     const navigate = useNavigate();
     const { t } = useLanguage();
 
-    const onFinish = (values) => {
-        console.log('Forgot password request:', values);
-        // Implementation here
+    const [loading, setLoading] = React.useState(false);
+
+    const onFinish = async (values) => {
+        setLoading(true);
+        try {
+            // Mock delayed API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            Modal.success({
+                title: t('success'),
+                content: t('admin_msg_reset_link_sent') || 'Yêu cầu của bạn đã được gửi. Vui lòng kiểm tra email để lấy lại mật khẩu.',
+                onOk: () => navigate('/login')
+            });
+        } catch (error) {
+            Modal.error({
+                title: t('error'),
+                content: t('admin_error_general')
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -65,7 +83,7 @@ const ForgotPassword = () => {
                         </Form.Item>
 
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" block className="auth-submit-btn">
+                            <Button type="primary" htmlType="submit" block className="auth-submit-btn" loading={loading}>
                                 {t('send_reset_link')}
                             </Button>
                         </Form.Item>

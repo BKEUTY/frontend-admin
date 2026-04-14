@@ -55,8 +55,8 @@ const generateInvoice = (orderData, t) => {
     const tableData = orderData.items.map(item => [
         item.productVariantName,
         item.quantity,
-        `${(item.price || 0).toLocaleString("vi-VN")}d`,
-        `${((item.price || 0) * (item.quantity || 1)).toLocaleString("vi-VN")}d`
+        `${(item.price || 0).toLocaleString("vi-VN")} ₫`,
+        `${((item.price || 0) * (item.quantity || 1)).toLocaleString("vi-VN")} ₫`
     ]);
 
     autoTable(doc, {
@@ -90,13 +90,13 @@ const generateInvoice = (orderData, t) => {
 
     doc.setFontSize(10);
     doc.text(`${t('invoice_shipping')}:`, labelX, finalY, { align: "right" });
-    doc.text(`+${(orderData.shippingFee || 0).toLocaleString("vi-VN")}d`, valueX, finalY, { align: "right" });
+    doc.text(`+${(orderData.shippingFee || 0).toLocaleString("vi-VN")} ₫`, valueX, finalY, { align: "right" });
 
     doc.setFont("Roboto", "bold");
     doc.setFontSize(14);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text(`${t('invoice_grand_total')}:`, labelX, finalY + 12, { align: "right" });
-    doc.text(`${(orderData.total || 0).toLocaleString("vi-VN")}d`, valueX, finalY + 12, { align: "right" });
+    doc.text(`${(orderData.total || 0).toLocaleString("vi-VN")} ₫`, valueX, finalY + 12, { align: "right" });
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(9);
