@@ -102,20 +102,31 @@ export default function AdminOrderDetail() {
             align: 'right',
             width: 150,
             render: (_, record) => {
-                const effectivePrice = record.promotionPrice < record.price ? record.promotionPrice : record.price;
+                const price = Number(record.price) || 0;
+                const promotionPrice = Number(record.promotionPrice) || price;
+                const quantity = Number(record.quantity) || 1;
+                const effectivePrice = promotionPrice < price ? promotionPrice : price;
                 return (
                     <Text strong style={{ color: '#10b981' }}>
-                        {(effectivePrice * (record.quantity || 1)).toLocaleString('vi-VN')}đ
+                        {(effectivePrice * quantity).toLocaleString('vi-VN')}đ
                     </Text>
                 );
             }
         }
     ];
 
-    const subtotal = (orderDetail.items || []).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = (orderDetail.items || []).reduce((sum, item) => {
+        const price = Number(item.price) || 0;
+        const quantity = Number(item.quantity) || 1;
+        return sum + (price * quantity);
+    }, 0);
+
     const totalDiscount = (orderDetail.items || []).reduce((sum, item) => {
-        if (item.promotionPrice < item.price) {
-            return sum + ((item.price - item.promotionPrice) * item.quantity);
+        const price = Number(item.price) || 0;
+        const promotionPrice = Number(item.promotionPrice) || price;
+        const quantity = Number(item.quantity) || 1;
+        if (promotionPrice < price) {
+            return sum + ((price - promotionPrice) * quantity);
         }
         return sum;
     }, 0);
@@ -175,12 +186,12 @@ export default function AdminOrderDetail() {
                                 )}
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('shipping_fee')}</Text>
-                                    <Text strong>{(orderDetail.shippingFee).toLocaleString('vi-VN')}đ</Text> 
+                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}đ</Text> 
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
                                     <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
                                     <Text strong style={{ fontSize: '26px', color: 'var(--admin-primary)' }}>
-                                        {(orderDetail.total).toLocaleString('vi-VN')}đ
+                                        {(orderDetail.total || 0).toLocaleString('vi-VN')}đ
                                     </Text>
                                 </div>
                             </div>
@@ -210,7 +221,7 @@ export default function AdminOrderDetail() {
                             <Descriptions.Item label={t('username')}>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     <Text strong>{orderDetail.userName || t('guest')}</Text>
-                                    <Text type="secondary" style={{ fontSize: '11px', fontWeight: 400 }}>ID: {orderDetail.userId}</Text>
+                                    <Text type="secondary" style={{ fontSize: '11px', fontWeight: 400 }}>ID: {orderDetail.userId || '---'}</Text>
                                 </div>
                             </Descriptions.Item>
                             <Descriptions.Item label={t('order_date')}>
