@@ -94,18 +94,18 @@ const AdminHome = () => {
             <Row gutter={[32, 32]}>
                 {apps.map((app) => (
                     <Col xs={24} sm={12} md={8} xl={6} key={app.key}>
-                        <button className="app-card" onClick={() => navigate(`/admin/${app.key}`)}>
-                            <div className="app-icon-wrapper">
-                                {app.icon}
-                            </div>
-                            <div className="app-info">
-                                <h3>{app.title}</h3>
-                                <p>{app.desc}</p>
-                            </div>
-                            <div className="app-arrow">
-                                <ArrowRightOutlined />
-                            </div>
-                        </button>
+                    <button type="button" className="app-card" onClick={() => navigate(`/admin/${app.key}`)}>
+                        <div className="app-icon-wrapper">
+                            {app.icon}
+                        </div>
+                        <div className="app-info">
+                            <h3>{app.title}</h3>
+                            <p>{app.desc}</p>
+                        </div>
+                        <div className="app-arrow">
+                            <ArrowRightOutlined />
+                        </div>
+                    </button>
                     </Col>
                 ))}
             </Row>

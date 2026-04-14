@@ -26,13 +26,13 @@ const AdminHeader = ({ onSearchOpen }) => {
     return (
         <div className='admin-header'>
             <div className='admin-header-left'>
-                <button className='admin-logo-wrapper' onClick={() => navigate('/admin')}>
+                <button type="button" className='admin-logo-wrapper' onClick={() => navigate('/admin')}>
                     <img src={logo_image} alt='BKEUTY' className='admin-sider-logo' />
                 </button>
             </div>
 
             <div className='admin-header-center'>
-                <button className='admin-search-trigger' onClick={onSearchOpen}>
+                <button type="button" className='admin-search-trigger' onClick={onSearchOpen}>
                     <span className='search-text'>
                         <SearchOutlined style={{ marginRight: '8px' }} />
                         {t('admin_search_command')}
@@ -49,7 +49,7 @@ const AdminHeader = ({ onSearchOpen }) => {
                     trigger={['click']}
                     className='admin-user-dropdown'
                 >
-                    <button className='admin-user-profile'>
+                    <button type="button" className='admin-user-profile'>
                         <Avatar size={28} style={{ backgroundColor: 'var(--admin-primary)' }}>
                             {user?.name?.[0]?.toUpperCase() || 'A'}
                         </Avatar>

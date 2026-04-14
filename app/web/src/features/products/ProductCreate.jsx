@@ -282,6 +282,7 @@ const ProductCreate = () => {
                                 return (
                                     <button
                                         key={val}
+                                        type="button"
                                         className={`pc-size-btn preview-mode ${isActive ? 'active' : ''}`}
                                         onClick={() => isPreview && setSelectedOptions(prev => ({ ...prev, [opt.optionName]: val }))}
                                     >
@@ -299,7 +300,7 @@ const ProductCreate = () => {
     return (
         <div className="pc-create-container">
             <div className="pc-header-section">
-                <button className="pc-back-btn" onClick={() => navigate('/admin/products')}>
+                <button type="button" className="pc-back-btn" onClick={() => navigate('/admin/products')}>
                     <PlusOutlined style={{ transform: 'rotate(45deg)' }} />
                 </button>
                 <div className="pc-header-info">

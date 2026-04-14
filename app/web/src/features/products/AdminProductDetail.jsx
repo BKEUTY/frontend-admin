@@ -229,6 +229,7 @@ export default function AdminProductDetail() {
                                         return (
                                             <button
                                                 key={val}
+                                                type="button"
                                                 className={`admin-pd-size-btn ${isActive ? 'active' : ''}`}
                                                 onClick={() => handleOptionSelect(opt.name, val)}
                                             >
@@ -261,6 +262,7 @@ export default function AdminProductDetail() {
                     {tabs.map(tab => (
                         <button 
                             key={tab.id} 
+                            type="button"
                             className={`admin-pd-tab-btn ${activeTab === tab.id ? 'active' : ''}`} 
                             onClick={() => setActiveTab(tab.id)}
                         >
