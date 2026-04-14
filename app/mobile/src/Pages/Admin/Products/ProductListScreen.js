@@ -16,17 +16,17 @@ const ProductListScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
-    const fetchProducts = async (pageNum = 0, isRefresh = false) => {
+    const fetchProducts = async (pageNum = 1, isRefresh = false) => {
         if (isRefresh) setRefreshing(true);
-        else if (pageNum === 0) setLoading(true);
+        else if (pageNum === 1) setLoading(true);
 
         try {
             const res = await adminApi.getAllProducts(pageNum, 10);
             if (res.data) {
-                if (isRefresh || pageNum === 0) {
+                if (isRefresh || pageNum === 1) {
                     setProducts(res.data.content || []);
                 } else {
                     setProducts(prev => [...prev, ...(res.data.content || [])]);
@@ -44,16 +44,16 @@ const ProductListScreen = ({ navigation }) => {
 
     useFocusEffect(
         useCallback(() => {
-            fetchProducts(0);
+            fetchProducts(1);
         }, [])
     );
 
     const onRefresh = () => {
-        fetchProducts(0, true);
+        fetchProducts(1, true);
     };
 
     const loadMore = () => {
-        if (page < totalPages - 1 && !loading) {
+        if (page < totalPages && !loading) {
             fetchProducts(page + 1);
         }
     };
@@ -119,7 +119,7 @@ const ProductListScreen = ({ navigation }) => {
                 />
             </View>
 
-            {loading && page === 0 ? (
+            {loading && page === 1 ? (
                 <View style={styles.centerContainer}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>

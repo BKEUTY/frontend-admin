@@ -1,0 +1,246 @@
+.admin-dashboard-root {
+    padding-bottom: 30px;
+}
+
+.admin-dashboard-container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.admin-loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+}
+
+.admin-stat-card-modern {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(241, 245, 249, 1);
+    height: 100%;
+}
+
+.admin-stat-card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.stat-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    background: rgba(193, 53, 132, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--admin-primary);
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 4px 0;
+}
+
+.stat-value {
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.02em;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stat-trend.up {
+    color: #10b981;
+}
+
+.stat-trend.down {
+    color: #ef4444;
+}
+
+.stat-trend small {
+    color: #94a3b8;
+    font-weight: 400;
+    margin-left: 4px;
+}
+
+.admin-glass-card {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 24px;
+    border: 1px solid rgba(241, 245, 249, 1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.card-header h5 {
+    margin: 0 !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+}
+
+.card-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.admin-badge-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.admin-badge-dot .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-compact-table .ant-table {
+    background: transparent !important;
+}
+
+.admin-compact-table .ant-table-thead > tr > th {
+    background: #f8fafc !important;
+    color: #64748b !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    padding: 12px 16px !important;
+    border: none !important;
+}
+
+.admin-compact-table .ant-table-tbody > tr > td {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #f8fafc !important;
+}
+
+.price-cell {
+    font-weight: 700;
+    color: #475569;
+}
+
+.sold-badge {
+    background: #ecfdf5;
+    color: #059669;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+}
+
+.stat-summary-mini {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.summary-item {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-label {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.summary-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.admin-segmented-luxury {
+    background: #f1f5f9 !important;
+    padding: 4px !important;
+    border-radius: 12px !important;
+}
+
+.admin-segmented-luxury .ant-segmented-item-selected {
+    background: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+}
+
+.category-tag-skincare { background: #eff6ff; color: #3b82f6; border: none; font-weight: 600; }
+.category-tag-makeup { background: #fff1f2; color: #f43f5e; border: none; font-weight: 600; }
+.category-tag-toner { background: #f0fdf4; color: #22c55e; border: none; font-weight: 600; }
+.category-tag-fragrance { background: #faf5ff; color: #a855f7; border: none; font-weight: 600; }
+
+@media (max-width: 992px) {
+    .main-chart-card {
+        height: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-stat-card-modern {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .stat-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .stat-value {
+        font-size: 20px;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

@@ -1,20 +1,22 @@
 import React, { lazy } from 'react';
 
-const Dashboard = lazy(() => import('../pages/Admin/Dashboard/Dashboard'));
-const DevelopingState = lazy(() => import('../Component/Common/DevelopingState'));
-const ProductList = lazy(() => import('../pages/Admin/Products/ProductList'));
-const ProductCreate = lazy(() => import('../pages/Admin/Products/ProductCreate'));
-const AdminProductDetail = lazy(() => import('../pages/Admin/Products/AdminProductDetail'));
-const OrderList = lazy(() => import('../pages/Admin/Orders/OrderList'));
-const AdminOrderDetail = lazy(() => import('../pages/Admin/Orders/AdminOrderDetail'));
-const AdminHome = lazy(() => import('../pages/Admin/Home/Home'));
-const PromotionList = lazy(() => import('../pages/Admin/Promotions/PromotionList'));
-const PromotionCreate = lazy(() => import('../pages/Admin/Promotions/PromotionCreate'));
-const BrandList = lazy(() => import('../pages/Admin/Brands/BrandList'));
-const CategoryList = lazy(() => import('../pages/Admin/Categories/CategoryList'));
-const ReviewList = lazy(() => import('../pages/Admin/Reviews/ReviewList'));
-const UserList = lazy(() => import('../pages/Admin/Users/UserList'));
-const Reports = lazy(() => import('../pages/Admin/Reports/Reports'));
+const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'));
+const DevelopingState = lazy(() => import('@/components/common/DevelopingState'));
+
+const OrderList = lazy(() => import('@/features/orders/OrderList'));
+const AdminOrderDetail = lazy(() => import('@/features/orders/AdminOrderDetail'));
+
+const ProductList = lazy(() => import('@/features/products/ProductList'));
+const ProductCreate = lazy(() => import('@/features/products/ProductCreate'));
+const AdminProductDetail = lazy(() => import('@/features/products/AdminProductDetail'));
+
+const AdminHome = lazy(() => import('@/features/home/Home'));
+const PromotionList = lazy(() => import('@/features/promotions/PromotionList'));
+const PromotionCreate = lazy(() => import('@/features/promotions/PromotionCreate'));
+const BrandList = lazy(() => import('@/features/brands/BrandList'));
+const CategoryList = lazy(() => import('@/features/categories/CategoryList'));
+const UserList = lazy(() => import('@/features/users/UserList'));
+const Reports = lazy(() => import('@/features/reports/Reports'));
 
 export const adminRoutes = [
     {
@@ -44,10 +46,6 @@ export const adminRoutes = [
     {
         path: "products/:slug",
         element: <AdminProductDetail />
-    },
-    {
-        path: "reviews",
-        element: <ReviewList />
     },
     {
         path: "categories",

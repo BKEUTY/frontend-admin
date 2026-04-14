@@ -16,12 +16,12 @@ const PromotionListScreen = ({ navigation }) => {
 
     useFocusEffect(
         useCallback(() => {
-            fetchPromotions(0);
+            fetchPromotions(1);
         }, [fetchPromotions])
     );
 
     const onRefresh = () => {
-        fetchPromotions(0);
+        fetchPromotions(1, true);
     };
 
     const filteredPromotions = promotions.filter(p =>
