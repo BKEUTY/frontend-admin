@@ -1,12 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 :root {
-  --color-primary: #ba1a56;
-  --color-primary-hover: #e91e63;
+  --color-primary: #c2185b;
+  --color-primary-hover: #d81b60;
   --color-text-main: #333;
   --color-text-secondary: #666;
   --color-bg-light: #f9f9f9;
-  --font-main: 'Inter', sans-serif;
+  --font-main: 'Be Vietnam Pro', sans-serif;
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);

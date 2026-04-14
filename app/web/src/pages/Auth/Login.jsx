@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Checkbox, Typography } from 'antd';
-import { MailOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone, GlobalOutlined } from '@ant-design/icons';
-import { useLanguage } from '../../i18n/LanguageContext';
-import { useAuth } from '../../Context/AuthContext';
-import { notifyError, notifySuccess } from '../../utils/NotificationService';
+import { useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Typography } from 'antd';
+import { MailOutlined, LockOutlined, GlobalOutlined } from '@ant-design/icons';
+import { useLanguage } from '@/store/LanguageContext';
+import { useAuth } from '@/store/AuthContext';
+import { notifyError, notifySuccess } from '@/services/NotificationService';
+import auth_bg from '@/assets/images/banners/auth_background.png';
 import './Auth.css';
-import auth_bg from '../../Assets/Images/Banners/auth_background.png';
 
 const { Title, Text } = Typography;
 
@@ -14,42 +14,29 @@ const Login = () => {
     const navigate = useNavigate();
     const { t, language, changeLanguage } = useLanguage();
     const [loading, setLoading] = useState(false);
-    const { login, logout } = useAuth();
+    const { login } = useAuth();
 
     const onFinish = async (values) => {
         setLoading(true);
         try {
-            const user = await login(values.email, values.password);
-            if (user?.user_role === 'admin') {
-                notifySuccess('success', t('login_success'));
-                navigate('/admin');
-            } else {
-                await logout();
-                notifyError('error', t('error_403'));
-            }
+            await login(values.email, values.password);
+            notifySuccess('success', t('login_success'));
+            navigate('/admin/dashboard');
         } catch (error) {
-            const errorRaw = error.response?.data;
-            let descriptionKey = 'api_error_login';
-
-            if (errorRaw === 'Wrong credentials') {
-                descriptionKey = 'api_error_wrong_credentials';
-            } else if (error.response?.status === 401) {
-                descriptionKey = 'api_error_invalid_credentials';
-            }
-
-            notifyError('error', descriptionKey);
+            const apiMsg = error.response?.data?.message || error.message;
+            notifyError('error', apiMsg || t('error'));
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="auth-container admin-mode">
+        <div className="auth-container">
             <div className="auth-image-side" style={{ backgroundImage: `url(${auth_bg})` }}>
                 <div className="auth-image-overlay">
                     <div className="auth-brand-section">
                         <h1 className="auth-brand-logo">BKEUTY</h1>
-                        <p className="auth-brand-tagline">{t('brand_tagline')}</p>
+                        <p className="auth-brand-tagline">ADMIN PORTAL</p>
                     </div>
                 </div>
             </div>
@@ -64,23 +51,19 @@ const Login = () => {
                         {language === 'vi' ? 'Tiếng Việt' : 'English'}
                     </Button>
                 </div>
-                <div className="auth-mobile-logo">
-                    <h1>BKEUTY</h1>
-                    <p>{t('brand_tagline')}</p>
-                </div>
+
                 <div className="auth-form-container">
                     <div className="auth-header">
-                        <div className="admin-badge">ADMIN PORTAL</div>
                         <Title level={2} className="auth-title">
-                            {t('welcome_back')}
+                            {t('admin_login_title')}
                         </Title>
                         <Text className="auth-subtitle">
-                            {t('login_subtitle')}
+                            {t('admin_login_subtitle')}
                         </Text>
                     </div>
 
                     <Form
-                        name="login"
+                        name="admin_login"
                         onFinish={onFinish}
                         layout="vertical"
                         size="large"
@@ -88,16 +71,15 @@ const Login = () => {
                     >
                         <Form.Item
                             name="email"
-                            label="Email"
+                            label={t('email') || 'Email'}
                             rules={[
                                 { required: true, message: t('email_required') },
                                 { type: 'email', message: t('email_invalid') }
                             ]}
                         >
                             <Input
-                                prefix={<MailOutlined />}
-                                placeholder={t('email_placeholder')}
-                                autoComplete="email"
+                                prefix={<MailOutlined style={{ color: '#94a3b8' }} />}
+                                placeholder="admin@bkeuty.com"
                             />
                         </Form.Item>
 
@@ -107,20 +89,9 @@ const Login = () => {
                             rules={[{ required: true, message: t('password_required') }]}
                         >
                             <Input.Password
-                                prefix={<LockOutlined />}
-                                placeholder={t('password')}
-                                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                                autoComplete="current-password"
+                                prefix={<LockOutlined style={{ color: '#94a3b8' }} />}
+                                placeholder="••••••••"
                             />
-                        </Form.Item>
-
-                        <Form.Item>
-                            <div className="auth-options">
-                                <Checkbox>{t('remember_me')}</Checkbox>
-                                <Link to="/forgot-password" className="auth-link">
-                                    {t('forgot_password')}
-                                </Link>
-                            </div>
                         </Form.Item>
 
                         <Form.Item>
@@ -134,8 +105,6 @@ const Login = () => {
                                 {t('login')}
                             </Button>
                         </Form.Item>
-
-
                     </Form>
                 </div>
             </div>

@@ -10,7 +10,7 @@ export const useAdminPromotions = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 30, total: 0 });
 
-    const fetchPromotions = useCallback(async (page = 0) => {
+    const fetchPromotions = useCallback(async (page = 1) => {
         setLoading(true);
         try {
             const res = await promotionApi.getAll({ page });
@@ -35,7 +35,7 @@ export const useAdminPromotions = () => {
         try {
             await promotionApi.create(data);
             showToast(t('success'), 'success', t('create_success') || 'Created successfully');
-            fetchPromotions(0);
+            fetchPromotions(1);
             return true;
         } catch (error) {
             showToast(t('error'), 'error', t('api_error_general'));
@@ -47,7 +47,7 @@ export const useAdminPromotions = () => {
         try {
             await promotionApi.update(id, data);
             showToast(t('success'), 'success', t('update_info_success'));
-            fetchPromotions(pagination.current - 1);
+            fetchPromotions(pagination.current);
             return true;
         } catch (error) {
             showToast(t('error'), 'error', t('api_error_general'));

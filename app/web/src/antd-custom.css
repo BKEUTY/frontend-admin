@@ -540,7 +540,7 @@ a.ant-typography:hover {
     font-weight: 700 !important;
     color: #1a1a1a !important;
     margin-bottom: 6px !important;
-    font-family: 'Inter', sans-serif, 'Be Vietnam Pro' !important;
+    font-family: 'Be Vietnam Pro', sans-serif !important;
     line-height: 1.4 !important;
 }
 
@@ -548,7 +548,7 @@ a.ant-typography:hover {
     font-size: 14px !important;
     color: #666 !important;
     line-height: 1.5 !important;
-    font-family: 'Inter', sans-serif, 'Be Vietnam Pro' !important;
+    font-family: 'Be Vietnam Pro', sans-serif !important;
 }
 
 .ant-notification-notice-icon {

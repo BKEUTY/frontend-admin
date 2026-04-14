@@ -9,9 +9,9 @@ import "./index.css";
 import "./global.css";
 import "antd/dist/reset.css";
 import "./antd-custom.css";
+import "@/admin.css";
 
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -32,15 +32,9 @@ root.render(
   </React.StrictMode>
 );
 
-reportWebVitals();
-
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then(registration => {
-      console.log('SW registered: ', registration);
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError);
-    });
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
   });
 }
 

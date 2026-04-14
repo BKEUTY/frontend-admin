@@ -15,13 +15,13 @@ const OrderListScreen = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-            fetchOrders(0, 10);
+            fetchOrders(1, 10);
         }, [fetchOrders])
     );
 
     const onRefresh = () => {
         setRefreshing(true);
-        fetchOrders(0, 10);
+        fetchOrders(1, 10);
     };
 
     const getStatusColor = (status) => {

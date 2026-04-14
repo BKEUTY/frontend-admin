@@ -1,7 +1,7 @@
-import Login from "../pages/Auth/Login";
-import ForgotPassword from "../pages/Auth/ForgotPassword";
-import NotFound from "../pages/ErrorPages/NotFound";
-import ServerError from "../pages/ErrorPages/ServerError";
+import Login from "@/pages/auth/Login";
+import ForgotPassword from "@/pages/auth/ForgotPassword";
+import NotFound from "@/pages/error/NotFound";
+import ServerError from "@/pages/error/ServerError";
 
 export const authRoutes = [
     {

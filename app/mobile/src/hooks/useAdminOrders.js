@@ -10,7 +10,7 @@ export const useAdminOrders = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
-    const fetchOrders = useCallback(async (page = 0, size = 10) => {
+    const fetchOrders = useCallback(async (page = 1, size = 10) => {
         setLoading(true);
         try {
             const res = await orderApi.getAllOrders(page, size);
@@ -51,7 +51,7 @@ export const useAdminOrders = () => {
         try {
             await orderApi.updateOrderStatus(id, status);
             showToast(t('success'), 'success', t('update_info_success'));
-            fetchOrders(pagination.current - 1, pagination.pageSize);
+            fetchOrders(pagination.current, pagination.pageSize);
             if (orderDetail && (orderDetail.orderId === id || orderDetail.id === id)) {
                 fetchOrderDetail(id);
             }
