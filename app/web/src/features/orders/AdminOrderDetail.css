@@ -53,32 +53,66 @@
     padding: 24px;
 }
 
-.status-select.success .ant-select-selector {
-    background-color: #ecfdf5 !important;
-    color: #10b981 !important;
-    border-color: #a7f3d0 !important;
-    font-weight: 600;
+.status-select-card {
+    margin-bottom: 24px;
 }
 
-.status-select.warning .ant-select-selector {
+.status-select-card .ant-card-body {
+    padding: 20px !important;
+}
+
+.status-control-label {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.admin-order-status-selector {
+    width: 100%;
+}
+
+.admin-order-status-selector .ant-select-selector {
+    height: 44px !important;
+    padding: 6px 16px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.admin-order-status-selector.success .ant-select-selector {
+    background-color: #f0fdf4 !important;
+    color: #16a34a !important;
+    border-color: #bbf7d0 !important;
+}
+
+.admin-order-status-selector.warning .ant-select-selector {
     background-color: #fffbeb !important;
-    color: #f59e0b !important;
-    border-color: #fde68a !important;
-    font-weight: 600;
+    color: #d97706 !important;
+    border-color: #fef3c7 !important;
 }
 
-.status-select.error .ant-select-selector {
+.admin-order-status-selector.processing .ant-select-selector {
+    background-color: #eff6ff !important;
+    color: #2563eb !important;
+    border-color: #dbeafe !important;
+}
+
+.admin-order-status-selector.error .ant-select-selector {
     background-color: #fef2f2 !important;
-    color: #ef4444 !important;
-    border-color: #fecaca !important;
-    font-weight: 600;
+    color: #dc2626 !important;
+    border-color: #fee2e2 !important;
 }
 
-.status-select.default .ant-select-selector {
+.admin-order-status-selector.default .ant-select-selector {
     background-color: #f8fafc !important;
-    color: #64748b !important;
+    color: #475569 !important;
     border-color: #e2e8f0 !important;
-    font-weight: 600;
+}
+
+.admin-order-status-selector span.ant-select-selection-item {
+    font-weight: 600 !important;
+    line-height: 30px !important;
 }
 
 @media (max-width: 768px) {

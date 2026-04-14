@@ -98,7 +98,7 @@ const AdminHome = () => {
             </div>
             
             <div className="admin-home-footer">
-                <p>© 2026 BKEUTY Admin. {t('all_rights_reserved')}</p>
+                <p>© {new Date().getFullYear()} BKEUTY Admin. {t('all_rights_reserved')}</p>
             </div>
         </div>
     );

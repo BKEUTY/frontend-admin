@@ -58,8 +58,8 @@ const OrderList = () => {
         switch (status?.toUpperCase()) {
             case 'PAID':
             case 'COMPLETED': return 'success';
-            case 'IN_PROGRESS':
-            case 'UNPAID': return 'warning';
+            case 'IN_PROGRESS': return 'warning';
+            case 'UNPAID': return 'processing';
             case 'CANCELLED': return 'danger';
             default: return 'default';
         }

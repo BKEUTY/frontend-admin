@@ -441,6 +441,8 @@ export default {
     order_date: "Ngày tạo đơn",
     shipping_address: "Địa chỉ giao hàng",
     no_orders: "Không tìm thấy đơn hàng nào",
+    order_management: "Quản lý đơn hàng",
+    update_order_status: "Cập nhật trạng thái",
     promo_search_placeholder: "Tìm kiếm theo tên khuyến mãi...",
     promo_status_STARTING: "Đang diễn ra",
     promo_status_INCOMING: "Sắp diễn ra",
@@ -525,5 +527,7 @@ export default {
     admin_section_catalog: "Sản phẩm & Thương hiệu",
     admin_section_operations: "Vận hành & Khách hàng",
     admin_open_module: "Truy cập",
-    all_rights_reserved: "Tất cả quyền được bảo lưu."
+    all_rights_reserved: "Tất cả quyền được bảo lưu.",
+    subtotal: "Tạm tính",
+    discount: "Giảm giá"
 };

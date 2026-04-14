@@ -441,6 +441,8 @@ export default {
     order_date: "Order Date",
     shipping_address: "Shipping Address",
     no_orders: "No orders found",
+    order_management: "Order Management",
+    update_order_status: "Update Status",
     promo_search_placeholder: "Search by promotion name...",
     promo_status_STARTING: "Ongoing",
     promo_status_INCOMING: "Upcoming",
@@ -525,5 +527,7 @@ export default {
     admin_section_catalog: "Products & Catalog",
     admin_section_operations: "Operations & Customers",
     admin_open_module: "Open",
-    all_rights_reserved: "All rights reserved."
+    all_rights_reserved: "All rights reserved.",
+    subtotal: "Subtotal",
+    discount: "Discount"
 };

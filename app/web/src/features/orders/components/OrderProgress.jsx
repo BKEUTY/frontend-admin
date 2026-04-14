@@ -14,23 +14,17 @@ const OrderProgress = ({ currentStatus }) => {
     const { t } = useLanguage();
 
     const steps = [
-        { key: 'PENDING', label: t('order_status_pending'), icon: <FaClock /> },
-        { key: 'CONFIRMED', label: t('order_status_confirmed'), icon: <FaClipboardCheck /> },
-        { key: 'PACKING', label: t('order_status_packing'), icon: <FaBox /> },
-        { key: 'SHIPPING', label: t('order_status_shipping'), icon: <FaShippingFast /> },
-        { key: 'DELIVERED', label: t('order_status_delivered'), icon: <FaCheckCircle /> }
+        { key: 'UNPAID', label: t('status_unpaid'), icon: <FaClock /> },
+        { key: 'PAID', label: t('status_paid'), icon: <FaClipboardCheck /> },
+        { key: 'IN_PROGRESS', label: t('status_in_progress'), icon: <FaBox /> },
+        { key: 'COMPLETED', label: t('status_completed'), icon: <FaCheckCircle /> }
     ];
 
     const statusMap = {
-        'PENDING': 0,
         'UNPAID': 0,
         'PAID': 1,
-        'CONFIRMED': 1,
-        'PACKING': 2,
         'IN_PROGRESS': 2,
-        'SHIPPING': 3,
-        'DELIVERED': 4,
-        'COMPLETED': 4
+        'COMPLETED': 3
     };
 
     const currentStepIndex = statusMap[currentStatus?.toUpperCase()] ?? -1;
