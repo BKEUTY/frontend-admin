@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    HomeOutlined,
     ControlOutlined, UsergroupAddOutlined, HeartOutlined,
     ShoppingOutlined, FileTextOutlined, ScheduleOutlined,
     PieChartOutlined, AppstoreOutlined,
@@ -15,6 +16,6 @@ export const ADMIN_NAV_ITEMS = (t) => [
     { key: '/admin/promotions', icon: <TagOutlined />, label: t('promotions'), desc: t('admin_home_promotions_desc') },
     { key: '/admin/services', icon: <HeartOutlined />, label: t('services'), desc: t('admin_home_services_desc') },
     { key: '/admin/appointments', icon: <ScheduleOutlined />, label: t('appointments'), desc: t('admin_home_appointments_desc') },
-    { key: '/admin/users', icon: <UsergroupAddOutlined />, label: t('admin_dashboard_users'), desc: t('admin_users_title') },
+    { key: '/admin/users', icon: <UsergroupAddOutlined />, label: t('admin_dashboard_users'), desc: t('admin_home_users_title') },
     { key: '/admin/reports', icon: <PieChartOutlined />, label: t('reports'), desc: t('admin_home_reports_desc') },
 ];

@@ -135,8 +135,10 @@ export default {
     female: "Nữ",
     other: "Khác",
 
-    admin_dashboard_title: "Trang quản trị",
-    admin_home_welcome: "Chào mừng trở lại, Admin!",
+    admin_dashboard_title: "Bảng điều khiển",
+    admin_home_welcome_prefix: "Chào mừng",
+    admin_home_welcome_highlight: "trở lại",
+    admin_home_welcome_suffix: ", Admin!",
     admin_home_subtitle: "Vui lòng chọn phân hệ để quản lý cửa hàng hôm nay",
     admin_home_dashboard_title: "Tổng quan báo cáo",
     admin_home_dashboard_desc: "Tổng quan hệ thống & doanh thu",
@@ -189,8 +191,9 @@ export default {
     admin_dashboard_orders: "Đơn hàng",
     admin_dashboard_appointments: "Lịch hẹn",
     admin_dashboard_users: "Người dùng",
-    admin_users_title: "Quản lý người dùng",
     admin_user_items: "người dùng",
+    admin_home_users_title: "Quản lý người dùng",
+    admin_home_users_desc: "Quản lý tài khoản & phân quyền",
     admin_user_refresh: "LÀM MỚI",
     admin_users_search: "Tìm kiếm người dùng...",
     admin_user_role: "Vai trò",
@@ -517,5 +520,10 @@ export default {
 
     pagination_showing: "Hiển thị",
     pagination_of: "trong số",
-    pagination_results: "kết quả"
+    pagination_results: "kết quả",
+    admin_section_insights: "Hệ thống & Báo cáo",
+    admin_section_catalog: "Sản phẩm & Thương hiệu",
+    admin_section_operations: "Vận hành & Khách hàng",
+    admin_open_module: "Truy cập",
+    all_rights_reserved: "Tất cả quyền được bảo lưu."
 };

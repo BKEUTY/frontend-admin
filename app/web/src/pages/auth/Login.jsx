@@ -21,7 +21,7 @@ const Login = () => {
         try {
             await login(values.email, values.password);
             notifySuccess('success', t('login_success'));
-            navigate('/admin/dashboard');
+            navigate('/admin');
         } catch (error) {
             const apiMsg = error.response?.data?.message || error.message;
             notifyError('error', apiMsg || t('error'));

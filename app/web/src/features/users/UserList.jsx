@@ -120,7 +120,7 @@ const UserList = () => {
     return (
         <div className="admin-list-container">
             <PageWrapper
-                title={t('admin_users_title')}
+                title={t('admin_home_users_title')}
                 subtitle={<Text type="secondary">{t('total')} • <Text strong className="admin-subtitle-count">{filteredUsers.length}</Text> {t('admin_user_items').toLowerCase()}</Text>}
                 extra={
                     <div className="admin-header-buttons">

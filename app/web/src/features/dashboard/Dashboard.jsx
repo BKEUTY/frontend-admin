@@ -123,7 +123,7 @@ const Dashboard = () => {
             title: t('admin_product_price'),
             dataIndex: 'price',
             key: 'price',
-            render: (price) => <Text className="price-cell">{price.toLocaleString()} -æ</Text>,
+            render: (price) => <Text className="price-cell">{price.toLocaleString()}đ</Text>,
         },
         {
             title: t('admin_product_sold'),

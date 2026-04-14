@@ -136,7 +136,9 @@ export default {
     other: "Other",
 
     admin_dashboard_title: "Admin dashboard",
-    admin_home_welcome: "Welcome back, Admin!",
+    admin_home_welcome_prefix: "Welcome",
+    admin_home_welcome_highlight: "back",
+    admin_home_welcome_suffix: ", Admin!",
     admin_home_subtitle: "Select a module to manage your store activities today",
     admin_home_dashboard_title: "Dashboard overview",
     admin_home_dashboard_desc: "System overview & revenue",
@@ -189,8 +191,9 @@ export default {
     admin_dashboard_orders: "Total orders",
     admin_dashboard_appointments: "Appointments",
     admin_dashboard_users: "Active users",
-    admin_users_title: "User Management",
     admin_user_items: "users",
+    admin_home_users_title: "User management",
+    admin_home_users_desc: "Manage accounts & permissions",
     admin_user_refresh: "REFRESH",
     admin_users_search: "Search users...",
     admin_user_role: "Role",
@@ -517,5 +520,10 @@ export default {
 
     pagination_showing: "Showing",
     pagination_of: "of",
-    pagination_results: "results"
+    pagination_results: "results",
+    admin_section_insights: "Insights & Systems",
+    admin_section_catalog: "Products & Catalog",
+    admin_section_operations: "Operations & Customers",
+    admin_open_module: "Open",
+    all_rights_reserved: "All rights reserved."
 };
