@@ -299,9 +299,9 @@ const ProductCreate = () => {
     return (
         <div className="pc-create-container">
             <div className="pc-header-section">
-                <div className="pc-back-btn" onClick={() => navigate('/admin/products')}>
+                <button className="pc-back-btn" onClick={() => navigate('/admin/products')}>
                     <PlusOutlined style={{ transform: 'rotate(45deg)' }} />
-                </div>
+                </button>
                 <div className="pc-header-info">
                     <h2>{t('admin_product_create')}</h2>
                     <p>{t('admin_create_desc')}</p>

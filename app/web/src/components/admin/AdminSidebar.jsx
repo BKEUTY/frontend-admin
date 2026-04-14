@@ -11,7 +11,7 @@ const AdminSidebar = ({ items }) => {
                 <button
                     key={item.key}
                     type="button"
-                    className={`dock-item ${location.pathname === item.key ? 'active' : ''}`}
+                    className={`dock-item ${location.pathname === item.key || location.pathname.startsWith(item.key + '/') ? 'active' : ''}`}
                     onClick={() => navigate(item.key)}
                 >
                     {item.icon}

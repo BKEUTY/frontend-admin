@@ -62,6 +62,8 @@
     border-radius: 12px;
     overflow: hidden;
     background: #f8fafc;
+    outline: none;
+    padding: 0;
 }
 
 .admin-pd-thumb-item.active {

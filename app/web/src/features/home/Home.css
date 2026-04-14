@@ -1,4 +1,4 @@
-﻿.admin-home-grid {
+.admin-home-grid {
     padding: 20px 0;
     animation: fadeInUp 0.5s ease-out;
 }
@@ -46,6 +46,9 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    text-align: left;
+    outline: none;
+    font: inherit;
 }
 
 .app-card:hover {

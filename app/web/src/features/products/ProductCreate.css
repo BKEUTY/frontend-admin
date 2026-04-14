@@ -28,6 +28,9 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     margin-right: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    outline: none;
+    font: inherit;
+    padding: 0;
 }
 
 .pc-back-btn:hover {

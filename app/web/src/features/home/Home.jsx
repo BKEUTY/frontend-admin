@@ -94,7 +94,7 @@ const AdminHome = () => {
             <Row gutter={[32, 32]}>
                 {apps.map((app) => (
                     <Col xs={24} sm={12} md={8} xl={6} key={app.key}>
-                        <div className="app-card" onClick={() => navigate(`/admin/${app.key}`)}>
+                        <button className="app-card" onClick={() => navigate(`/admin/${app.key}`)}>
                             <div className="app-icon-wrapper">
                                 {app.icon}
                             </div>
@@ -105,7 +105,7 @@ const AdminHome = () => {
                             <div className="app-arrow">
                                 <ArrowRightOutlined />
                             </div>
-                        </div>
+                        </button>
                     </Col>
                 ))}
             </Row>

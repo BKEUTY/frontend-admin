@@ -166,9 +166,14 @@ export default function AdminProductDetail() {
                 <div className="admin-pd-gallery">
                     <div className="admin-pd-thumbnail-list">
                         {galleryImages.map((img, idx) => (
-                            <div key={idx} className={`admin-pd-thumb-item ${mainImage === img ? 'active' : ''}`} onClick={() => setMainImage(img)}>
+                            <button 
+                                key={idx} 
+                                className={`admin-pd-thumb-item ${mainImage === img ? 'active' : ''}`} 
+                                onClick={() => setMainImage(img)}
+                                type="button"
+                            >
                                 <img src={img} alt={`Thumb ${idx}`} />
-                            </div>
+                            </button>
                         ))}
                     </div>
                     <div className="admin-pd-main-image">
