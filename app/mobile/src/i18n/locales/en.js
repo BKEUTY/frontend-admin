@@ -84,7 +84,7 @@ export default {
     back_to_login: "Back to login",
     full_name: "Full name",
     username: "Username",
-    
+
     step_email: "Email",
     step_otp: "OTP verification",
     step_new_pass: "New password",
@@ -247,6 +247,7 @@ export default {
     admin_label_variant: "Specific variation",
     admin_label_price: "Retail price",
     admin_label_stock: "Stock quantity",
+    admin_label_sold: "Sold quantity",
     admin_btn_finish_later: "Save & hide",
     admin_btn_save_finish: "Save & publish",
     admin_hint_price_step_3: "(Price & stock entered at last step)",
@@ -256,7 +257,7 @@ export default {
     admin_variant_image_label: "Display image",
     admin_variant_desc_label: "Variation description (optional)",
     admin_preview_mode_msg: "This is a preview mode, you cannot add to cart.",
-    
+
     admin_msg_create_success: "Product created successfully!",
     admin_msg_options_success: "Options created successfully!",
     admin_msg_variants_success: "Variants updated successfully!",
@@ -270,11 +271,17 @@ export default {
     admin_error_name_required: "Product name is required!",
     admin_error_category_required: "Select at least one category.",
 
+    startDate: "Start date",
+    endDate: "End date",
+    date_range: "Date range",
+    filter_date: "Filter by date",
+    filter_all: "All filters",
+
     error_401: "Session expired. Please login again.",
     error_403: "You do not have permission to access this resource.",
     confirm_delete_title: "Confirm deletion",
     confirm_delete_message: "Are you sure you want to permanently delete this item? This action cannot be undone.",
-    
+
     api_error_wrong_credentials: "Incorrect username or password.",
     api_error_profile_update: "Failed to update profile.",
     api_error_change_password: "Failed to change password.",
@@ -374,6 +381,16 @@ export default {
     sort_price_desc: "Price: High to Low",
     sort_stock_asc: "Stock: Low to High",
     sort_stock_desc: "Stock: High to Low",
+    sort_sold_asc: "Sold: Low to High",
+    sort_sold_desc: "Sold: High to Low",
+    sort_rating_asc: "Rating: Low to High",
+    sort_rating_desc: "Rating: High to Low",
+    sort_reviews_asc: "Reviews: Fewest to Most",
+    sort_reviews_desc: "Reviews: Most to Fewest",
+    sort_time_newest: "Time: Newest",
+    sort_time_oldest: "Time: Oldest",
+    sort_id_asc: "ID: Low to High",
+    sort_id_desc: "ID: High to Low",
     active: "Active",
     inactive: "Inactive",
 

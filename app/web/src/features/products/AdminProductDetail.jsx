@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Tag } from 'antd';
-import { useLanguage } from '@/store/LanguageContext';
 import { Skeleton } from "@/components/common";
 import publicProductService from '@/features/products/services/publicProductService';
-import { getImageUrl } from '@/services/axiosClient';
+import ReviewList from '@/features/reviews/ReviewList';
 import NotFound from '@/pages/error/NotFound';
-import ReviewList from '@/features/reviews/ReviewList'; 
+import { getImageUrl } from '@/services/axiosClient';
+import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug, getIdFromSlug } from '@/utils/helpers';
+import { Tag } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import './AdminProductDetail.css';
 
 import dummy1 from '@/assets/images/products/product_dummy_1.jpg';
@@ -35,6 +35,7 @@ export default function AdminProductDetail() {
     const [activeTab, setActiveTab] = useState('details');
     const [selectedOptions, setSelectedOptions] = useState({});
     const [stockQuantity, setStockQuantity] = useState(0);
+    const [soldQuantity, setSoldQuantity] = useState(0);
     const [mainImage, setMainImage] = useState(fallbackImg);
 
     const [currentPrice, setCurrentPrice] = useState({ originPrice: 0, promotionPrice: 0, hasDiscount: false });
@@ -79,12 +80,13 @@ export default function AdminProductDetail() {
                 const targetVariant = responseData.variants?.find(v => v.id === responseData.id) || responseData.variants?.[0];
                 const correctSlug = generateSlug(targetVariant.productVariantName, productId);
                 if (slug && slug !== correctSlug) {
-                    throw new Error('Invalid product slug'); 
+                    throw new Error('Invalid product slug');
                 }
                 setProductData(responseData);
                 setSelectedOptions(targetVariant?.variantOptions || {});
                 setStockQuantity(targetVariant?.stockQuantity || 0);
-                
+                setSoldQuantity(targetVariant?.sold || 0);
+
             } catch (err) {
                 setIsError(true);
             } finally {
@@ -99,7 +101,7 @@ export default function AdminProductDetail() {
         const normalize = (val) => val?.toString().toLowerCase().trim();
         return productData.variants.find(v => {
             if (!v.variantOptions) return false;
-            return Object.entries(options).every(([key, value]) => 
+            return Object.entries(options).every(([key, value]) =>
                 normalize(v.variantOptions[key]) === normalize(value)
             );
         });
@@ -115,7 +117,8 @@ export default function AdminProductDetail() {
 
         if (matchedVariant) {
             setStockQuantity(matchedVariant.stockQuantity);
-            
+            setSoldQuantity(matchedVariant.sold || 0);
+
             if (matchedVariant.id !== productData.id) {
                 const combinedName = matchedVariant.productVariantName || productData.name;
                 const newSlug = generateSlug(combinedName, matchedVariant.id);
@@ -166,9 +169,9 @@ export default function AdminProductDetail() {
                 <div className="admin-pd-gallery">
                     <div className="admin-pd-thumbnail-list">
                         {galleryImages.map((img, idx) => (
-                            <button 
-                                key={idx} 
-                                className={`admin-pd-thumb-item ${mainImage === img ? 'active' : ''}`} 
+                            <button
+                                key={idx}
+                                className={`admin-pd-thumb-item ${mainImage === img ? 'active' : ''}`}
                                 onClick={() => setMainImage(img)}
                                 type="button"
                             >
@@ -253,6 +256,10 @@ export default function AdminProductDetail() {
                         <div className="admin-pd-stock-info">
                             {t('in_stock_label')} <strong>{stockQuantity}</strong> {t('items_available')}
                         </div>
+
+                        <div className="admin-pd-sold-info">
+                            {t('sold_label')} <strong>{soldQuantity}</strong> {t('items_sold')}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -260,10 +267,10 @@ export default function AdminProductDetail() {
             <div className="admin-pd-tabs-container">
                 <div className="admin-pd-tab-headers">
                     {tabs.map(tab => (
-                        <button 
-                            key={tab.id} 
+                        <button
+                            key={tab.id}
                             type="button"
-                            className={`admin-pd-tab-btn ${activeTab === tab.id ? 'active' : ''}`} 
+                            className={`admin-pd-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
                             onClick={() => setActiveTab(tab.id)}
                         >
                             {tab.label}

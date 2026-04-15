@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Tooltip, Space, Modal, Input, Form } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useLanguage } from '@/store/LanguageContext';
-import { EmptyState, PageWrapper, CButton, Pagination } from '@/components/common';
-import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '@/features/categories/hooks/useCategories';
-import { useAuth } from '@/store/AuthContext';
-import useQueryParams from '@/hooks/useQueryParams';
-import { useDebounce } from '@/hooks/useDebounce';
 import '@/admin-list.css';
+import { CButton, EmptyState, PageWrapper, Pagination } from '@/components/common';
+import { useCategories, useCreateCategory, useDeleteCategory, useUpdateCategory } from '@/features/categories/hooks/useCategories';
+import { useDebounce } from '@/hooks/useDebounce';
+import useQueryParams from '@/hooks/useQueryParams';
+import { useAuth } from '@/store/AuthContext';
+import { useLanguage } from '@/store/LanguageContext';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, Space, Table, Tooltip } from 'antd';
+import { useEffect, useState } from 'react';
 
 const { Search } = Input;
 const { confirm } = Modal;
@@ -73,7 +73,7 @@ const CategoryList = () => {
             }
             setIsModalVisible(false);
             refetchCategories();
-        } catch (error) {}
+        } catch (error) { }
     };
 
     const handleDelete = (category) => {
@@ -116,10 +116,10 @@ const CategoryList = () => {
             render: (_, record) => (
                 <Space size="small">
                     <Tooltip title={t('edit')}>
-                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={() => openModal(record)} />
+                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); openModal(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={() => handleDelete(record)} />
+                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDelete(record); }} />
                     </Tooltip>
                 </Space>
             )

@@ -84,7 +84,7 @@ export default {
     back_to_login: "Quay lại đăng nhập",
     full_name: "Họ và tên",
     username: "Tên hiển thị",
-    
+
     step_email: "Email",
     step_otp: "Xác thực OTP",
     step_new_pass: "Mật khẩu mới",
@@ -247,6 +247,7 @@ export default {
     admin_label_variant: "Phân loại chi tiết",
     admin_label_price: "Giá bán",
     admin_label_stock: "Tồn kho",
+    admin_label_sold: "Đã bán",
     admin_btn_finish_later: "Lưu & ẩn",
     admin_btn_save_finish: "Lưu & hiển thị",
     admin_hint_price_step_3: "(Giá & tồn kho nhập ở bước cuối)",
@@ -256,7 +257,7 @@ export default {
     admin_variant_image_label: "Ảnh đại diện",
     admin_variant_desc_label: "Mô tả phân loại (nếu có)",
     admin_preview_mode_msg: "Đây là chế độ xem trước, bạn không thể thêm vào giỏ hàng.",
-    
+
     admin_msg_create_success: "Thông tin cơ bản đã được lưu!",
     admin_msg_options_success: "Cấu hình phân loại đã được lưu!",
     admin_msg_variants_success: "Danh sách phân loại đã được cập nhật!",
@@ -269,12 +270,16 @@ export default {
     admin_error_at_least_one_option: "Vui lòng thêm ít nhất một phân loại!",
     admin_error_name_required: "Vui lòng nhập tên sản phẩm!",
     admin_error_category_required: "Chọn ít nhất một danh mục.",
-
+    startDate: "Ngày bắt đầu",
+    endDate: "Ngày kết thúc",
+    date_range: "Khoảng thời gian",
+    filter_date: "Lọc theo ngày",
+    filter_all: "Tất cả các mục lục",
     error_401: "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.",
     error_403: "Bạn không có quyền truy cập tài nguyên này.",
     confirm_delete_title: "Xác nhận xóa",
     confirm_delete_message: "Bạn có chắc chắn muốn xóa vĩnh viễn mục này? Hành động này không thể hoàn tác.",
-    
+
     api_error_wrong_credentials: "Tên đăng nhập hoặc mật khẩu không đúng.",
     api_error_profile_update: "Cập nhật hồ sơ thất bại.",
     api_error_change_password: "Đổi mật khẩu thất bại.",
@@ -321,7 +326,7 @@ export default {
 
     all_products: "Tất cả sản phẩm",
     coming_soon: "Sắp ra mắt",
-    admin_variant_id: "Mã phân loại",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+    admin_variant_id: "Mã phân loại",
     product_items: "sản phẩm",
     promotion_items: "khuyến mãi",
     no_products_found: "Không tìm thấy sản phẩm nào",
@@ -374,6 +379,16 @@ export default {
     sort_price_desc: "Giá: Cao đến Thấp",
     sort_stock_asc: "Số lượng: Thấp đến Cao",
     sort_stock_desc: "Số lượng: Cao đến Thấp",
+    sort_sold_asc: "Đã bán: Thấp đến Cao",
+    sort_sold_desc: "Đã bán: Cao đến Thấp",
+    sort_rating_asc: "Đánh giá: Thấp đến Cao",
+    sort_rating_desc: "Đánh giá: Cao đến Thấp",
+    sort_reviews_asc: "Lượt đánh giá: Ít đến Nhiều",
+    sort_reviews_desc: "Lượt đánh giá: Nhiều đến Ít",
+    sort_time_newest: "Thời gian: Mới nhất",
+    sort_time_oldest: "Thời gian: Cũ nhất",
+    sort_id_asc: "Mã đơn: Thấp đến Cao",
+    sort_id_desc: "Mã đơn: Cao đến Thấp",
     active: "Đang bán",
     inactive: "Ngừng bán",
 

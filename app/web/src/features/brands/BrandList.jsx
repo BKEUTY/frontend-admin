@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Typography, Tooltip, Space, Modal, Input, Form, Upload, Select } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, CloudUploadOutlined } from '@ant-design/icons';
-import { useLanguage } from '@/store/LanguageContext';
-import { EmptyState, PageWrapper, CButton, Pagination } from '@/components/common';
-import { getImageUrl } from '@/services/axiosClient';
-import { useBrands, useCreateBrand, useUpdateBrand, useDeleteBrand } from '@/features/brands/hooks/useBrands';
-import { useAuth } from '@/store/AuthContext';
-import useQueryParams from '@/hooks/useQueryParams';
-import { useDebounce } from '@/hooks/useDebounce';
 import '@/admin-list.css';
+import { CButton, EmptyState, PageWrapper, Pagination } from '@/components/common';
+import { useBrands, useCreateBrand, useDeleteBrand, useUpdateBrand } from '@/features/brands/hooks/useBrands';
+import { useDebounce } from '@/hooks/useDebounce';
+import useQueryParams from '@/hooks/useQueryParams';
+import { getImageUrl } from '@/services/axiosClient';
+import { useAuth } from '@/store/AuthContext';
+import { useLanguage } from '@/store/LanguageContext';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, Select, Space, Table, Tooltip, Typography } from 'antd';
+import { useEffect, useState } from 'react';
 
 const { Text } = Typography;
 const { Search, TextArea } = Input;
@@ -90,7 +90,7 @@ const BrandList = () => {
             }
             setIsModalVisible(false);
             refetchBrands();
-        } catch (error) {}
+        } catch (error) { }
     };
 
     const handleDelete = (brand) => {
@@ -127,8 +127,8 @@ const BrandList = () => {
             align: 'center',
             render: (src) => (
                 <div className="admin-table-image-wrapper">
-                    {src ? <img src={getImageUrl(src)} alt="brand" className="admin-table-image" /> 
-                         : <div style={{background: '#f1f5f9', width: '100%', height: '100%'}}></div>}
+                    {src ? <img src={getImageUrl(src)} alt="brand" className="admin-table-image" />
+                        : <div style={{ background: '#f1f5f9', width: '100%', height: '100%' }}></div>}
                 </div>
             )
         },
@@ -165,10 +165,10 @@ const BrandList = () => {
             render: (_, record) => (
                 <Space size="small">
                     <Tooltip title={t('edit')}>
-                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={() => openModal(record)} />
+                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); openModal(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={() => handleDelete(record)} />
+                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDelete(record); }} />
                     </Tooltip>
                 </Space>
             )
@@ -220,15 +220,15 @@ const BrandList = () => {
                     />
                     {brands.length > 0 && totalPages > 1 && (
                         <div className="admin-custom-pagination">
-                            <Pagination 
-                                page={currentPage} 
-                                totalPages={totalPages} 
+                            <Pagination
+                                page={currentPage}
+                                totalPages={totalPages}
                                 totalItems={totalItems}
                                 pageSize={pageSize}
-                                onPageChange={(page) => { 
-                                    setQuery({ page: page }); 
-                                    window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                                }} 
+                                onPageChange={(page) => {
+                                    setQuery({ page: page });
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
                             />
                         </div>
                     )}

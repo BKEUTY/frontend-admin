@@ -1,16 +1,16 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Button, Typography, Tooltip, Tag, Space, Modal, Input, Select, Form, InputNumber } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, StarFilled } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import '@/admin-list.css';
+import { CButton, EmptyState, PageWrapper, Pagination, Skeleton } from '@/components/common';
+import { useProducts } from '@/features/products/hooks/useProducts';
+import { usePublicProducts } from '@/features/products/hooks/usePublicProducts';
+import { useDebounce } from '@/hooks/useDebounce';
+import useQueryParams from '@/hooks/useQueryParams';
 import { getImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
-import { usePublicProducts } from '@/features/products/hooks/usePublicProducts';
-import { useProducts } from '@/features/products/hooks/useProducts';
-import { EmptyState, PageWrapper, CButton, Skeleton, Pagination } from '@/components/common';
 import { generateSlug } from '@/utils/helpers';
-import useQueryParams from '@/hooks/useQueryParams';
-import { useDebounce } from '@/hooks/useDebounce';
-import '@/admin-list.css';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined } from '@ant-design/icons';
+import { Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import dummy1 from '@/assets/images/products/product_dummy_1.jpg';
 import dummy2 from '@/assets/images/products/product_dummy_2.jpg';
@@ -29,7 +29,7 @@ const ProductList = () => {
     const navigate = useNavigate();
     const [editForm] = Form.useForm();
     const [query, setQuery] = useQueryParams();
-    
+
     const currentPage = query.page ? Number(query.page) : 1;
     const sortOption = query.sort || 'default';
     const statusFilter = query.status || undefined;
@@ -82,6 +82,8 @@ const ProductList = () => {
         { label: t('sort_price_desc'), value: 'price_desc' },
         { label: t('sort_stock_asc'), value: 'stock_asc' },
         { label: t('sort_stock_desc'), value: 'stock_desc' },
+        { label: t('sort_sold_asc'), value: 'sold_asc' },
+        { label: t('sort_sold_desc'), value: 'sold_desc' },
         { label: t('sort_rating_asc'), value: 'rating_asc' },
         { label: t('sort_rating_desc'), value: 'rating_desc' },
         { label: t('sort_reviews_asc'), value: 'reviews_asc' },
@@ -278,6 +280,18 @@ const ProductList = () => {
             render: (stockQuantity) => (
                 <span className={`admin-status-badge ${stockQuantity > 0 ? 'success' : 'danger'}`}>
                     {stockQuantity}
+                </span>
+            )
+        },
+        {
+            title: t('admin_label_sold'),
+            dataIndex: 'sold',
+            key: 'sold',
+            width: 80,
+            align: 'center',
+            render: (sold) => (
+                <span className="admin-sold-badge">
+                    {sold || 0}
                 </span>
             )
         },

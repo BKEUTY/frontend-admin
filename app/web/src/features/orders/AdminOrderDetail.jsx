@@ -107,12 +107,10 @@ export default function AdminOrderDetail() {
             width: 150,
             render: (_, record) => {
                 const price = Number(record.price) || 0;
-                const promotionPrice = Number(record.promotionPrice) || price;
                 const quantity = Number(record.quantity) || 1;
-                const effectivePrice = promotionPrice < price ? promotionPrice : price;
                 return (
                     <Text strong style={{ color: '#10b981' }}>
-                        {(effectivePrice * quantity).toLocaleString('vi-VN')}đ
+                        {(price * quantity).toLocaleString('vi-VN')}đ
                     </Text>
                 );
             }
@@ -129,7 +127,7 @@ export default function AdminOrderDetail() {
         const price = Number(item.price) || 0;
         const promotionPrice = Number(item.promotionPrice) || price;
         const quantity = Number(item.quantity) || 1;
-        if (promotionPrice < price) {
+        if (promotionPrice > 0 && promotionPrice < price) {
             return sum + ((price - promotionPrice) * quantity);
         }
         return sum;

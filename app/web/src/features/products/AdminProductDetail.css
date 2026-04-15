@@ -277,6 +277,16 @@
     color: #0f172a;
 }
 
+.admin-pd-sold-info {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.admin-pd-sold-info strong {
+    color: #0f172a;
+}
+
 .admin-pd-tabs-container {
     margin-top: 40px;
     background: #fff;
@@ -345,8 +355,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .admin-pd-skeleton-img {
@@ -357,9 +374,17 @@
     flex: 1;
 }
 
-.admin-pd-mb15 { margin-bottom: 15px; }
-.admin-pd-mb20 { margin-bottom: 20px; }
-.admin-pd-mb30 { margin-bottom: 30px; }
+.admin-pd-mb15 {
+    margin-bottom: 15px;
+}
+
+.admin-pd-mb20 {
+    margin-bottom: 20px;
+}
+
+.admin-pd-mb30 {
+    margin-bottom: 30px;
+}
 
 @media (max-width: 1024px) {
     .admin-pd-top-section {
@@ -426,7 +451,7 @@
     .admin-pd-detail-title {
         font-size: 1.8rem;
     }
-    
+
     .admin-pd-current-price {
         font-size: 2.2rem;
     }
