@@ -248,6 +248,7 @@
 .admin-status-badge.success { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
 .admin-status-badge.warning { background: #fffbeb; color: #f59e0b; border: 1px solid #fef3c7; }
 .admin-status-badge.danger { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; }
+.admin-status-badge.processing { background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe; }
 
 @keyframes slideInUp {
     from { opacity: 0; transform: translateY(20px); }

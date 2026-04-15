@@ -1,35 +1,30 @@
-import React from 'react';
-import { 
-    FaClipboardCheck, 
-    FaBox, 
-    FaShippingFast, 
-    FaCheckCircle, 
+import { useLanguage } from '@/store/LanguageContext';
+import {
+    FaBan,
+    FaBox,
+    FaCheckCircle,
+    FaClipboardCheck,
     FaClock,
-    FaBan 
+    FaShippingFast
 } from 'react-icons/fa';
 import './OrderProgress.css';
-import { useLanguage } from '@/store/LanguageContext';
 
 const OrderProgress = ({ currentStatus }) => {
     const { t } = useLanguage();
 
     const steps = [
-        { key: 'PENDING', label: t('order_status_pending'), icon: <FaClock /> },
-        { key: 'CONFIRMED', label: t('order_status_confirmed'), icon: <FaClipboardCheck /> },
-        { key: 'PACKING', label: t('order_status_packing'), icon: <FaBox /> },
+        { key: 'UNPAID', label: t('status_unpaid'), icon: <FaClock /> },
+        { key: 'PAID', label: t('status_paid'), icon: <FaClipboardCheck /> },
+        { key: 'IN_PROGRESS', label: t('status_in_progress'), icon: <FaBox /> },
         { key: 'SHIPPING', label: t('order_status_shipping'), icon: <FaShippingFast /> },
-        { key: 'DELIVERED', label: t('order_status_delivered'), icon: <FaCheckCircle /> }
+        { key: 'COMPLETED', label: t('status_completed'), icon: <FaCheckCircle /> }
     ];
 
     const statusMap = {
-        'PENDING': 0,
         'UNPAID': 0,
         'PAID': 1,
-        'CONFIRMED': 1,
-        'PACKING': 2,
         'IN_PROGRESS': 2,
         'SHIPPING': 3,
-        'DELIVERED': 4,
         'COMPLETED': 4
     };
 
@@ -52,7 +47,7 @@ const OrderProgress = ({ currentStatus }) => {
                 {steps.map((step, index) => {
                     const isCompleted = index < currentStepIndex;
                     const isActive = index === currentStepIndex;
-                    
+
                     return (
                         <div key={step.key} className={`progress-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`}>
                             <div className="step-pointer">

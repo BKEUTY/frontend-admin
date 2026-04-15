@@ -1,13 +1,12 @@
-import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Typography, Tag, Select, Row, Col, Card, Table, Descriptions } from 'antd';
-import { useLanguage } from '@/store/LanguageContext';
-import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
-import { Skeleton, PageWrapper, CButton } from '@/components/common';
-import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
-import { generateSlug } from '@/utils/helpers';
+import { CButton, PageWrapper, Skeleton } from '@/components/common';
 import OrderProgress from '@/features/orders/components/OrderProgress';
+import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
+import { useLanguage } from '@/store/LanguageContext';
+import { generateSlug } from '@/utils/helpers';
 import generateInvoice from '@/utils/InvoiceService';
+import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Card, Col, Descriptions, Row, Select, Table, Tag, Typography } from 'antd';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AdminOrderDetail.css';
 
 const { Text, Title } = Typography;
@@ -16,27 +15,22 @@ export default function AdminOrderDetail() {
     const { id } = useParams();
     const { t } = useLanguage();
     const navigate = useNavigate();
-    
+
     const { data: orderDetail, isLoading: detailLoading } = useOrderDetail(id);
     const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
 
     const handleStatusChange = async (value) => {
         try {
             await updateOrderStatus({ id: id, status: value });
-        } catch (error) {}
+        } catch (error) { }
     };
 
     const getStatusColor = (status) => {
         switch (status?.toUpperCase()) {
             case 'PAID':
-            case 'DELIVERED':
             case 'COMPLETED': return 'success';
-            case 'IN_PROGRESS':
-            case 'CONFIRMED':
-            case 'PACKING':
-            case 'SHIPPING':
-            case 'UNPAID': return 'warning';
-            case 'PENDING': return 'processing';
+            case 'IN_PROGRESS': return 'warning';
+            case 'UNPAID': return 'processing';
             case 'CANCELLED': return 'error';
             default: return 'default';
         }
@@ -59,10 +53,10 @@ export default function AdminOrderDetail() {
             key: 'productVariantName',
             render: (text, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img 
-                        src={record.productVariantImage || 'https://via.placeholder.com/50'} 
-                        alt="product" 
-                        style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }} 
+                    <img
+                        src={record.productVariantImage || 'https://via.placeholder.com/50'}
+                        alt="product"
+                        style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }}
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/50'; }}
                     />
                     <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`}>
@@ -73,11 +67,30 @@ export default function AdminOrderDetail() {
         },
         {
             title: t('price'),
-            dataIndex: 'price',
             key: 'price',
             align: 'right',
-            width: 150,
-            render: (price) => <Text>{(price || 0).toLocaleString('vi-VN')}đ</Text>
+            width: 180,
+            render: (_, record) => {
+                const price = Number(record.price) || 0;
+                const promotionPrice = Number(record.promotionPrice) || price;
+                const showDiscount = promotionPrice < price && promotionPrice > 0;
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        {showDiscount ? (
+                            <>
+                                <Text strong style={{ color: 'var(--admin-primary)' }}>
+                                    {promotionPrice.toLocaleString('vi-VN')}đ
+                                </Text>
+                                <Text delete type="secondary" style={{ fontSize: '11px' }}>
+                                    {price.toLocaleString('vi-VN')}đ
+                                </Text>
+                            </>
+                        ) : (
+                            <Text>{price.toLocaleString('vi-VN')}đ</Text>
+                        )}
+                    </div>
+                );
+            }
         },
         {
             title: t('quantity'),
@@ -92,13 +105,35 @@ export default function AdminOrderDetail() {
             key: 'subtotal',
             align: 'right',
             width: 150,
-            render: (_, record) => (
-                <Text strong style={{ color: '#10b981' }}>
-                    {((record.price || 0) * (record.quantity || 1)).toLocaleString('vi-VN')}đ
-                </Text>
-            )
+            render: (_, record) => {
+                const price = Number(record.price) || 0;
+                const promotionPrice = Number(record.promotionPrice) || price;
+                const quantity = Number(record.quantity) || 1;
+                const effectivePrice = promotionPrice < price ? promotionPrice : price;
+                return (
+                    <Text strong style={{ color: '#10b981' }}>
+                        {(effectivePrice * quantity).toLocaleString('vi-VN')}đ
+                    </Text>
+                );
+            }
         }
     ];
+
+    const subtotal = (orderDetail.items || []).reduce((sum, item) => {
+        const price = Number(item.price) || 0;
+        const quantity = Number(item.quantity) || 1;
+        return sum + (price * quantity);
+    }, 0);
+
+    const totalDiscount = (orderDetail.items || []).reduce((sum, item) => {
+        const price = Number(item.price) || 0;
+        const promotionPrice = Number(item.promotionPrice) || price;
+        const quantity = Number(item.quantity) || 1;
+        if (promotionPrice < price) {
+            return sum + ((price - promotionPrice) * quantity);
+        }
+        return sum;
+    }, 0);
 
     return (
         <PageWrapper noCard>
@@ -113,33 +148,19 @@ export default function AdminOrderDetail() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <CButton type="outline" icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/orders')} />
                         <Title level={4} style={{ margin: 0, color: 'var(--admin-text-main)' }}>{t('order_detail')} #{orderDetail.id || id}</Title>
-                        <Tag color="cyan" style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '6px' }}>{orderDetail.paymentMethod}</Tag>
-                        <CButton 
-                            type="outline" 
-                            icon={<DownloadOutlined />} 
-                            onClick={() => generateInvoice(orderDetail, t)}
-                        >
-                            {t('invoice')}
-                        </CButton>
+                        <Tag color="cyan" style={{ padding: '6px 12px', fontSize: '14px', borderRadius: '8px', fontWeight: 600 }}>
+                            {orderDetail.paymentMethod}
+                        </Tag>
                     </div>
                 </Col>
                 <Col>
-                    <Select
-                        value={orderDetail.status}
-                        style={{ width: 140 }}
-                        onChange={handleStatusChange}
-                        options={[
-                            { value: 'PENDING', label: t('order_status_pending') },
-                            { value: 'CONFIRMED', label: t('order_status_confirmed') },
-                            { value: 'PACKING', label: t('order_status_packing') },
-                            { value: 'SHIPPING', label: t('order_status_shipping') },
-                            { value: 'DELIVERED', label: t('order_status_delivered') },
-                            { value: 'CANCELLED', label: t('order_status_cancelled') },
-                            { value: 'UNPAID', label: t('status_unpaid') },
-                            { value: 'PAID', label: t('status_paid') }
-                        ]}
-                        className={`status-select ${getStatusColor(orderDetail.status)}`}
-                    />
+                    <CButton
+                        type="primary"
+                        icon={<DownloadOutlined />}
+                        onClick={() => generateInvoice(orderDetail, t)}
+                    >
+                        {t('invoice')}
+                    </CButton>
                 </Col>
             </Row>
 
@@ -148,47 +169,79 @@ export default function AdminOrderDetail() {
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
                     <Card title={t('order_items')} variant="outlined" className="bkeuty-admin-card shadow-card">
-                        <Table 
-                            columns={columns} 
-                            dataSource={orderDetail.items || []} 
+                        <Table
+                            columns={columns}
+                            dataSource={orderDetail.items || []}
                             pagination={false}
                             rowKey={(record, idx) => record.productVariantId || idx}
                             scroll={{ x: 'max-content' }}
                         />
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
-                            <div style={{ width: '300px' }}>
-                                <Row justify="space-between" style={{ marginBottom: 12 }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 32 }}>
+                            <div style={{ width: '100%', maxWidth: '300px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                                    <Text type="secondary">{t('subtotal')}</Text>
+                                    <Text strong>{(subtotal).toLocaleString('vi-VN')}đ</Text>
+                                </div>
+                                {totalDiscount > 0 && (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                                        <Text type="secondary">{t('discount')}</Text>
+                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString('vi-VN')}đ</Text>
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('shipping_fee')}</Text>
-                                    <Text>{(orderDetail.shippingFee).toLocaleString('vi-VN')}đ</Text> 
-                                </Row>
-                                <Row justify="space-between" align="middle">
-                                    <Text strong style={{ fontSize: '16px' }}>{t('total')}</Text>
-                                    <Text strong style={{ fontSize: '24px', color: 'var(--admin-primary)' }}>
-                                        {(orderDetail.total).toLocaleString('vi-VN')}đ
+                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}đ</Text>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
+                                    <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
+                                    <Text strong style={{ fontSize: '26px', color: 'var(--admin-primary)' }}>
+                                        {(orderDetail.total || 0).toLocaleString('vi-VN')}đ
                                     </Text>
-                                </Row>
+                                </div>
                             </div>
                         </div>
                     </Card>
                 </Col>
 
                 <Col xs={24} lg={8}>
+                    <Card title={t('order_management')} variant="outlined" className="bkeuty-admin-card shadow-card status-select-card">
+                        <label className="status-control-label">{t('update_order_status')}</label>
+                        <Select
+                            value={orderDetail.status}
+                            className={`admin-order-status-selector ${getStatusColor(orderDetail.status)}`}
+                            onChange={handleStatusChange}
+                            options={[
+                                { value: 'UNPAID', label: t('status_unpaid') },
+                                { value: 'PAID', label: t('status_paid') },
+                                { value: 'IN_PROGRESS', label: t('status_in_progress') },
+                                { value: 'COMPLETED', label: t('status_completed') },
+                                { value: 'CANCELLED', label: t('status_cancelled') }
+                            ]}
+                        />
+                    </Card>
+
                     <Card title={t('customer_info')} variant="outlined" className="bkeuty-admin-card shadow-card" style={{ marginBottom: 24 }}>
-                        <Descriptions column={1} labelStyle={{ color: '#6b7280' }}>
+                        <Descriptions column={1} labelStyle={{ color: '#64748b', fontWeight: 500 }} contentStyle={{ fontWeight: 600 }}>
                             <Descriptions.Item label={t('username')}>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Text strong>{orderDetail.userName || 'Guest'}</Text>
-                                    <Text type="secondary" style={{ fontSize: '12px' }}>{orderDetail.userId}</Text>
+                                    <Text strong>{orderDetail.userName || t('guest')}</Text>
+                                    <Text type="secondary" style={{ fontSize: '11px', fontWeight: 400 }}>ID: {orderDetail.userId || '---'}</Text>
                                 </div>
                             </Descriptions.Item>
                             <Descriptions.Item label={t('order_date')}>
-                                {orderDetail.orderDate ? new Date(orderDetail.orderDate).toLocaleDateString('vi-VN') : '---'}
+                                {orderDetail.orderDate ? new Date(orderDetail.orderDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '---'}
                             </Descriptions.Item>
                         </Descriptions>
                     </Card>
 
                     <Card title={t('shipping_address')} variant="outlined" className="bkeuty-admin-card shadow-card">
-                        <Text style={{ color: '#334155' }}>{orderDetail.address ? orderDetail.address.split('|')[0] : ''}</Text>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <div style={{ flex: 1 }}>
+                                <Text style={{ color: '#334155', display: 'block', lineHeight: '1.6' }}>
+                                    {orderDetail.address ? orderDetail.address.split('|')[0] : t('no_address')}
+                                </Text>
+                            </div>
+                        </div>
                     </Card>
                 </Col>
             </Row>
