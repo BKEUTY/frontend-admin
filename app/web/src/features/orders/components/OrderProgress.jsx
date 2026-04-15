@@ -4,7 +4,8 @@ import {
     FaBox,
     FaCheckCircle,
     FaClipboardCheck,
-    FaClock
+    FaClock,
+    FaShippingFast
 } from 'react-icons/fa';
 import './OrderProgress.css';
 
@@ -15,6 +16,7 @@ const OrderProgress = ({ currentStatus }) => {
         { key: 'UNPAID', label: t('status_unpaid'), icon: <FaClock /> },
         { key: 'PAID', label: t('status_paid'), icon: <FaClipboardCheck /> },
         { key: 'IN_PROGRESS', label: t('status_in_progress'), icon: <FaBox /> },
+        { key: 'SHIPPING', label: t('order_status_shipping'), icon: <FaShippingFast /> },
         { key: 'COMPLETED', label: t('status_completed'), icon: <FaCheckCircle /> }
     ];
 
@@ -22,7 +24,8 @@ const OrderProgress = ({ currentStatus }) => {
         'UNPAID': 0,
         'PAID': 1,
         'IN_PROGRESS': 2,
-        'COMPLETED': 3
+        'SHIPPING': 3,
+        'COMPLETED': 4
     };
 
     const currentStepIndex = statusMap[currentStatus?.toUpperCase()] ?? -1;
