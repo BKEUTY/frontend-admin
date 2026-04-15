@@ -380,6 +380,8 @@ export default {
     date_range: "Date range",
     filter_date: "Filter by date",
     filter_all: "All filters",
+    invoice: "Invoice",
+    download_invoice: "Export Invoice",
     invoice_title: "SALES INVOICE",
     invoice_subtitle: "Bkeuty - Pure Beauty",
     invoice_order: "Order #",

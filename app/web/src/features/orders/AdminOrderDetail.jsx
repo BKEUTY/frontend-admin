@@ -102,15 +102,17 @@ export default function AdminOrderDetail() {
         },
         {
             title: t('total'),
-            key: 'subtotal',
+            key: 'itemTotal',
             align: 'right',
             width: 150,
             render: (_, record) => {
                 const price = Number(record.price) || 0;
+                const promotionPrice = (record.promotionPrice !== null && record.promotionPrice !== undefined) ? Number(record.promotionPrice) : price;
+                const effectivePrice = (promotionPrice > 0 && promotionPrice < price) ? promotionPrice : price;
                 const quantity = Number(record.quantity) || 1;
                 return (
                     <Text strong style={{ color: '#10b981' }}>
-                        {(price * quantity).toLocaleString('vi-VN')}đ
+                        {(effectivePrice * quantity).toLocaleString('vi-VN')}đ
                     </Text>
                 );
             }
@@ -125,9 +127,10 @@ export default function AdminOrderDetail() {
 
     const totalDiscount = (orderDetail.items || []).reduce((sum, item) => {
         const price = Number(item.price) || 0;
-        const promotionPrice = Number(item.promotionPrice) || price;
+        const hasPromotion = item.promotionPrice !== null && item.promotionPrice !== undefined;
+        const promotionPrice = hasPromotion ? Number(item.promotionPrice) : price;
         const quantity = Number(item.quantity) || 1;
-        if (promotionPrice > 0 && promotionPrice < price) {
+        if (hasPromotion && promotionPrice < price) {
             return sum + ((price - promotionPrice) * quantity);
         }
         return sum;
@@ -157,7 +160,7 @@ export default function AdminOrderDetail() {
                         icon={<DownloadOutlined />}
                         onClick={() => generateInvoice(orderDetail, t)}
                     >
-                        {t('invoice')}
+                        {t('download_invoice')}
                     </CButton>
                 </Col>
             </Row>
