@@ -1,10 +1,14 @@
-import React from 'react';
 import {
-    HomeOutlined,
-    ControlOutlined, UsergroupAddOutlined, HeartOutlined,
-    ShoppingOutlined, FileTextOutlined, ScheduleOutlined,
-    PieChartOutlined, AppstoreOutlined,
-    TagsOutlined, TagOutlined
+    AppstoreOutlined,
+    ControlOutlined,
+    FileTextOutlined,
+    HeartOutlined,
+    PieChartOutlined,
+    ScheduleOutlined,
+    ShoppingOutlined,
+    TagOutlined,
+    TagsOutlined,
+    UsergroupAddOutlined
 } from '@ant-design/icons';
 
 export const ADMIN_NAV_ITEMS = (t) => [

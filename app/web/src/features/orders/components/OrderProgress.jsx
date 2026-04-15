@@ -1,14 +1,12 @@
-import React from 'react';
-import { 
-    FaClipboardCheck, 
-    FaBox, 
-    FaShippingFast, 
-    FaCheckCircle, 
-    FaClock,
-    FaBan 
+import { useLanguage } from '@/store/LanguageContext';
+import {
+    FaBan,
+    FaBox,
+    FaCheckCircle,
+    FaClipboardCheck,
+    FaClock
 } from 'react-icons/fa';
 import './OrderProgress.css';
-import { useLanguage } from '@/store/LanguageContext';
 
 const OrderProgress = ({ currentStatus }) => {
     const { t } = useLanguage();
@@ -46,7 +44,7 @@ const OrderProgress = ({ currentStatus }) => {
                 {steps.map((step, index) => {
                     const isCompleted = index < currentStepIndex;
                     const isActive = index === currentStepIndex;
-                    
+
                     return (
                         <div key={step.key} className={`progress-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`}>
                             <div className="step-pointer">

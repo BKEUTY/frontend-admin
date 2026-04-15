@@ -1,13 +1,12 @@
-import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Typography, Tag, Select, Row, Col, Card, Table, Descriptions } from 'antd';
-import { useLanguage } from '@/store/LanguageContext';
-import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
-import { Skeleton, PageWrapper, CButton } from '@/components/common';
-import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
-import { generateSlug } from '@/utils/helpers';
+import { CButton, PageWrapper, Skeleton } from '@/components/common';
 import OrderProgress from '@/features/orders/components/OrderProgress';
+import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
+import { useLanguage } from '@/store/LanguageContext';
+import { generateSlug } from '@/utils/helpers';
 import generateInvoice from '@/utils/InvoiceService';
+import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Card, Col, Descriptions, Row, Select, Table, Tag, Typography } from 'antd';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AdminOrderDetail.css';
 
 const { Text, Title } = Typography;
@@ -16,14 +15,14 @@ export default function AdminOrderDetail() {
     const { id } = useParams();
     const { t } = useLanguage();
     const navigate = useNavigate();
-    
+
     const { data: orderDetail, isLoading: detailLoading } = useOrderDetail(id);
     const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
 
     const handleStatusChange = async (value) => {
         try {
             await updateOrderStatus({ id: id, status: value });
-        } catch (error) {}
+        } catch (error) { }
     };
 
     const getStatusColor = (status) => {
@@ -54,10 +53,10 @@ export default function AdminOrderDetail() {
             key: 'productVariantName',
             render: (text, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img 
-                        src={record.productVariantImage || 'https://via.placeholder.com/50'} 
-                        alt="product" 
-                        style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }} 
+                    <img
+                        src={record.productVariantImage || 'https://via.placeholder.com/50'}
+                        alt="product"
+                        style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }}
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/50'; }}
                     />
                     <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`}>
@@ -71,22 +70,27 @@ export default function AdminOrderDetail() {
             key: 'price',
             align: 'right',
             width: 180,
-            render: (_, record) => (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    {record.promotionPrice < record.price ? (
-                        <>
-                            <Text strong style={{ color: 'var(--admin-primary)' }}>
-                                {(record.promotionPrice || 0).toLocaleString('vi-VN')}đ
-                            </Text>
-                            <Text delete type="secondary" style={{ fontSize: '11px' }}>
-                                {(record.price || 0).toLocaleString('vi-VN')}đ
-                            </Text>
-                        </>
-                    ) : (
-                        <Text>{(record.price || 0).toLocaleString('vi-VN')}đ</Text>
-                    )}
-                </div>
-            )
+            render: (_, record) => {
+                const price = Number(record.price) || 0;
+                const promotionPrice = Number(record.promotionPrice) || price;
+                const showDiscount = promotionPrice < price && promotionPrice > 0;
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        {showDiscount ? (
+                            <>
+                                <Text strong style={{ color: 'var(--admin-primary)' }}>
+                                    {promotionPrice.toLocaleString('vi-VN')}đ
+                                </Text>
+                                <Text delete type="secondary" style={{ fontSize: '11px' }}>
+                                    {price.toLocaleString('vi-VN')}đ
+                                </Text>
+                            </>
+                        ) : (
+                            <Text>{price.toLocaleString('vi-VN')}đ</Text>
+                        )}
+                    </div>
+                );
+            }
         },
         {
             title: t('quantity'),
@@ -150,9 +154,9 @@ export default function AdminOrderDetail() {
                     </div>
                 </Col>
                 <Col>
-                    <CButton 
-                        type="primary" 
-                        icon={<DownloadOutlined />} 
+                    <CButton
+                        type="primary"
+                        icon={<DownloadOutlined />}
                         onClick={() => generateInvoice(orderDetail, t)}
                     >
                         {t('invoice')}
@@ -165,9 +169,9 @@ export default function AdminOrderDetail() {
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
                     <Card title={t('order_items')} variant="outlined" className="bkeuty-admin-card shadow-card">
-                        <Table 
-                            columns={columns} 
-                            dataSource={orderDetail.items || []} 
+                        <Table
+                            columns={columns}
+                            dataSource={orderDetail.items || []}
                             pagination={false}
                             rowKey={(record, idx) => record.productVariantId || idx}
                             scroll={{ x: 'max-content' }}
@@ -176,17 +180,17 @@ export default function AdminOrderDetail() {
                             <div style={{ width: '100%', maxWidth: '300px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('subtotal')}</Text>
-                                    <Text strong>{(subtotal).toLocaleString('vi-VN')}đ</Text> 
+                                    <Text strong>{(subtotal).toLocaleString('vi-VN')}đ</Text>
                                 </div>
                                 {totalDiscount > 0 && (
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                         <Text type="secondary">{t('discount')}</Text>
-                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString('vi-VN')}đ</Text> 
+                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString('vi-VN')}đ</Text>
                                     </div>
                                 )}
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('shipping_fee')}</Text>
-                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}đ</Text> 
+                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}đ</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
                                     <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
