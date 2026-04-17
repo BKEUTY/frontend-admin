@@ -131,22 +131,25 @@ const UserList = () => {
                 }
             >
                 <div className="admin-filter-bar">
-                    <Search
-                        placeholder={t('admin_users_search')}
-                        allowClear
-                        className="admin-toolbar-search"
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        onSearch={(v) => setQuery({ search: v || null, page: 1 })}
-                    />
-                    <Select
-                        allowClear
-                        placeholder={t('admin_user_role')}
-                        options={roleOptions}
-                        onChange={(v) => setQuery({ role: v || null, page: 1 })}
-                        className="admin-toolbar-select"
-                        value={roleFilter}
-                    />
+                    <div className="admin-filter-left">
+                        <Search
+                            placeholder={t('admin_users_search')}
+                            allowClear
+                            className="admin-toolbar-search"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onSearch={(v) => setQuery({ search: v || null, page: 1 })}
+                        />
+                        <Select
+                            allowClear
+                            placeholder={t('admin_user_role')}
+                            options={roleOptions}
+                            onChange={(v) => setQuery({ role: v || null, page: 1 })}
+                            className="admin-toolbar-select"
+                            value={roleFilter}
+                            style={{ minWidth: 160 }}
+                        />
+                    </div>
                 </div>
 
                 <div className="admin-table-wrapper">

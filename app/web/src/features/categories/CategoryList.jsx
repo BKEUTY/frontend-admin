@@ -6,7 +6,7 @@ import useQueryParams from '@/hooks/useQueryParams';
 import { useAuth } from '@/store/AuthContext';
 import { useLanguage } from '@/store/LanguageContext';
 import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Modal, Space, Table, Tooltip } from 'antd';
+import { Form, Input, Modal, Space, Table, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 
 const { Search } = Input;
@@ -116,10 +116,10 @@ const CategoryList = () => {
             render: (_, record) => (
                 <Space size="small">
                     <Tooltip title={t('edit')}>
-                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); openModal(record); }} />
+                        <CButton type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); openModal(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDelete(record); }} />
+                        <CButton type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDelete(record); }} />
                     </Tooltip>
                 </Space>
             )
@@ -143,15 +143,17 @@ const CategoryList = () => {
                 }
             >
                 <div className="admin-filter-bar">
-                    <Search
-                        placeholder={t('admin_category_search')}
-                        allowClear
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        onSearch={(v) => setQuery({ search: v || null, page: 1 })}
-                        className="admin-toolbar-search"
-                        style={{ maxWidth: 400 }}
-                    />
+                    <div className="admin-filter-left">
+                        <Search
+                            placeholder={t('admin_category_search')}
+                            allowClear
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onSearch={(v) => setQuery({ search: v || null, page: 1 })}
+                            className="admin-toolbar-search"
+                            style={{ maxWidth: 400 }}
+                        />
+                    </div>
                 </div>
 
                 <div className="admin-table-wrapper">

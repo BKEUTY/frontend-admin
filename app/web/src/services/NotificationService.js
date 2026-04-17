@@ -19,10 +19,11 @@ export const showNotification = (type, messageKey, descriptionKey, duration = 3)
 
     notification[type]({
         key: notificationKey,
-        title: message,
+        message: message,
         description: description,
         duration: duration,
         placement: 'topRight',
+        className: 'admin-notification-modern',
         onClose: () => recentNotifications.delete(notificationKey)
     });
 };

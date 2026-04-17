@@ -1,13 +1,17 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Row, Col, Table, Tag, Spin, Typography, Space, Segmented } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { Row, Col, Table, Tag, Typography, Space, Segmented, Skeleton, Modal } from 'antd';
 import { useLanguage } from '@/store/LanguageContext';
+import { useNotification } from '@/store/NotificationContext';
+import { useNavigate } from 'react-router-dom';
 import {
     TransactionOutlined,
     ShoppingOutlined,
-    UserOutlined,
-    ArrowUpOutlined,
+    AppstoreOutlined,
+    StockOutlined,
     CalendarOutlined,
-    AppstoreOutlined
+    ArrowUpOutlined,
+    DownloadOutlined,
+    ExportOutlined
 } from '@ant-design/icons';
 import {
     AreaChart,
@@ -24,128 +28,307 @@ import {
     Bar,
     Legend
 } from 'recharts';
+import * as XLSX from 'xlsx';
 import './Dashboard.css';
+import '@/admin-list.css';
 import StatsCard from '@/components/common/StatsCard';
-import { PageWrapper, CButton } from '@/components/common';
+import { PageWrapper, CButton, Pagination } from '@/components/common';
+import { useDashboard } from '@/hooks/useDashboard';
+import { generateSlug } from '@/utils/helpers';
+import adminDashboardService from '@/services/adminDashboardService';
 
 const { Text, Title } = Typography;
 
 const Dashboard = () => {
     const { t } = useLanguage();
-    const [loading, setLoading] = useState(true);
-    const [timeRange, setTimeRange] = useState('week');
+    const navigate = useNavigate();
+    const showNotification = useNotification();
+    const { timeRange, setTimeRange, loading, dashboardData } = useDashboard('month');
+    const [exportLoading, setExportLoading] = useState(false);
+    
+    const [detailModal, setDetailModal] = useState({ 
+        visible: false, 
+        type: '', 
+        data: [], 
+        loading: false,
+        currentPage: 1,
+        pageSize: 10
+    });
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
-    }, []);
+    const fetchDetails = async (type) => {
+        setDetailModal(prev => ({ 
+            ...prev, 
+            visible: true, 
+            type, 
+            loading: true, 
+            data: [],
+            currentPage: 1 
+        }));
+        try {
+            const end = new Date();
+            const start = new Date();
+            if (timeRange === 'week') start.setDate(end.getDate() - 7);
+            else if (timeRange === 'month') start.setMonth(end.getMonth() - 1);
+            else if (timeRange === 'quarter') start.setMonth(end.getMonth() - 3);
+            else if (timeRange === 'year') start.setFullYear(end.getFullYear() - 1);
+            
+            const formatDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            const params = { startDate: formatDate(start), endDate: formatDate(end) };
 
-    const stats = useMemo(() => [
-        {
-            title: t('admin_dashboard_sales'),
-            value: (45680000).toLocaleString('vi-VN') + 'đ',
-            icon: <TransactionOutlined />,
-            trend: 12.5,
-            trendType: 'up'
-        },
-        {
-            title: t('admin_dashboard_orders'),
-            value: (1248).toLocaleString('vi-VN'),
-            icon: <ShoppingOutlined />,
-            trend: 8.2,
-            trendType: 'up'
-        },
-        {
-            title: t('admin_dashboard_users'),
-            value: (3842).toLocaleString('vi-VN'),
-            icon: <UserOutlined />,
-            trend: 5.6,
-            trendType: 'up'
-        },
-        {
-            title: t('admin_dashboard_products'),
-            value: '124',
-            icon: <AppstoreOutlined />,
-            trend: 2.1,
-            trendType: 'down'
+            let listData = [];
+            if (type === 'orders') {
+                const response = await adminDashboardService.getDetailedOrders(params);
+                listData = response?.data || [];
+            } else if (type === 'products') {
+                const response = await adminDashboardService.getDetailedProducts(params);
+                listData = (response?.data?.topProducts || []).map(p => ({
+                    ...p,
+                    key: p.id,
+                    name: p.productVariantName,
+                    value: p.quantity
+                }));
+            } else if (type === 'customers') {
+                const response = await adminDashboardService.getDetailedCustomers(params);
+                listData = response?.data || [];
+            }
+
+            setDetailModal(prev => ({ ...prev, loading: false, data: listData }));
+        } catch (err) {
+            setDetailModal(prev => ({ ...prev, loading: false, data: [] }));
         }
-    ], [t]);
+    };
 
-    const revenueData = useMemo(() => [
-        { name: t('mon'), revenue: 4500000, orders: 120 },
-        { name: t('tue'), revenue: 5200000, orders: 145 },
-        { name: t('wed'), revenue: 3800000, orders: 98 },
-        { name: t('thu'), revenue: 6100000, orders: 180 },
-        { name: t('fri'), revenue: 5800000, orders: 165 },
-        { name: t('sat'), revenue: 8500000, orders: 250 },
-        { name: t('sun'), revenue: 7800000, orders: 210 },
-    ], [t]);
+    const exportToExcel = async (listData, type) => {
+        if (!dashboardData) return;
+        setExportLoading(true);
+        
+        setTimeout(() => {
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                const overviewData = [
+                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: dashboardData.stats?.totalRevenue ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: dashboardData.stats?.totalOrders ?? 0, [t('admin_col_unit')]: t('admin_unit_order') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: dashboardData.stats?.totalProfit ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_total_products_sold'), [t('admin_col_value')]: dashboardData.stats?.totalProductsSold ?? 0, [t('admin_col_unit')]: t('admin_unit_product') },
+                ];
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(overviewData), t('admin_sheet_overview'));
 
-    const categoryData = useMemo(() => [
-        { name: t('skincare'), value: 45 },
-        { name: t('makeup'), value: 25 },
-        { name: t('fragrance'), value: 15 },
-        { name: t('body_care'), value: 10 },
-        { name: t('hair_care'), value: 5 },
-    ], [t]);
+                if (listData?.length > 0) {
+                    let formattedData = [];
+                    const sheetName = t('admin_sheet_daily_detail');
 
-    const userGrowthData = useMemo(() => [
-        { month: 'Jan', users: 1200 },
-        { month: 'Feb', users: 1500 },
-        { month: 'Mar', users: 1800 },
-        { month: 'Apr', users: 2400 },
-        { month: 'May', users: 2800 },
-        { month: 'Jun', users: 3842 },
-    ], []);
+                    if (type === 'orders') {
+                        formattedData = listData.map(item => ({
+                            [t('admin_order_id')]: `#${item.id}`,
+                            [t('admin_date')]: item.date,
+                            [t('admin_customer')]: item.customerName,
+                            [t('total')]: item.total,
+                            [t('status')]: item.status
+                        }));
+                    } else if (type === 'products') {
+                        formattedData = listData.map(item => ({
+                            [t('admin_product_id')]: item.id,
+                            [t('admin_product_name')]: item.productVariantName,
+                            [t('admin_product_sold')]: item.quantity,
+                            [t('revenue')]: item.revenue,
+                            [t('admin_dashboard_profit')]: item.profit ?? 0
+                        }));
+                    } else if (type === 'customers') {
+                        formattedData = listData.map(item => ({
+                            [t('admin_user_id')]: item.userId,
+                            [t('admin_customer')]: item.userName,
+                            [t('admin_dashboard_orders')]: item.orderCount,
+                            [t('total')]: item.totalSpent
+                        }));
+                    }
+                    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(formattedData), sheetName);
+                }
 
-    const COLORS = ['#c13584', '#e1306c', '#fd1d1d', '#f56040', '#f77737'];
+                if (dashboardData.revenueChart?.length) {
+                    const dailyData = dashboardData.revenueChart.map(d => ({
+                        [t('admin_date')]: d.date,
+                        [t('admin_dashboard_revenue')]: d.revenue ?? 0,
+                        [t('admin_dashboard_orders')]: d.orders ?? 0
+                    }));
+                    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dailyData), t('admin_sheet_daily_summary'));
+                }
 
-    const productsColumns = [
-        {
-            title: t('admin_product_name'),
-            dataIndex: 'name',
-            key: 'name',
-            render: (text) => <Text strong className="admin-text-primary">{text}</Text>,
+                const fileName = `Bkeuty_Dashboard_${t(`admin_report_${timeRange ?? 'month'}`)}_${new Date().getTime()}.xlsx`.replace(/\s+/g, '_');
+                XLSX.writeFile(wb, fileName);
+                showNotification(t('admin_export_success'), 'success');
+            } catch (err) {
+                console.error("Excel Export Error:", err);
+                showNotification(t('admin_export_failed'), 'error');
+            } finally {
+                setExportLoading(false);
+            }
+        }, 500);
+    };
+
+    const stats = useMemo(() => {
+        const overview = dashboardData?.overview;
+        return [
+            {
+                title: t('admin_dashboard_sales'),
+                value: (overview?.totalRevenue ?? 0).toLocaleString('vi-VN') + t('admin_unit_vnd'),
+                icon: <TransactionOutlined />,
+                trend: 12.5,
+                trendType: 'up',
+                onClick: () => fetchDetails('orders')
+            },
+            {
+                title: t('admin_dashboard_profit'),
+                value: (overview?.totalProfit ?? 0).toLocaleString('vi-VN') + t('admin_unit_vnd'),
+                icon: <StockOutlined />,
+                trend: 15.2,
+                trendType: 'up'
+            },
+            {
+                title: t('admin_dashboard_orders'),
+                value: (overview?.totalOrders ?? 0).toLocaleString('vi-VN'),
+                icon: <ShoppingOutlined />,
+                trend: 8.2,
+                trendType: 'up',
+                onClick: () => fetchDetails('orders')
+            },
+            {
+                title: t('admin_dashboard_products'),
+                value: (overview?.totalProductsSold ?? 0).toLocaleString('vi-VN'),
+                icon: <AppstoreOutlined />,
+                trend: 2.1,
+                trendType: 'up',
+                onClick: () => fetchDetails('products')
+            }
+        ];
+    }, [t, dashboardData]);
+
+    const revenueData = useMemo(() => {
+        return dashboardData?.revenueChart?.map(c => ({
+            name: c.date ? c.date.substring(5).replace('-', '/') : '',
+            revenue: c.revenue ?? 0,
+            profit: c.profit ?? 0,
+            orders: c.orders ?? 0
+        })) ?? [];
+    }, [dashboardData]);
+
+    const topProductsData = useMemo(() => {
+        return dashboardData?.topPerformers?.topProducts?.slice(0, 5).map(p => ({
+            key: p.id,
+            name: p.productVariantName,
+            value: Number(p.quantity ?? 0),
+            revenue: p.revenue ?? 0
+        })) ?? [];
+    }, [dashboardData]);
+
+    const topProductsColumns = [
+        { 
+            title: t('admin_product_name'), 
+            dataIndex: 'name', 
+            key: 'name', 
+            width: '60%',
+            render: (text, record) => {
+                const slug = generateSlug(text, record.key);
+                return (
+                    <a onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/admin/products/${slug}`, { state: { productId: record.key } });
+                    }} className="admin-text-primary" style={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                        {text}
+                    </a>
+                );
+            } 
         },
-        {
-            title: t('admin_product_category'),
-            dataIndex: 'category',
-            key: 'category',
-            render: (tag) => (
-                <Tag className={`category-tag-${tag.toLowerCase()}`}>
-                    {t(tag.toLowerCase())}
-                </Tag>
-            ),
+        { 
+            title: t('revenue'), 
+            dataIndex: 'revenue', 
+            key: 'revenue', 
+            width: '25%',
+            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap' }}>{(price ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> 
         },
-        {
-            title: t('admin_product_price'),
-            dataIndex: 'price',
-            key: 'price',
-            render: (price) => <Text className="price-cell">{price.toLocaleString()}đ</Text>,
-        },
-        {
-            title: t('admin_product_sold'),
-            dataIndex: 'sold',
-            key: 'sold',
-            align: 'center',
+        { 
+            title: t('admin_product_sold'), 
+            dataIndex: 'value', 
+            key: 'value', 
+            width: '15%',
+            align: 'center', 
             render: (sold) => (
-                <div className="sold-badge">
+                <div className="sold-badge" style={{ display: 'inline-flex' }}>
                     <ArrowUpOutlined style={{ marginRight: 4, fontSize: 10 }} />
-                    {sold}
+                    {sold ?? 0}
                 </div>
-            ),
+            )
+        }
+    ];
+
+    const topBrandsData = useMemo(() => {
+        return dashboardData?.topPerformers?.topBrands?.slice(0, 5).map(b => ({
+            name: b.productVariantName,
+            value: Number(b.quantity ?? 0),
+        })) ?? [];
+    }, [dashboardData]);
+
+    const topCustomersData = useMemo(() => {
+        return dashboardData?.topCustomers?.slice(0, 3).map(c => ({
+            name: c.userName ?? t('not_available'),
+            spent: Number(c.totalSpent ?? 0)
+        })) ?? [];
+    }, [dashboardData, t]);
+
+    const COLORS = ['#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', '#10b981'];
+
+    const recentOrdersColumns = [
+        { 
+            title: t('admin_order_id'), 
+            dataIndex: 'id', 
+            key: 'id', 
+            width: 80,
+            render: (text) => <a onClick={(e) => { e.stopPropagation(); navigate(`/admin/orders/${text}`); }} style={{ fontWeight: 'bold' }}>{`#${text}`}</a> 
+        },
+        { 
+            title: t('admin_customer'), 
+            dataIndex: 'customerName', 
+            key: 'customerName', 
+            render: (text) => <span style={{ whiteSpace: 'nowrap' }}>{text}</span> 
+        },
+        { 
+            title: t('admin_date'), 
+            dataIndex: 'date', 
+            key: 'date',
+            render: (date) => <span style={{ whiteSpace: 'nowrap' }}>{date ? new Date(date).toLocaleDateString('vi-VN') : '---'}</span>
+        },
+        { 
+            title: t('total'), 
+            dataIndex: 'total', 
+            key: 'total', 
+            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{(price ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> 
+        },
+        { 
+            title: t('status'), 
+            dataIndex: 'status', 
+            key: 'status', 
+            align: 'center',
+            render: (status) => {
+                const map = {
+                   'UNPAID': { class: 'processing', text: t('status_unpaid') },
+                   'PAID': { class: 'success', text: t('status_paid') },
+                   'PENDING': { class: 'warning', text: t('status_pending') },
+                   'IN_PROGRESS': { class: 'warning', text: t('status_in_progress') },
+                   'COMPLETED': { class: 'success', text: t('status_completed') },
+                   'CANCELLED': { class: 'danger', text: t('status_cancelled') }
+                };
+                const formatted = map[status?.toUpperCase()];
+                return <span className={`admin-status-badge ${formatted?.class}`} style={{ whiteSpace: 'nowrap', minWidth: '80px' }}>{formatted?.text}</span>;
+            } 
         },
     ];
 
-    const products = [
-        { key: '1', name: 'Premium Anti-Aging Serum', category: 'skincare', price: 1250000, sold: 482 },
-        { key: '2', name: 'Velvet Matte Lipstick Red', category: 'makeup', price: 480000, sold: 325 },
-        { key: '3', name: 'Hydrating Rose Toner', category: 'toner', price: 350000, sold: 298 },
-        { key: '4', name: 'Glow Boost Vitamin C', category: 'skincare', price: 890000, sold: 245 },
-        { key: '5', name: 'Ocean Mist Body Spray', category: 'fragrance', price: 650000, sold: 186 },
-    ];
+    const recentOrders = useMemo(() => {
+        return dashboardData?.recentOrders?.slice(0, 5).map(o => ({
+            ...o,
+            key: o.id,
+        })) ?? [];
+    }, [dashboardData]);
 
     return (
         <div className="admin-dashboard-root">
@@ -154,168 +337,230 @@ const Dashboard = () => {
                 extra={
                     <Space size="middle">
                         <Segmented
+                            size="large"
                             options={[
-                                { label: t('this_week'), value: 'week' },
-                                { label: t('admin_this_month'), value: 'month' },
-                                { label: t('admin_this_year'), value: 'year' }
+                                { label: t('admin_report_7_days'), value: 'week' },
+                                { label: t('admin_report_1_month'), value: 'month' },
+                                { label: t('admin_report_3_months'), value: 'quarter' },
+                                { label: t('admin_report_1_year'), value: 'year' }
                             ]}
                             value={timeRange}
                             onChange={setTimeRange}
                             className="admin-segmented-luxury"
                         />
-                        <CButton type="primary" icon={<CalendarOutlined />}>
+                        <CButton type="primary" icon={<CalendarOutlined />} onClick={() => navigate('/admin/reports')}>
                             {t('admin_home_reports_title')}
                         </CButton>
                     </Space>
                 }
             >
                 {loading ? (
-                    <div className="admin-loading-container">
-                        <Spin size="large" />
+                    <div className="admin-dashboard-container css-fade-in">
+                        <Row gutter={[24, 24]}>
+                            {[1, 2, 3, 4].map((k) => (
+                                <Col xs={24} sm={12} xl={6} key={`skeleton-stat-${k}`}>
+                                    <div className="admin-glass-card" style={{ padding: 24, borderRadius: 16 }}>
+                                        <Skeleton active avatar={{ shape: 'square' }} title={false} paragraph={{ rows: 2 }} />
+                                    </div>
+                                </Col>
+                            ))}
+                        </Row>
                     </div>
                 ) : (
                     <div className="admin-dashboard-container">
                         <Row gutter={[24, 24]}>
                             {stats.map((stat, index) => (
                                 <Col xs={24} sm={12} xl={6} key={index}>
-                                    <StatsCard {...stat} />
+                                    <div onClick={stat.onClick} style={{ cursor: stat.onClick ? 'pointer' : 'default', height: '100%' }}>
+                                        <StatsCard {...stat} />
+                                    </div>
                                 </Col>
                             ))}
 
-                            <Col xs={24} xl={16}>
+                            <Col xs={24} xl={12}>
                                 <div className="admin-glass-card main-chart-card">
                                     <div className="card-header">
-                                        <Title level={5}>{t('revenue_overview')}</Title>
-                                        <div className="card-actions">
-                                            <BadgeDot color="#c13584" text={t('admin_dashboard_revenue')} />
-                                            <BadgeDot color="#f56040" text={t('admin_dashboard_orders_count')} />
+                                        <Title level={5}>{t('admin_dashboard_revenue_chart')}</Title>
+                                        <div className="admin-badge-dot">
+                                            <span className="dot" style={{ background: '#8b5cf6' }}></span> {t('admin_dashboard_revenue')}
                                         </div>
                                     </div>
                                     <div className="chart-body">
-                                        <ResponsiveContainer width="100%" height={350}>
+                                        <ResponsiveContainer width="100%" height={350} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
                                             <AreaChart data={revenueData}>
                                                 <defs>
                                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#c13584" stopOpacity={0.15} />
-                                                        <stop offset="95%" stopColor="#c13584" stopOpacity={0} />
+                                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
+                                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                                    </linearGradient>
+                                                    <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                                     </linearGradient>
                                                 </defs>
                                                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
                                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
                                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                                                <Tooltip 
-                                                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}
-                                                />
-                                                <Area 
-                                                    type="monotone" 
-                                                    dataKey="revenue" 
-                                                    name={t('admin_dashboard_revenue')}
-                                                    stroke="#c13584" 
-                                                    strokeWidth={3} 
-                                                    fillOpacity={1} 
-                                                    fill="url(#colorRevenue)" 
-                                                    animationDuration={1500}
-                                                />
-                                                <Area 
-                                                    type="monotone" 
-                                                    dataKey="orders" 
-                                                    name={t('admin_dashboard_orders_count')}
-                                                    stroke="#f56040" 
-                                                    strokeWidth={2} 
-                                                    fill="transparent"
-                                                    strokeDasharray="5 5"
-                                                    animationDuration={2000}
-                                                />
+                                                <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} />
+                                                <Area type="monotone" dataKey="revenue" name={t('admin_dashboard_revenue')} stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" animationDuration={1500} />
+                                                <Area type="monotone" dataKey="profit" name={t('admin_dashboard_profit')} stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorProfit)" animationDuration={1500} />
                                             </AreaChart>
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
                             </Col>
 
-                            <Col xs={24} xl={8}>
+                            <Col xs={24} lg={12} xl={6}>
+                                <div className="admin-glass-card">
+                                    <div className="card-header" onClick={() => fetchDetails('customers')} style={{ cursor: 'pointer' }}>
+                                        <Title level={5}>{t('admin_dashboard_top_customers')}</Title>
+                                        <ExportOutlined className="admin-text-muted" />
+                                    </div>
+                                    <div className="chart-body">
+                                        <ResponsiveContainer width="100%" height={300} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
+                                            <BarChart data={topCustomersData}>
+                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                                                <YAxis hide />
+                                                <Tooltip cursor={{ fill: '#f8fafc' }} />
+                                                <Bar dataKey="spent" name={t('amount_spent')} fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={40} />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            </Col>
+
+                            <Col xs={24} lg={12} xl={6}>
                                 <div className="admin-glass-card">
                                     <div className="card-header">
-                                        <Title level={5}>{t('categories')}</Title>
+                                        <Title level={5}>{t('admin_best_brand')}</Title>
                                     </div>
                                     <div className="chart-body flex-center">
-                                        <ResponsiveContainer width="100%" height={300}>
+                                        <ResponsiveContainer width="100%" height={300} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
                                             <PieChart>
-                                                <Pie
-                                                    data={categoryData}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    innerRadius={60}
-                                                    outerRadius={80}
-                                                    paddingAngle={5}
-                                                    dataKey="value"
-                                                >
-                                                    {categoryData.map((entry, index) => (
+                                                <Pie data={topBrandsData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
+                                                    {(topBrandsData ?? []).map((entry, index) => (
                                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                     ))}
                                                 </Pie>
                                                 <Tooltip />
-                                                <Legend layout="vertical" verticalAlign="middle" align="right" />
+                                                <Legend layout="horizontal" verticalAlign="bottom" />
                                             </PieChart>
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={12}>
+                            <Col xs={24} lg={12} xl={12}>
                                 <div className="admin-glass-card">
                                     <div className="card-header">
-                                        <Title level={5}>{t('admin_top_products')}</Title>
+                                        <Title level={5}>{t('admin_recent_orders')}</Title>
                                     </div>
                                     <Table
-                                        columns={productsColumns}
-                                        dataSource={products}
+                                        columns={recentOrdersColumns}
+                                        dataSource={recentOrders}
                                         pagination={false}
                                         className="admin-compact-table"
                                         size="small"
+                                        onRow={(record) => ({
+                                            onClick: () => navigate(`/admin/orders/${record.id}`),
+                                            className: "admin-table-row-pointer"
+                                        })}
                                     />
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={12}>
+                            <Col xs={24} lg={12} xl={12}>
                                 <div className="admin-glass-card">
                                     <div className="card-header">
-                                        <Title level={5}>{t('admin_dashboard_users')}</Title>
+                                        <Title level={5}>{t('admin_best_product')}</Title>
                                     </div>
-                                    <div className="chart-body">
-                                        <ResponsiveContainer width="100%" height={250}>
-                                            <BarChart data={userGrowthData}>
-                                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                                                <YAxis hide />
-                                                <Tooltip cursor={{ fill: '#f8fafc' }} />
-                                                <Bar dataKey="users" name={t('admin_dashboard_users')} fill="#1e293b" radius={[4, 4, 0, 0]} barSize={30} />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                        <div className="stat-summary-mini">
-                                            <div className="summary-item">
-                                                <span className="summary-label">{t('admin_dashboard_summary_mobile')}</span>
-                                                <span className="summary-value">65%</span>
-                                            </div>
-                                            <div className="summary-item">
-                                                <span className="summary-label">{t('admin_dashboard_summary_new_users')}</span>
-                                                <span className="summary-value">+240</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <Table
+                                        columns={topProductsColumns}
+                                        dataSource={topProductsData}
+                                        pagination={false}
+                                        className="admin-compact-table"
+                                        size="small"
+                                        onRow={(record) => ({
+                                            onClick: () => {
+                                                const slug = generateSlug(record.name, record.key);
+                                                navigate(`/admin/products/${slug}`, {
+                                                    state: { productId: record.key }
+                                                });
+                                            },
+                                            className: "admin-table-row-pointer"
+                                        })}
+                                    />
                                 </div>
                             </Col>
                         </Row>
                     </div>
                 )}
             </PageWrapper>
+
+            <Modal
+                title={<Title level={4}>{t('view_all')}</Title>}
+                open={detailModal.visible}
+                onCancel={() => setDetailModal(prev => ({ ...prev, visible: false }))}
+                width={1000}
+                footer={[
+                    <div key="footer-actions" className="admin-modal-footer-actions">
+                        <CButton 
+                            className="admin-btn-export" 
+                            icon={<DownloadOutlined />} 
+                            onClick={() => exportToExcel(detailModal.data, detailModal.type)}
+                            loading={exportLoading}
+                            disabled={exportLoading}
+                        >
+                            {t('admin_export_excel')}
+                        </CButton>
+                        <CButton 
+                            className="admin-btn-close" 
+                            onClick={() => setDetailModal(prev => ({ ...prev, visible: false }))}
+                        >
+                            {t('close')}
+                        </CButton>
+                    </div>
+                ]}
+                className="admin-glass-modal"
+            >
+                <div style={{ marginTop: 24 }}>
+                    <Table 
+                        dataSource={(detailModal?.data ?? [])
+                            .slice(
+                                (detailModal.currentPage - 1) * detailModal.pageSize, 
+                                detailModal.currentPage * detailModal.pageSize
+                            )
+                            .map((d, i) => ({ ...d, key: i }))} 
+                        loading={detailModal.loading}
+                        columns={
+                            detailModal.type === 'orders' ? recentOrdersColumns : 
+                            detailModal.type === 'products' ? topProductsColumns.concat([{ title: t('quantity'), dataIndex: 'quantity', key: 'quantity' }]) :
+                            [
+                                { title: t('admin_product_id'), dataIndex: 'userId', key: 'userId', render: id => `#${id.substring(0,8)}` },
+                                { title: t('admin_customer'), dataIndex: 'userName', key: 'userName' }, 
+                                { title: t('admin_dashboard_orders'), dataIndex: 'orderCount', key: 'orderCount' },
+                                { title: t('total'), dataIndex: 'totalSpent', key: 'totalSpent', render: v => `${Number(v ?? 0).toLocaleString()}${t('admin_unit_vnd')}` }
+                            ]
+                        }
+                        pagination={false}
+                        scroll={{ y: 450 }}
+                    />
+                    
+                    {detailModal.data?.length > 0 && !detailModal.loading && (
+                        <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center' }}>
+                            <Pagination
+                                page={detailModal.currentPage}
+                                pageSize={detailModal.pageSize}
+                                totalItems={detailModal.data.length}
+                                totalPages={Math.ceil(detailModal.data.length / detailModal.pageSize)}
+                                onPageChange={(page) => setDetailModal(prev => ({ ...prev, currentPage: page }))}
+                            />
+                        </div>
+                    )}
+                </div>
+            </Modal>
         </div>
     );
 };
-
-const BadgeDot = ({ color, text }) => (
-    <div className="admin-badge-dot">
-        <span className="dot" style={{ backgroundColor: color }}></span>
-        <span className="dot-text">{text}</span>
-    </div>
-);
 
 export default Dashboard;

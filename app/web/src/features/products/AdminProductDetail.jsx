@@ -210,12 +210,12 @@ export default function AdminProductDetail() {
                     <div className="admin-pd-price-box">
                         <div className="admin-pd-current-price-wrapper">
                             <div className="admin-pd-current-price">
-                                {shownPrice.toLocaleString('vi-VN')}đ
+                                {shownPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                             </div>
                             {currentPrice.hasDiscount && (
                                 <div className="admin-pd-old-price-wrapper">
                                     <span className="admin-pd-old-price-text">
-                                        {currentPrice.originPrice.toLocaleString('vi-VN')}đ
+                                        {currentPrice.originPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                                     </span>
                                 </div>
                             )}

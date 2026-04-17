@@ -8,3 +8,4 @@ export { default as PageWrapper } from './PageWrapper';
 export { default as CButton } from './CButton';
 export { default as CInput } from './CInput';
 export { default as ErrorBoundary } from './ErrorBoundary';
+export { default as StatsCard } from './StatsCard';

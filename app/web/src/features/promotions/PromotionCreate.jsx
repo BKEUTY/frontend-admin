@@ -4,7 +4,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useLanguage } from '@/store/LanguageContext';
 import { PageWrapper, CButton, CInput } from '@/components/common';
-import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useCreatePromotion, useUpdatePromotion } from '@/features/promotions/hooks/usePromotions';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useBrands } from '@/features/brands/hooks/useBrands';
@@ -12,7 +12,6 @@ import './PromotionCreate.css';
 
 const { Option } = Select;
 
-// Backend hiện chỉ có type luôn = "PRODUCT"
 const getPromotionScopeOptions = (t) => [
     { value: 'PRODUCT', label: t('promo_scope_product') },
     { value: 'CATEGORY', label: t('promo_scope_category') },

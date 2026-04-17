@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Tooltip, Space, Select, Button, DatePicker } from 'antd';
+import { Table, Tooltip, Space, Select, DatePicker, Segmented } from 'antd';
 import { SyncOutlined, EyeOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -25,22 +25,20 @@ const OrderList = () => {
     const startDate = query.startDate || null;
     const endDate = query.endDate || null;
 
-    const filterParams = {
-        page,
-        size: pageSize,
-        status: status === 'ALL' ? null : status,
-        sort,
-        startDate,
-        endDate,
-    };
-
     const { 
         orders, 
         totalItems,
         totalPages, 
         isLoading, 
         refetchOrders 
-    } = useOrders(filterParams);
+    } = useOrders({
+        page,
+        size: pageSize,
+        status: status === 'ALL' ? null : status,
+        sort,
+        startDate,
+        endDate,
+    });
 
     const { mutateAsync: updateOrderStatus, isPending: isUpdating } = useUpdateOrderStatus();
 
@@ -48,10 +46,6 @@ const OrderList = () => {
         try {
             await updateOrderStatus({ id: orderId, status: value });
         } catch (error) {}
-    };
-
-    const handleFilterChange = (newParams) => {
-        setQuery({ ...newParams, page: 1 });
     };
 
     const getStatusClass = (status) => {
@@ -102,14 +96,14 @@ const OrderList = () => {
             render: (method) => <span className="admin-table-tag">{method}</span>,
         },
         {
-            title: t('admin_total'),
+            title: t('total'),
             key: 'total',
             width: 180,
             align: 'center',
             render: (_, record) => (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString("vi-VN")}đ</span>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString("vi-VN")}đ</span>
+                    <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString("vi-VN")}{t('admin_unit_vnd')}</span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString("vi-VN")}{t('admin_unit_vnd')}</span>
                 </div>
             ),
         },
@@ -138,7 +132,7 @@ const OrderList = () => {
             ),
         },
         {
-            title: t('admin_product_action'),
+            title: t('actions_col'),
             key: 'action',
             width: 100,
             align: 'center',
@@ -146,7 +140,7 @@ const OrderList = () => {
             render: (_, record) => (
                 <Space size="middle">
                     <Tooltip title={t('view')}>
-                        <Button type="text" className="admin-action-btn edit-btn" icon={<EyeOutlined />} onClick={() => navigate(`/admin/orders/${record.id}`)} />
+                        <CButton type="text" className="admin-action-btn edit-btn" icon={<EyeOutlined />} onClick={() => navigate(`/admin/orders/${record.id}`)} />
                     </Tooltip>
                 </Space>
             ),
@@ -157,7 +151,7 @@ const OrderList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_orders_title')}
-                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('orders')?.toLowerCase()}</>}
+                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('admin_dashboard_orders')?.toLowerCase()}</>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton
@@ -172,13 +166,14 @@ const OrderList = () => {
                 }
             >
                 <div className="admin-filter-bar">
-                    <div className="admin-filter-row">
-                        <FilterOutlined style={{ color: '#64748b', fontSize: '16px' }} />
+                    <div className="admin-filter-left">
+                        <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
                         <Select 
                             value={status} 
-                            onChange={(val) => handleFilterChange({ status: val })} 
+                            onChange={(val) => setQuery({ ...query, status: val, page: 1 })} 
                             className="admin-toolbar-select"
                             placeholder={t('status')}
+                            style={{ minWidth: 160 }}
                         >
                             <Option value="ALL">{t('all')}</Option>
                             <Option value="UNPAID">{t('status_unpaid')}</Option>
@@ -187,25 +182,27 @@ const OrderList = () => {
                             <Option value="COMPLETED">{t('status_completed')}</Option>
                             <Option value="CANCELLED">{t('status_cancelled')}</Option>
                         </Select>
-                        <RangePicker 
-                            value={startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null}
-                            onChange={(dates) => {
-                                handleFilterChange({
-                                    startDate: dates ? dates[0].format('YYYY-MM-DD') : null,
-                                    endDate: dates ? dates[1].format('YYYY-MM-DD') : null
-                                });
-                            }}
-                            className="admin-date-picker-range"
-                            style={{ width: 280 }}
-                            placeholder={[t('startDate') || 'Bắt đầu', t('endDate') || 'Kết thúc']}
-                        />
+
+                            <RangePicker 
+                                value={startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null}
+                                onChange={(dates) => {
+                                    setQuery({
+                                        ...query,
+                                        startDate: dates ? dates[0].format('YYYY-MM-DD') : null,
+                                        endDate: dates ? dates[1].format('YYYY-MM-DD') : null,
+                                        page: 1
+                                    });
+                                }}
+                                className="admin-date-picker-range-luxury"
+                                placeholder={[t('startDate'), t('endDate')]}
+                            />
                     </div>
 
                     <div className="admin-toolbar-right">
-                        <SortAscendingOutlined style={{ color: '#64748b', fontSize: '16px' }} />
+                        <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
                         <Select 
                             value={sort} 
-                            onChange={(val) => handleFilterChange({ sort: val })} 
+                            onChange={(val) => setQuery({ ...query, sort: val, page: 1 })} 
                             className="admin-toolbar-select"
                             style={{ minWidth: 200 }}
                         >
@@ -240,7 +237,7 @@ const OrderList = () => {
                                 totalPages={totalPages} 
                                 totalItems={totalItems}
                                 pageSize={pageSize}
-                                onPageChange={(p) => setQuery({ page: p })} 
+                                onPageChange={(p) => setQuery({ ...query, page: p })} 
                             />
                         </div>
                     )}

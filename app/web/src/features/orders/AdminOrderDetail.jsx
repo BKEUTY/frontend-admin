@@ -22,7 +22,7 @@ export default function AdminOrderDetail() {
     const handleStatusChange = async (value) => {
         try {
             await updateOrderStatus({ id: id, status: value });
-        } catch (error) { }
+        } catch (error) {}
     };
 
     const getStatusColor = (status) => {
@@ -48,7 +48,7 @@ export default function AdminOrderDetail() {
 
     const columns = [
         {
-            title: t('product'),
+            title: t('admin_home_products_title'),
             dataIndex: 'productVariantName',
             key: 'productVariantName',
             render: (text, record) => (
@@ -79,14 +79,14 @@ export default function AdminOrderDetail() {
                         {showDiscount ? (
                             <>
                                 <Text strong style={{ color: 'var(--admin-primary)' }}>
-                                    {promotionPrice.toLocaleString('vi-VN')}đ
+                                    {promotionPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                                 </Text>
                                 <Text delete type="secondary" style={{ fontSize: '11px' }}>
-                                    {price.toLocaleString('vi-VN')}đ
+                                    {price.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                                 </Text>
                             </>
                         ) : (
-                            <Text>{price.toLocaleString('vi-VN')}đ</Text>
+                            <Text>{price.toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
                         )}
                     </div>
                 );
@@ -112,7 +112,7 @@ export default function AdminOrderDetail() {
                 const quantity = Number(record.quantity) || 1;
                 return (
                     <Text strong style={{ color: '#10b981' }}>
-                        {(effectivePrice * quantity).toLocaleString('vi-VN')}đ
+                        {(effectivePrice * quantity).toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                     </Text>
                 );
             }
@@ -141,7 +141,7 @@ export default function AdminOrderDetail() {
             <div className="admin-pd-breadcrumb">
                 <Link to="/admin/orders">{t('admin_home_orders_title')}</Link>
                 <span className="admin-pd-divider">/</span>
-                <span className="admin-pd-current">Order #{id}</span>
+                <span className="admin-pd-current">{t('invoice_order')} #{id}</span>
             </div>
 
             <Row justify="space-between" align="middle" className="admin-mb30">
@@ -181,22 +181,22 @@ export default function AdminOrderDetail() {
                             <div style={{ width: '100%', maxWidth: '300px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('subtotal')}</Text>
-                                    <Text strong>{(subtotal).toLocaleString('vi-VN')}đ</Text>
+                                    <Text strong>{(subtotal).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
                                 </div>
                                 {totalDiscount > 0 && (
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                         <Text type="secondary">{t('discount')}</Text>
-                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString('vi-VN')}đ</Text>
+                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
                                     </div>
                                 )}
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('shipping_fee')}</Text>
-                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}đ</Text>
+                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
                                     <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
                                     <Text strong style={{ fontSize: '26px', color: 'var(--admin-primary)' }}>
-                                        {(orderDetail.total || 0).toLocaleString('vi-VN')}đ
+                                        {(orderDetail.total || 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                                     </Text>
                                 </div>
                             </div>

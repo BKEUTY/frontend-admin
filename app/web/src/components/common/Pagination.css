@@ -17,7 +17,7 @@
 }
 
 .pagination-info {
-    font-family: var(--inter_font, 'Inter', sans-serif);
+    font-family: inherit;
     font-size: 13.5px;
     color: #64748b;
     font-weight: 500;
@@ -31,15 +31,15 @@
 .pagination {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 6px;
+    flex-wrap: nowrap;
 }
 
 .page-btn {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     cursor: pointer;
     font-size: 14px;
@@ -48,7 +48,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: var(--inter_font, 'Inter', sans-serif);
+    font-family: inherit;
     font-weight: 600;
 }
 
@@ -74,6 +74,33 @@
     box-shadow: 0 4px 12px rgba(194, 24, 91, 0.2);
 }
 
-.page-btn.active:hover {
-    transform: translateY(-2px);
+.nav-btn {
+    font-size: 12px;
+}
+
+.pagination-ellipsis {
+    color: #94a3b8;
+    font-weight: 700;
+    width: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    .page-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+    
+    .pagination-info {
+        font-size: 12px;
+    }
+    
+    .pagination {
+        gap: 4px;
+    }
 }

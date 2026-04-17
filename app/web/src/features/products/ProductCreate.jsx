@@ -86,7 +86,12 @@ const ProductCreate = () => {
             notification.success({ message: t('success'), description: t('admin_msg_create_success') });
             setCurrentStep(1);
         } catch (error) {
-            notification.error({ message: t('error'), description: error.message });
+            if (!error.isGlobalHandled) {
+                notification.error({ 
+                    message: t('error'), 
+                    description: error.response?.data?.message || t('api_error_general') 
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -109,8 +114,10 @@ const ProductCreate = () => {
                 notification.success({ message: t('success'), description: t('admin_msg_upload_success') });
             }
             setCurrentStep(2);
-        } catch {
-            notification.error({ message: t('error'), description: t('admin_error_upload_img') });
+        } catch (error) {
+            if (!error.isGlobalHandled) {
+                notification.error({ message: t('error'), description: t('admin_error_upload_img') });
+            }
         } finally {
             setLoading(false);
         }
@@ -202,8 +209,10 @@ const ProductCreate = () => {
             }
             notification.success({ message: t('success'), description: t('admin_msg_options_success') });
             setCurrentStep(3);
-        } catch {
-            notification.error({ message: t('error'), description: t('admin_error_options_save') });
+        } catch (error) {
+            if (!error.isGlobalHandled) {
+                notification.error({ message: t('error'), description: t('admin_error_options_save') });
+            }
         } finally {
             setLoading(false);
         }
@@ -387,7 +396,9 @@ const ProductCreate = () => {
                                     </div>
                                 </div>
                                 <div className="pc-detail-price-box">
-                                    <div className="pc-detail-current-price">{`${shownPrice.toLocaleString('vi-VN')}đ`}</div>
+                                    <div className="pc-detail-current-price">
+                                        {shownPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                    </div>
                                 </div>
                                 {renderPreviewOptions()}
                                 {optionTypes.length > 0 && optionTypes[0].optionName !== '' && (

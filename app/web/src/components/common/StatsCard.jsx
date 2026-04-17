@@ -5,6 +5,21 @@ import './StatsCard.css';
 
 const StatsCard = ({ title, value, icon, trend, trendType }) => {
     const { t } = useLanguage();
+
+    const unit = t('admin_unit_vnd');
+
+    const formatValue = (val) => {
+        if (typeof val === 'string' && val.endsWith(unit)) {
+            return {
+                amount: val.slice(0, -unit.length),
+                currency: unit
+            };
+        }
+        return { amount: val, currency: null };
+    };
+
+    const { amount, currency } = formatValue(value);
+
     return (
         <div className="admin-stat-card-modern">
             <div className="stat-icon-wrapper">
@@ -12,7 +27,10 @@ const StatsCard = ({ title, value, icon, trend, trendType }) => {
             </div>
             <div className="stat-content">
                 <p className="stat-label">{title}</p>
-                <h3 className="stat-value">{value}</h3>
+                <div className="stat-value-container">
+                    <h3 className="stat-value">{amount}</h3>
+                    {currency && <span className="stat-currency">{currency}</span>}
+                </div>
                 {trend !== undefined && (
                     <div className={`stat-trend ${trendType}`}>
                         {trendType === 'up' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}

@@ -1,78 +1,117 @@
 .admin-stat-card-modern {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(241, 245, 249, 1);
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1) !important;
     height: 100%;
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .admin-stat-card-modern:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translate(-3px, -3px) !important;
+    box-shadow: 12px 12px 0px rgba(139, 92, 246, 0.1) !important;
+    border-color: var(--admin-primary) !important;
 }
 
 .stat-icon-wrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 18px;
-    background: rgba(193, 53, 132, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: var(--admin-primary);
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-}
-
-.admin-stat-card-modern:hover .stat-icon-wrapper {
-    background: var(--admin-primary);
-    color: white;
-    transform: scale(1.1) rotate(-5deg);
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 12px !important;
+    background: rgba(139, 92, 246, 0.08) !important;
+    color: var(--admin-primary) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 24px !important;
+    flex-shrink: 0 !important;
 }
 
 .stat-content {
-    flex: 1;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-height: 80px !important; /* Ensure consistent content area */
 }
 
 .stat-label {
-    color: #64748b;
-    font-size: 14px;
-    font-weight: 500;
-    margin: 0 0 4px 0;
+    color: #94a3b8 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin: 0 0 6px 0 !important;
+    text-transform: capitalize;
+    letter-spacing: 0.2px;
+}
+
+.stat-value-container {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    margin-bottom: 4px !important;
 }
 
 .stat-value {
-    color: #0f172a;
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0 0 6px 0;
-    letter-spacing: -0.02em;
+    color: #0f172a !important;
+    font-size: 24px !important;
+    font-weight: 850 !important;
+    margin: 0 !important;
+    letter-spacing: -1px !important;
+    line-height: 1 !important;
+    word-break: break-all !important;
+}
+
+.stat-currency {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+    line-height: 1 !important;
+}
+
+/* Auto-scale font size for very long numbers */
+.stat-value:has(+ .stat-currency) {
+    font-size: clamp(18px, 1.5vw, 24px) !important;
+}
+
+@media (max-width: 1400px) {
+    .stat-value {
+        font-size: 20px !important;
+    }
+    .admin-stat-card-modern {
+        padding: 16px !important;
+        gap: 12px !important;
+    }
 }
 
 .stat-trend {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    font-weight: 600;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
 }
 
-.stat-trend.up {
-    color: #10b981;
-}
-
-.stat-trend.down {
-    color: #ef4444;
-}
+.stat-trend.up { color: #10b981 !important; }
+.stat-trend.down { color: #ef4444 !important; }
 
 .stat-trend small {
-    color: #94a3b8;
-    font-weight: 400;
-    margin-left: 4px;
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+    margin-left: 4px !important;
 }

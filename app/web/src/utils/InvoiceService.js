@@ -33,8 +33,17 @@ const generateInvoice = (orderData, t) => {
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(10);
-    doc.text(`${t('invoice_date')}: ${orderData.orderDate ? new Date(orderData.orderDate).toLocaleDateString('vi-VN') : '---'}`, 15, 57);
-    doc.text(`${t('invoice_payment')}: ${orderData.paymentMethod}`, 15, 62);
+    
+    const formattedDate = orderData.orderDate ? new Date(orderData.orderDate).toLocaleDateString(t('language') === 'Vietnamese' ? 'vi-VN' : 'en-US') : '---';
+    doc.text(`${t('invoice_date')}: ${formattedDate}`, 15, 57);
+    
+    const paymentMethodsMap = {
+        'CASH': t('invoice_cash'),
+        'BANK_TRANSFER': t('invoice_bank_transfer'),
+        'CREDIT_CARD': t('invoice_credit_card')
+    };
+    const displayPayment = paymentMethodsMap[orderData.paymentMethod] || orderData.paymentMethod;
+    doc.text(`${t('invoice_payment')}: ${displayPayment}`, 15, 62);
 
     const rightColX = 115;
     const addressWidth = 80;
@@ -43,9 +52,9 @@ const generateInvoice = (orderData, t) => {
     doc.text(t('invoice_customer'), rightColX, 50);
     
     doc.setFont("Roboto", "normal");
-    doc.text(`${orderData.userName || 'Guest'}`, rightColX, 57);
+    doc.text(`${orderData.userName || t('guest')}`, rightColX, 57);
     
-    const addressStr = orderData.address?.split('|')[0] || '';
+    const addressStr = orderData.address?.split('|')[0] || t('no_address');
     const splitAddress = doc.splitTextToSize(addressStr, addressWidth);
     doc.text(splitAddress, rightColX, 62);
 
@@ -61,8 +70,8 @@ const generateInvoice = (orderData, t) => {
         return [
             item.productVariantName,
             quantity,
-            `${effectivePrice.toLocaleString("vi-VN")} đ`,
-            `${(effectivePrice * quantity).toLocaleString("vi-VN")} đ`
+            `${effectivePrice.toLocaleString("vi-VN")}${t('admin_unit_vnd')}`,
+            `${(effectivePrice * quantity).toLocaleString("vi-VN")}${t('admin_unit_vnd')}`
         ];
     });
 
@@ -97,20 +106,21 @@ const generateInvoice = (orderData, t) => {
 
     doc.setFontSize(10);
     doc.text(`${t('invoice_shipping')}:`, labelX, finalY, { align: "right" });
-    doc.text(`+${(orderData.shippingFee || 0).toLocaleString("vi-VN")} đ`, valueX, finalY, { align: "right" });
+    doc.text(`+${(orderData.shippingFee || 0).toLocaleString("vi-VN")}${t('admin_unit_vnd')}`, valueX, finalY, { align: "right" });
 
     doc.setFont("Roboto", "bold");
     doc.setFontSize(14);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text(`${t('invoice_grand_total')}:`, labelX, finalY + 12, { align: "right" });
-    doc.text(`${(orderData.total || 0).toLocaleString("vi-VN")} đ`, valueX, finalY + 12, { align: "right" });
+    doc.text(`${(orderData.total || 0).toLocaleString("vi-VN")}${t('admin_unit_vnd')}`, valueX, finalY + 12, { align: "right" });
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(9);
     doc.setTextColor(150);
     doc.text(t('invoice_thanks'), 105, 280, { align: "center" });
 
-    doc.save(`BKEUTY_Admin_Invoice_${orderData.id}.pdf`);
+    const invoiceFileName = t('language') === 'Vietnamese' ? `BKEUTY_HoaDon_${orderData.id}.pdf` : `BKEUTY_Invoice_${orderData.id}.pdf`;
+    doc.save(invoiceFileName);
 };
 
 export default generateInvoice;

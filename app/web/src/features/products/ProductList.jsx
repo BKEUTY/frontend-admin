@@ -8,7 +8,7 @@ import { getImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug } from '@/utils/helpers';
 import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -246,12 +246,12 @@ const ProductList = () => {
                     {record.hasDiscount && (
                         <div className="admin-old-price-row">
                             <Text delete className="admin-old-price">
-                                {record.originPrice.toLocaleString('vi-VN')}đ
+                                {record.originPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                             </Text>
                         </div>
                     )}
                     <Text className={`admin-current-price ${record.hasDiscount ? 'is-sale' : ''}`}>
-                        {discountPrice.toLocaleString('vi-VN')}đ
+                        {discountPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
                     </Text>
                 </div>
             )
@@ -299,7 +299,7 @@ const ProductList = () => {
             title: t('status'),
             dataIndex: 'status',
             key: 'status',
-            width: 110,
+            width: 140,
             align: 'center',
             render: (status) => (
                 <span className={`admin-status-badge ${status === 'ACTIVE' ? 'success' : 'danger'}`}>
@@ -316,11 +316,11 @@ const ProductList = () => {
             render: (_, record) => (
                 <Space size="small">
                     <Tooltip title={t('edit')}>
-                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />}
+                        <CButton type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />}
                             onClick={(e) => { e.stopPropagation(); handleEditClick(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting && selectedRecord?.productId === record.productId}
+                        <CButton type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting && selectedRecord?.productId === record.productId}
                             onClick={(e) => { e.stopPropagation(); handleDeleteClick(record); }} />
                     </Tooltip>
                 </Space>
@@ -345,39 +345,45 @@ const ProductList = () => {
                 }
             >
                 <div className="admin-filter-bar">
-                    <Search
-                        placeholder={t('admin_search_products')}
-                        allowClear
-                        className="admin-toolbar-search"
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        onSearch={handleSearch}
-                    />
-                    <Select
-                        showSearch
-                        allowClear
-                        placeholder={t('categories')}
-                        options={categoryOptions}
-                        onChange={handleCategorySelect}
-                        className="admin-toolbar-select"
-                        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                        value={selectedCategoryId}
-                    />
-                    <Select
-                        allowClear
-                        placeholder={t('status')}
-                        options={statusOptions}
-                        onChange={handleStatusChange}
-                        className="admin-toolbar-select"
-                        value={statusFilter}
-                    />
-                    <Select
-                        placeholder={t('sort_default')}
-                        options={sortOptions}
-                        onChange={handleSortChange}
-                        className="admin-toolbar-select"
-                        value={sortOption}
-                    />
+                    <div className="admin-filter-left">
+                        <Search
+                            placeholder={t('admin_search_products')}
+                            allowClear
+                            className="admin-toolbar-search"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onSearch={handleSearch}
+                        />
+                        <Select
+                            showSearch
+                            allowClear
+                            placeholder={t('categories')}
+                            options={categoryOptions}
+                            onChange={handleCategorySelect}
+                            className="admin-toolbar-select"
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                            value={selectedCategoryId}
+                            style={{ minWidth: 180 }}
+                        />
+                    </div>
+                    <div className="admin-toolbar-right">
+                        <Select
+                            allowClear
+                            placeholder={t('status')}
+                            options={statusOptions}
+                            onChange={handleStatusChange}
+                            className="admin-toolbar-select"
+                            value={statusFilter}
+                        />
+                        <Select
+                            placeholder={t('sort_default')}
+                            options={sortOptions}
+                            onChange={handleSortChange}
+                            className="admin-toolbar-select"
+                            value={sortOption}
+                            style={{ minWidth: 200 }}
+                        />
+                    </div>
                 </div>
 
                 <div className="admin-table-wrapper">
@@ -428,13 +434,13 @@ const ProductList = () => {
                 open={actionModalVisible}
                 onCancel={() => setActionModalVisible(false)}
                 footer={null}
-                title={selectedRecord ? `#${selectedRecord.productId} - ${selectedRecord.variantName}` : t('admin_product_action')}
+                title={selectedRecord ? `#${selectedRecord.productId} - ${selectedRecord.variantName}` : t('actions_col')}
                 centered
                 width={320}
             >
-                <div className="admin-modal-action-wrap">
-                    <Button type="primary" block size="large" icon={<FormOutlined />} onClick={() => handleEditClick(selectedRecord)}>{t('edit')}</Button>
-                    <Button danger block size="large" icon={<DeleteOutlined />} onClick={() => handleDeleteClick(selectedRecord)}>{t('delete')}</Button>
+                <div className="admin-modal-action-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <CButton type="primary" block size="large" icon={<FormOutlined />} onClick={() => handleEditClick(selectedRecord)}>{t('edit')}</CButton>
+                    <CButton danger block size="large" icon={<DeleteOutlined />} onClick={() => handleDeleteClick(selectedRecord)}>{t('delete')}</CButton>
                 </div>
             </Modal>
 

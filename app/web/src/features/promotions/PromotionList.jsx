@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Typography, Tooltip, Space, Modal, Input, Select, DatePicker, Row, Col } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, FilterOutlined } from '@ant-design/icons';
+import { Table, Typography, Tooltip, Space, Modal, Input, Select, DatePicker } from 'antd';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 import { useNavigate } from 'react-router-dom';
@@ -22,10 +22,10 @@ const PromotionList = () => {
     const { isAuthenticated } = useAuth();
     const [query, setQuery] = useQueryParams();
 
-    const titleTerm = query.title || '';
-    const statusFilter = query.status || null;
-    const startAtParam = query.startAt || null;
-    const endAtParam = query.endAt || null;
+    const titleTerm = query.title ?? '';
+    const statusFilter = query.status ?? null;
+    const startAtParam = query.startAt ?? null;
+    const endAtParam = query.endAt ?? null;
     const currentPage = query.page ? Number(query.page) : 1;
     const pageSize = 10;
 
@@ -51,7 +51,7 @@ const PromotionList = () => {
 
     useEffect(() => {
         if (debouncedSearch !== titleTerm) {
-            setQuery({ title: debouncedSearch || null, page: 1 });
+            setQuery({ title: debouncedSearch ?? null, page: 1 });
         }
     }, [debouncedSearch, titleTerm, setQuery]);
 
@@ -118,7 +118,7 @@ const PromotionList = () => {
             width: 150,
             render: (_, record) => (
                 <span className="admin-current-price is-sale">
-                    {record.discountType === 'PERCENTAGE' ? `${record.discountValue}%` : `${record.discountValue?.toLocaleString()}đ`}
+                    {record.discountType === 'PERCENTAGE' ? `${record.discountValue}%` : `${record.discountValue?.toLocaleString()}${t('admin_unit_vnd')}`}
                 </span>
             )
         },
@@ -127,7 +127,7 @@ const PromotionList = () => {
             dataIndex: 'promotionType',
             key: 'type',
             width: 150,
-            render: (type) => <span className="admin-table-tag">{type === 'PRODUCT' ? t('product_label') : type || t('all_caps')}</span>
+            render: (type) => <span className="admin-table-tag">{type ? t(`promo_type_${type.toLowerCase()}`) : t('all_caps')}</span>
         },
         {
             title: t('promo_col_start_time'), 
@@ -182,10 +182,10 @@ const PromotionList = () => {
             render: (_, record) => (
                 <Space size="small">
                     <Tooltip title={t('edit')}>
-                        <Button type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); handleEdit(record); }} />
+                        <CButton type="text" className="admin-action-btn edit-btn" icon={<FormOutlined />} onClick={(e) => { e.stopPropagation(); handleEdit(record); }} />
                     </Tooltip>
                     <Tooltip title={t('delete')}>
-                        <Button type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDeleteClick(record); }} />
+                        <CButton type="text" className="admin-action-btn delete-btn" icon={<DeleteOutlined />} loading={isDeleting} onClick={(e) => { e.stopPropagation(); handleDeleteClick(record); }} />
                     </Tooltip>
                 </Space>
             )
@@ -208,35 +208,39 @@ const PromotionList = () => {
                     </div>
                 }
             >
-                <div className="admin-filter-bar advanced-filters">
-                    <Search
-                        placeholder={t('promo_search_placeholder')}
-                        allowClear
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        onSearch={(v) => setQuery({ title: v || null, page: 1 })}
-                        className="admin-toolbar-search"
-                    />
-                    <Select
-                        placeholder={t('promo_col_status')}
-                        allowClear
-                        value={statusFilter}
-                        onChange={handleStatusChange}
-                        className="admin-toolbar-select"
-                    >
-                        <Select.Option value="STARTING">{t('promo_status_STARTING')}</Select.Option>
-                        <Select.Option value="INCOMING">{t('promo_status_INCOMING')}</Select.Option>
-                        <Select.Option value="ENDED">{t('promo_status_ENDED')}</Select.Option>
-                        <Select.Option value="DISABLED">{t('promo_status_DISABLED')}</Select.Option>
-                    </Select>
-                    <DatePicker.RangePicker
-                        showTime
-                        format="DD/MM/YYYY HH:mm"
-                        value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
-                        onChange={handleDateRangeChange}
-                        placeholder={[t('promo_col_start_time'), t('promo_col_end_time')]}
-                        className="admin-date-picker-range"
-                    />
+                <div className="admin-filter-bar">
+                    <div className="admin-filter-left">
+                        <Search
+                            placeholder={t('promo_search_placeholder')}
+                            allowClear
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onSearch={(v) => setQuery({ title: v || null, page: 1 })}
+                            className="admin-toolbar-search"
+                        />
+                        <Select
+                            placeholder={t('promo_col_status')}
+                            allowClear
+                            value={statusFilter}
+                            onChange={handleStatusChange}
+                            className="admin-toolbar-select"
+                            style={{ minWidth: 160 }}
+                        >
+                            <Select.Option value="STARTING">{t('promo_status_STARTING')}</Select.Option>
+                            <Select.Option value="INCOMING">{t('promo_status_INCOMING')}</Select.Option>
+                            <Select.Option value="ENDED">{t('promo_status_ENDED')}</Select.Option>
+                            <Select.Option value="DISABLED">{t('promo_status_DISABLED')}</Select.Option>
+                        </Select>
+
+                        <DatePicker.RangePicker
+                            showTime
+                            format="DD/MM/YYYY HH:mm"
+                            value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
+                            onChange={handleDateRangeChange}
+                            placeholder={[t('promo_col_start_time'), t('promo_col_end_time')]}
+                            className="admin-date-picker-range-luxury"
+                        />
+                    </div>
                 </div>
 
                 <div className="admin-table-wrapper">

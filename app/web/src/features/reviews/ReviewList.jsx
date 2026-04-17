@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Modal, Input, message, Rate, Avatar, Space, Tooltip, Select } from 'antd';
-import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, ClockCircleOutlined, StarFilled } from '@ant-design/icons';
+import { Modal, Input, message, Rate, Avatar, Select } from 'antd';
+import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, StarFilled } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
 import { useReviews } from '@/features/reviews/hooks/useReviews';
 import { Pagination, CButton } from '@/components/common';
@@ -13,7 +13,7 @@ const { Option } = Select;
 const ReviewList = ({ variantId }) => {
     const { t } = useLanguage();
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize] = useState(10);
     const [selectedVariantId, setSelectedVariantId] = useState(variantId || null);
     const [ratingFilter, setRatingFilter] = useState(null);
     const [hasImageFilter, setHasImageFilter] = useState(null);
@@ -125,7 +125,7 @@ const ReviewList = ({ variantId }) => {
                         {t('admin_review_management_title')}
                     </h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontWeight: 600, color: '#475569' }}>{t('product')}:</span>
+                        <span style={{ fontWeight: 600, color: '#475569' }}>{t('products')}:</span>
                         <Select
                             showSearch
                             className="admin-toolbar-select"
@@ -218,9 +218,7 @@ const ReviewList = ({ variantId }) => {
                                         className={`filter-chip-admin ${ratingFilter === star ? 'active' : ''}`}
                                         onClick={() => handleFilterRating(star)}
                                     >
-                                        {t('admin_review_star').includes('{star}') 
-                                            ? t('admin_review_star').replace('{star}', star)
-                                            : `${star} ${t('reviews').toLowerCase()}`}
+                                        {t('admin_review_star').replace('{star}', star)}
                                     </button>
                                 ))}
                             </div>

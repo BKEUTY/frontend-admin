@@ -105,20 +105,20 @@ const createAxiosClient = () => {
             }
 
             if (status !== 401 && !originalRequest.skipGlobalErrorHandler) {
+                const errorData = error.response?.data;
+                const apiMessage = typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error || '');
+                
                 let fallbackKey = 'error_unknown';
                 if (status === 403) fallbackKey = 'error_403';
                 else if (status === 404) fallbackKey = 'error_404';
                 else if (status >= 500) fallbackKey = 'error_500';
 
-                const errorData = error.response?.data;
-                const apiMessage = typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error || '');
-                
-                let title = originalRequest.customErrorTitle || 'error';
+                let title = originalRequest.customErrorTitle || getTranslation('error') || 'Error';
                 let description = originalRequest.customErrorMsg || apiMessage || getTranslation(fallbackKey);
 
                 if (error.message === 'Network Error') {
-                    title = 'error';
-                    description = getTranslation('api_error_network') || 'Network Error';
+                    title = getTranslation('error') || 'Error';
+                    description = getTranslation('api_error_network');
                 }
 
                 notifyError(title, description);
