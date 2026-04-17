@@ -7,7 +7,6 @@ import {
     TransactionOutlined,
     ShoppingOutlined,
     AppstoreOutlined,
-    StockOutlined,
     CalendarOutlined,
     ArrowUpOutlined,
     DownloadOutlined,
@@ -245,12 +244,20 @@ const Dashboard = () => {
             render: (text, record) => {
                 const slug = generateSlug(text, record.key);
                 return (
-                    <a onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/admin/products/${slug}`, { state: { productId: record.key } });
-                    }} className="admin-text-primary" style={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                    <button 
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/products/${slug}`, { state: { productId: record.key } });
+                        }} 
+                        className="admin-table-link admin-text-primary" 
+                        style={{ 
+                            fontWeight: 'bold', 
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
                         {text}
-                    </a>
+                    </button>
                 );
             } 
         },
@@ -299,7 +306,19 @@ const Dashboard = () => {
             dataIndex: 'id', 
             key: 'id', 
             width: 90,
-            render: (text) => <a onClick={(e) => { e.stopPropagation(); navigate(`/admin/orders/${text}`); }} style={{ fontWeight: 'bold' }}>{`#${text}`}</a> 
+            render: (text) => (
+                <button 
+                    type="button"
+                    className="admin-table-link"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/admin/orders/${text}`); }} 
+                    style={{ 
+                        fontWeight: 'bold',
+                        color: 'inherit'
+                    }}
+                >
+                    {`#${text}`}
+                </button>
+            )
         },
         { 
             title: t('admin_customer'), 

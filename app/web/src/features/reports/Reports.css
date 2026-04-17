@@ -90,12 +90,20 @@
     letter-spacing: 0.05em !important;
 }
 
+.luxury-type-card-v2:hover:not(.active) {
+    border-color: var(--admin-primary) !important;
+    background: #ffffff !important;
+    color: var(--admin-primary) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08) !important;
+}
+
 .luxury-type-card-v2.active {
     background: var(--admin-primary) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
     border-color: var(--admin-primary) !important;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15) !important;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2) !important;
 }
 
 .horizontal-divider-minimal {

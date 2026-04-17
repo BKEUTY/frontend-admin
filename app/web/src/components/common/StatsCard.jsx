@@ -28,7 +28,7 @@ const StatsCard = ({ title, value, icon, trend, trendType }) => {
             <div className="stat-content">
                 <p className="stat-label">{title}</p>
                 <div className="stat-value-container">
-                    <h3 className="stat-value">{amount}</h3>
+                    <h3 className={`stat-value ${currency ? 'has-currency' : ''}`}>{amount}</h3>
                     {currency && <span className="stat-currency">{currency}</span>}
                 </div>
                 {trend !== undefined && (

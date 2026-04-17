@@ -206,6 +206,56 @@
     font-weight: 600 !important;
 }
 
+.admin-table-row-pointer {
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.admin-table-row-pointer:hover td {
+    background-color: #f8fafc !important;
+}
+
+.admin-table-row-pointer:hover {
+    transform: scale(1.005);
+    z-index: 1;
+}
+
+.admin-table-row-pointer:active {
+    transform: scale(0.995);
+    background-color: #f1f5f9 !important;
+}
+
+.admin-table-link {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    position: relative;
+}
+
+.admin-table-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1.5px;
+    bottom: -1px;
+    left: 0;
+    background-color: currentColor;
+    transition: width 0.3s ease;
+}
+
+.admin-table-link:hover {
+    color: var(--admin-primary) !important;
+    filter: brightness(0.9);
+}
+
+.admin-table-link:hover::after {
+    width: 100%;
+}
+
 @media (max-width: 576px) {
     .admin-stat-card-modern {
         padding: 16px;

@@ -244,13 +244,24 @@ const Reports = () => {
                         </div>
                         <div className="report-type-horizontal-row">
                             {['combined', 'product', 'category', 'brand'].map(type => (
-                                <div 
+                                <button 
+                                    type="button"
                                     key={type}
                                     className={`luxury-type-card-v2 ${reportType === type ? 'active' : ''}`}
                                     onClick={() => setReportType(type)}
+                                    aria-pressed={reportType === type}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        padding: 0,
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        color: 'inherit',
+                                        fontFamily: 'inherit'
+                                    }}
                                 >
                                     {t(`admin_report_${type}_revenue`)}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </div>
