@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Row, Col, Table, Tag, Typography, Space, Segmented, Skeleton, Modal } from 'antd';
+import { Row, Col, Table, Tag, Typography, Space, Segmented, Skeleton, Modal, Avatar } from 'antd';
 import { useLanguage } from '@/store/LanguageContext';
 import { useNotification } from '@/store/NotificationContext';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,9 @@ import {
     CalendarOutlined,
     ArrowUpOutlined,
     DownloadOutlined,
-    ExportOutlined
+    ExportOutlined,
+    UserAddOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 import {
     AreaChart,
@@ -84,11 +86,14 @@ const Dashboard = () => {
                 listData = (response?.data?.topProducts || []).map(p => ({
                     ...p,
                     key: p.id,
-                    name: p.productVariantName,
+                    name: p.name,
                     value: p.quantity
                 }));
             } else if (type === 'customers') {
                 const response = await adminDashboardService.getDetailedCustomers(params);
+                listData = response?.data || [];
+            } else if (type === 'new-customers') {
+                const response = await adminDashboardService.getDetailedNewUsers(params);
                 listData = response?.data || [];
             }
 
@@ -106,11 +111,12 @@ const Dashboard = () => {
             try {
                 const wb = XLSX.utils.book_new();
                 
+                const overview = dashboardData.overview || {};
                 const overviewData = [
-                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: dashboardData.stats?.totalRevenue ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: dashboardData.stats?.totalOrders ?? 0, [t('admin_col_unit')]: t('admin_unit_order') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: dashboardData.stats?.totalProfit ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_total_products_sold'), [t('admin_col_value')]: dashboardData.stats?.totalProductsSold ?? 0, [t('admin_col_unit')]: t('admin_unit_product') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: overview.totalRevenue ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: overview.totalOrders ?? 0, [t('admin_col_unit')]: t('admin_unit_order') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: overview.totalProfit ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_products'), [t('admin_col_value')]: overview.totalProductsSold ?? 0, [t('admin_col_unit')]: t('admin_unit_product') },
                 ];
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(overviewData), t('admin_sheet_overview'));
 
@@ -129,7 +135,7 @@ const Dashboard = () => {
                     } else if (type === 'products') {
                         formattedData = listData.map(item => ({
                             [t('admin_product_id')]: item.id,
-                            [t('admin_product_name')]: item.productVariantName,
+                            [t('admin_product_name')]: item.name,
                             [t('admin_product_sold')]: item.quantity,
                             [t('revenue')]: item.revenue,
                             [t('admin_dashboard_profit')]: item.profit ?? 0
@@ -154,7 +160,14 @@ const Dashboard = () => {
                     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dailyData), t('admin_sheet_daily_summary'));
                 }
 
-                const fileName = `Bkeuty_Dashboard_${t(`admin_report_${timeRange ?? 'month'}`)}_${new Date().getTime()}.xlsx`.replace(/\s+/g, '_');
+                const timeRangeLabels = {
+                    'week': t('admin_report_7_days'),
+                    'month': t('admin_report_1_month'),
+                    'quarter': t('admin_report_3_months'),
+                    'year': t('admin_report_1_year')
+                };
+                const rangeLabel = timeRangeLabels[timeRange] || t('admin_report_1_month');
+                const fileName = `Bkeuty_Dashboard_${rangeLabel}_${new Date().getTime()}.xlsx`.replace(/\s+/g, '_');
                 XLSX.writeFile(wb, fileName);
                 showNotification(t('admin_export_success'), 'success');
             } catch (err) {
@@ -178,11 +191,12 @@ const Dashboard = () => {
                 onClick: () => fetchDetails('orders')
             },
             {
-                title: t('admin_dashboard_profit'),
-                value: (overview?.totalProfit ?? 0).toLocaleString('vi-VN') + t('admin_unit_vnd'),
-                icon: <StockOutlined />,
+                title: t('admin_dashboard_users'),
+                value: (overview?.totalRegisteredCustomers ?? 0).toLocaleString('vi-VN'),
+                icon: <UserAddOutlined />,
                 trend: 15.2,
-                trendType: 'up'
+                trendType: 'up',
+                onClick: () => fetchDetails('new-customers')
             },
             {
                 title: t('admin_dashboard_orders'),
@@ -215,7 +229,7 @@ const Dashboard = () => {
     const topProductsData = useMemo(() => {
         return dashboardData?.topPerformers?.topProducts?.slice(0, 5).map(p => ({
             key: p.id,
-            name: p.productVariantName,
+            name: p.name,
             value: Number(p.quantity ?? 0),
             revenue: p.revenue ?? 0
         })) ?? [];
@@ -226,7 +240,8 @@ const Dashboard = () => {
             title: t('admin_product_name'), 
             dataIndex: 'name', 
             key: 'name', 
-            width: '60%',
+            width: '35%',
+            ellipsis: true,
             render: (text, record) => {
                 const slug = generateSlug(text, record.key);
                 return (
@@ -243,17 +258,18 @@ const Dashboard = () => {
             title: t('revenue'), 
             dataIndex: 'revenue', 
             key: 'revenue', 
-            width: '25%',
+            width: 140,
+            align: 'right',
             render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap' }}>{(price ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> 
         },
         { 
             title: t('admin_product_sold'), 
             dataIndex: 'value', 
             key: 'value', 
-            width: '15%',
-            align: 'center', 
+            width: 100,
+            align: 'right', 
             render: (sold) => (
-                <div className="sold-badge" style={{ display: 'inline-flex' }}>
+                <div className="sold-badge" style={{ display: 'inline-flex', marginLeft: 'auto' }}>
                     <ArrowUpOutlined style={{ marginRight: 4, fontSize: 10 }} />
                     {sold ?? 0}
                 </div>
@@ -263,7 +279,7 @@ const Dashboard = () => {
 
     const topBrandsData = useMemo(() => {
         return dashboardData?.topPerformers?.topBrands?.slice(0, 5).map(b => ({
-            name: b.productVariantName,
+            name: b.name,
             value: Number(b.quantity ?? 0),
         })) ?? [];
     }, [dashboardData]);
@@ -282,31 +298,37 @@ const Dashboard = () => {
             title: t('admin_order_id'), 
             dataIndex: 'id', 
             key: 'id', 
-            width: 80,
+            width: 90,
             render: (text) => <a onClick={(e) => { e.stopPropagation(); navigate(`/admin/orders/${text}`); }} style={{ fontWeight: 'bold' }}>{`#${text}`}</a> 
         },
         { 
             title: t('admin_customer'), 
             dataIndex: 'customerName', 
             key: 'customerName', 
+            width: '25%',
+            ellipsis: true,
             render: (text) => <span style={{ whiteSpace: 'nowrap' }}>{text}</span> 
         },
         { 
             title: t('admin_date'), 
             dataIndex: 'date', 
             key: 'date',
+            width: 120,
             render: (date) => <span style={{ whiteSpace: 'nowrap' }}>{date ? new Date(date).toLocaleDateString('vi-VN') : '---'}</span>
         },
         { 
             title: t('total'), 
             dataIndex: 'total', 
             key: 'total', 
+            width: 150,
+            align: 'right',
             render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{(price ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> 
         },
         { 
             title: t('status'), 
             dataIndex: 'status', 
             key: 'status', 
+            width: 120,
             align: 'center',
             render: (status) => {
                 const map = {
@@ -529,17 +551,80 @@ const Dashboard = () => {
                             .slice(
                                 (detailModal.currentPage - 1) * detailModal.pageSize, 
                                 detailModal.currentPage * detailModal.pageSize
-                            )
-                            .map((d, i) => ({ ...d, key: i }))} 
+                            )} 
+                        rowKey={(record) => record.id || record.userId || record.key}
                         loading={detailModal.loading}
+                        className="admin-compact-table"
                         columns={
                             detailModal.type === 'orders' ? recentOrdersColumns : 
-                            detailModal.type === 'products' ? topProductsColumns.concat([{ title: t('quantity'), dataIndex: 'quantity', key: 'quantity' }]) :
+                            detailModal.type === 'products' ? [
+                                ...topProductsColumns,
+                                { title: t('admin_col_quantity'), dataIndex: 'quantity', key: 'quantity', width: 100, align: 'right' }
+                            ] :
+                            detailModal.type === 'new-customers' ? [
+                                { 
+                                    title: 'ID', 
+                                    dataIndex: 'userId', 
+                                    key: 'userId', 
+                                    width: 90, 
+                                    align: 'center', 
+                                    render: id => {
+                                        if (!id) return '-';
+                                        const strId = String(id);
+                                        return <span className="admin-table-id">#{strId.length > 8 ? strId.substring(0, 8) : strId}</span>;
+                                    }
+                                },
+                                { 
+                                    title: t('full_name'), 
+                                    key: 'fullName', 
+                                    width: 220,
+                                    render: (_, record) => (
+                                        <Space>
+                                            <Avatar size="small" icon={<UserOutlined />} />
+                                            <Text strong>{`${record.firstname || ''} ${record.lastname || ''}`}</Text>
+                                        </Space>
+                                    )
+                                },
+                                { title: t('admin_user_email'), dataIndex: 'email', key: 'email', width: 220, ellipsis: true },
+                                { 
+                                    title: t('admin_user_role'), 
+                                    dataIndex: 'userRole', 
+                                    key: 'userRole', 
+                                    width: 120, 
+                                    align: 'center',
+                                    render: (role) => (
+                                        <Tag color={role?.toLowerCase() === 'admin' ? 'gold' : 'blue'} className="admin-status-badge">
+                                            {role?.toLowerCase() === 'admin' ? t('admin_user_role_admin') : t('admin_user_role_user')}
+                                        </Tag>
+                                    )
+                                }
+                            ] :
                             [
-                                { title: t('admin_product_id'), dataIndex: 'userId', key: 'userId', render: id => `#${id.substring(0,8)}` },
-                                { title: t('admin_customer'), dataIndex: 'userName', key: 'userName' }, 
-                                { title: t('admin_dashboard_orders'), dataIndex: 'orderCount', key: 'orderCount' },
-                                { title: t('total'), dataIndex: 'totalSpent', key: 'totalSpent', render: v => `${Number(v ?? 0).toLocaleString()}${t('admin_unit_vnd')}` }
+                                { 
+                                    title: 'ID', 
+                                    dataIndex: 'userId', 
+                                    key: 'userId', 
+                                    width: 90, 
+                                    align: 'center', 
+                                    render: id => {
+                                        if (!id) return '-';
+                                        const strId = String(id);
+                                        return <span className="admin-table-id">#{strId.length > 8 ? strId.substring(0, 8) : strId}</span>;
+                                    }
+                                },
+                                { 
+                                    title: t('admin_customer'), 
+                                    key: 'customer', 
+                                    width: 220,
+                                    render: (_, record) => (
+                                        <Space>
+                                            <Avatar size="small" icon={<UserOutlined />} />
+                                            <Text strong>{record.userName}</Text>
+                                        </Space>
+                                    )
+                                }, 
+                                { title: t('admin_dashboard_orders'), dataIndex: 'orderCount', key: 'orderCount', width: 120, align: 'right', render: v => <Text strong>{v}</Text> },
+                                { title: t('total'), dataIndex: 'totalSpent', key: 'totalSpent', width: 160, align: 'right', render: v => <Text strong className="admin-current-price">{Number(v ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> }
                             ]
                         }
                         pagination={false}

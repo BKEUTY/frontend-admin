@@ -189,7 +189,7 @@ const ProductList = () => {
             title: t('admin_variant_id'),
             dataIndex: 'productId',
             key: 'productId',
-            width: 90,
+            width: 80,
             align: 'center',
             render: (id) => <span className="admin-table-id">#{id}</span>
         },
@@ -212,7 +212,8 @@ const ProductList = () => {
             title: t('admin_product_name'),
             dataIndex: 'variantName',
             key: 'variantName',
-            width: 220,
+            width: 250,
+            ellipsis: true,
             render: (variantName) => <span className="admin-table-product-name">{variantName}</span>
         },
         {
@@ -275,10 +276,10 @@ const ProductList = () => {
             title: t('admin_label_stock'),
             dataIndex: 'stockQuantity',
             key: 'stockQuantity',
-            width: 90,
-            align: 'center',
+            width: 80,
+            align: 'right',
             render: (stockQuantity) => (
-                <span className={`admin-status-badge ${stockQuantity > 0 ? 'success' : 'danger'}`}>
+                <span className={`admin-status-badge ${stockQuantity > 0 ? 'success' : 'danger'}`} style={{ marginLeft: 'auto' }}>
                     {stockQuantity}
                 </span>
             )
@@ -288,9 +289,9 @@ const ProductList = () => {
             dataIndex: 'sold',
             key: 'sold',
             width: 80,
-            align: 'center',
+            align: 'right',
             render: (sold) => (
-                <span className="admin-sold-badge">
+                <span className="admin-sold-badge" style={{ marginLeft: 'auto' }}>
                     {sold || 0}
                 </span>
             )

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Tooltip, Space, Select, DatePicker, Segmented } from 'antd';
+import { Table, Tooltip, Space, Select, DatePicker } from 'antd';
 import { SyncOutlined, EyeOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -64,14 +64,15 @@ const OrderList = () => {
             title: t('admin_order_id'),
             dataIndex: 'id',
             key: 'id',
-            width: 120,
+            width: 90,
             align: 'center',
             render: (text) => <span className="admin-table-id">#{text}</span>,
         },
         {
             title: t('admin_customer'),
             key: 'customer',
-            width: 200,
+            width: 220,
+            ellipsis: true,
             render: (_, record) => (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="admin-table-product-name">{record.userName || t('guest')}</span>
@@ -83,7 +84,7 @@ const OrderList = () => {
             title: t('admin_date'),
             dataIndex: 'orderDate',
             key: 'orderDate',
-            width: 150,
+            width: 120,
             align: 'center',
             render: (date) => <span style={{ color: '#64748b' }}>{dayjs(date).format('DD/MM/YYYY')}</span>,
         },
@@ -91,17 +92,17 @@ const OrderList = () => {
             title: t('payment_method'),
             dataIndex: 'paymentMethod',
             key: 'paymentMethod',
-            width: 150,
+            width: 120,
             align: 'center',
             render: (method) => <span className="admin-table-tag">{method}</span>,
         },
         {
             title: t('total'),
             key: 'total',
-            width: 180,
-            align: 'center',
+            width: 160,
+            align: 'right',
             render: (_, record) => (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                     <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString("vi-VN")}{t('admin_unit_vnd')}</span>
                     <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString("vi-VN")}{t('admin_unit_vnd')}</span>
                 </div>
@@ -111,7 +112,7 @@ const OrderList = () => {
             title: t('status'),
             dataIndex: 'status',
             key: 'status',
-            width: 180,
+            width: 160,
             align: 'center',
             render: (status, record) => (
                 <div className={`admin-status-badge ${getStatusClass(status)}`} style={{ padding: '0', display: 'inline-block' }}>
@@ -134,7 +135,7 @@ const OrderList = () => {
         {
             title: t('actions_col'),
             key: 'action',
-            width: 100,
+            width: 80,
             align: 'center',
             fixed: 'right',
             render: (_, record) => (

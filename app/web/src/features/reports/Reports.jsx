@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Row, Col, Typography, Space, Segmented, Card, Table, Statistic, Skeleton, DatePicker, Tag } from 'antd';
+import { Row, Col, Typography, Space, Segmented, Card, Skeleton, DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
 import { useNotification } from '@/store/NotificationContext';
-import { DownloadOutlined, PieChartOutlined, BarChartOutlined, LineChartOutlined, UserOutlined, CalendarOutlined, TransactionOutlined } from '@ant-design/icons';
+import { DownloadOutlined, PieChartOutlined, BarChartOutlined, LineChartOutlined, UserOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, Legend } from 'recharts';
 import * as XLSX from 'xlsx';
 import './Reports.css';
@@ -28,7 +28,7 @@ const ReportBarChart = ({ data, t }) => {
         <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="productVariantName" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} dy={10} />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} dy={10} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                 <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
                 <Bar dataKey="revenue" radius={[4, 4, 0, 0]} barSize={40}>
@@ -133,17 +133,17 @@ const Reports = () => {
                     ],
                     product: (p) => ({
                         [t('admin_col_product_id')]: p.id,
-                        [t('admin_product_name')]: p.productVariantName,
+                        [t('admin_product_name')]: p.name,
                         [t('admin_col_quantity')]: p.quantity || 0,
                         [t('admin_col_revenue_vnd')]: p.revenue || 0
                     }),
                     brand: (b) => ({
-                        [t('admin_product_brand')]: b.productVariantName,
+                        [t('admin_product_brand')]: b.name,
                         [t('admin_col_quantity')]: b.quantity || 0,
                         [t('admin_col_revenue_vnd')]: b.revenue || 0
                     }),
                     category: (c) => ({
-                        [t('admin_product_category')]: c.productVariantName,
+                        [t('admin_product_category')]: c.name,
                         [t('admin_col_quantity')]: c.quantity || 0,
                         [t('admin_col_revenue_vnd')]: c.revenue || 0
                     }),
@@ -155,8 +155,8 @@ const Reports = () => {
                     }),
                     productTransaction: (d) => ({
                         [t('admin_col_time')]: dayjs(d.date).format('YYYY-MM-DD HH:mm:ss'),
-                        [t('admin_col_product_id')]: d.productId,
-                        [t('admin_product_name')]: d.productVariantName,
+                        [t('admin_col_product_id')]: d.variantId,
+                        [t('admin_product_name')]: d.name,
                         [t('admin_col_quantity')]: d.quantity || 0,
                         [t('admin_col_revenue_vnd')]: d.revenue || 0
                     }),
@@ -164,8 +164,8 @@ const Reports = () => {
                         [t('admin_col_time')]: dayjs(d.date).format('YYYY-MM-DD HH:mm:ss'),
                         [t('admin_col_brand_id')]: d.entityId,
                         [t('admin_col_brand_name')]: d.entityName,
-                        [t('admin_col_product_id')]: d.productId,
-                        [t('admin_product_name')]: d.productVariantName,
+                        [t('admin_col_product_id')]: d.variantId,
+                        [t('admin_product_name')]: d.name,
                         [t('admin_col_quantity')]: d.quantity || 0,
                         [t('admin_col_revenue_vnd')]: d.revenue || 0
                     }),
@@ -173,8 +173,8 @@ const Reports = () => {
                         [t('admin_col_time')]: dayjs(d.date).format('YYYY-MM-DD HH:mm:ss'),
                         [t('admin_col_category_id')]: d.entityId,
                         [t('admin_col_category_name')]: d.entityName,
-                        [t('admin_col_product_id')]: d.productId,
-                        [t('admin_product_name')]: d.productVariantName,
+                        [t('admin_col_product_id')]: d.variantId,
+                        [t('admin_product_name')]: d.name,
                         [t('admin_col_quantity')]: d.quantity || 0,
                         [t('admin_col_revenue_vnd')]: d.revenue || 0
                     })

@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable';
 import './Roboto-normal.js';
 import './Roboto-bold.js';
 
-const generateInvoice = (orderData, t) => {
+const generateInvoice = (orderData, t, language) => {
     const doc = new jsPDF({
         orientation: 'p',
         unit: 'mm',
@@ -34,7 +34,7 @@ const generateInvoice = (orderData, t) => {
     doc.setFont("Roboto", "normal");
     doc.setFontSize(10);
     
-    const formattedDate = orderData.orderDate ? new Date(orderData.orderDate).toLocaleDateString(t('language') === 'Vietnamese' ? 'vi-VN' : 'en-US') : '---';
+    const formattedDate = orderData.orderDate ? new Date(orderData.orderDate).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US') : '---';
     doc.text(`${t('invoice_date')}: ${formattedDate}`, 15, 57);
     
     const paymentMethodsMap = {
@@ -119,7 +119,7 @@ const generateInvoice = (orderData, t) => {
     doc.setTextColor(150);
     doc.text(t('invoice_thanks'), 105, 280, { align: "center" });
 
-    const invoiceFileName = t('language') === 'Vietnamese' ? `BKEUTY_HoaDon_${orderData.id}.pdf` : `BKEUTY_Invoice_${orderData.id}.pdf`;
+    const invoiceFileName = language === 'vi' ? `BKEUTY_HoaDon_${orderData.id}.pdf` : `BKEUTY_Invoice_${orderData.id}.pdf`;
     doc.save(invoiceFileName);
 };
 

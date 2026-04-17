@@ -13,7 +13,7 @@ const { Text, Title } = Typography;
 
 export default function AdminOrderDetail() {
     const { id } = useParams();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const navigate = useNavigate();
 
     const { data: orderDetail, isLoading: detailLoading } = useOrderDetail(id);
@@ -48,7 +48,7 @@ export default function AdminOrderDetail() {
 
     const columns = [
         {
-            title: t('admin_home_products_title'),
+            title: t('invoice_product'),
             dataIndex: 'productVariantName',
             key: 'productVariantName',
             render: (text, record) => (
@@ -158,7 +158,7 @@ export default function AdminOrderDetail() {
                     <CButton
                         type="primary"
                         icon={<DownloadOutlined />}
-                        onClick={() => generateInvoice(orderDetail, t)}
+                        onClick={() => generateInvoice(orderDetail, t, language)}
                     >
                         {t('download_invoice')}
                     </CButton>
