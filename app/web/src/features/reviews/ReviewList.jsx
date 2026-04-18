@@ -11,7 +11,7 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 const ReviewList = ({ variantId }) => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [page, setPage] = useState(1);
     const [pageSize] = useState(10);
     const [selectedVariantId, setSelectedVariantId] = useState(variantId || null);
