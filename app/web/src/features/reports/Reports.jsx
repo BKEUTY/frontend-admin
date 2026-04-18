@@ -6,7 +6,7 @@ import { useLanguage } from '@/store/LanguageContext';
 import { useNotification } from '@/store/NotificationContext';
 import { DownloadOutlined, PieChartOutlined, BarChartOutlined, LineChartOutlined, UserOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, Legend } from 'recharts';
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx'; // Lazy loaded in exportToExcel
 import './Reports.css';
 import { PageWrapper, CButton, StatsCard } from '@/components/common';
 import adminReportService from '@/services/adminReportService';
@@ -92,8 +92,9 @@ const Reports = () => {
         if (!reportData) return;
         setExportLoading(true);
 
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
+                const XLSX = await import('xlsx');
                 const wb = XLSX.utils.book_new();
                 
                 let start, end;

@@ -29,7 +29,7 @@ import {
     Bar,
     Legend
 } from 'recharts';
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx'; // Lazy loaded in exportToExcel
 import './Dashboard.css';
 import '@/admin-list.css';
 import StatsCard from '@/components/common/StatsCard';
@@ -106,8 +106,9 @@ const Dashboard = () => {
         if (!dashboardData) return;
         setExportLoading(true);
         
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
+                const XLSX = await import('xlsx');
                 const wb = XLSX.utils.book_new();
                 
                 const overview = dashboardData.overview || {};
@@ -416,22 +417,43 @@ const Dashboard = () => {
                         <Row gutter={[24, 24]}>
                             {stats.map((stat, index) => (
                                 <Col xs={24} sm={12} xl={6} key={index}>
-                                    <div onClick={stat.onClick} style={{ cursor: stat.onClick ? 'pointer' : 'default', height: '100%' }}>
-                                        <StatsCard {...stat} />
-                                    </div>
+                                    {stat.onClick ? (
+                                        <button 
+                                            type="button"
+                                            onClick={stat.onClick} 
+                                            className="admin-stats-card-button"
+                                            style={{ 
+                                                cursor: 'pointer', 
+                                                height: '100%',
+                                                width: '100%',
+                                                padding: 0,
+                                                border: 'none',
+                                                background: 'none',
+                                                textAlign: 'inherit',
+                                                display: 'block'
+                                            }}
+                                            aria-label={stat.title}
+                                        >
+                                            <StatsCard {...stat} />
+                                        </button>
+                                    ) : (
+                                        <div style={{ height: '100%' }}>
+                                            <StatsCard {...stat} />
+                                        </div>
+                                    )}
                                 </Col>
                             ))}
 
-                            <Col xs={24} xl={12}>
-                                <div className="admin-glass-card main-chart-card">
+                            <Col xs={24} xl={12} style={{ display: 'flex' }}>
+                                <div className="admin-glass-card main-chart-card" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                     <div className="card-header">
                                         <Title level={5}>{t('admin_dashboard_revenue_chart')}</Title>
                                         <div className="admin-badge-dot">
                                             <span className="dot" style={{ background: '#8b5cf6' }}></span> {t('admin_dashboard_revenue')}
                                         </div>
                                     </div>
-                                    <div className="chart-body">
-                                        <ResponsiveContainer width="100%" height={350} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
+                                    <div className="chart-body" style={{ flex: 1 }}>
+                                        <ResponsiveContainer width="100%" height={320} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
                                             <AreaChart data={revenueData}>
                                                 <defs>
                                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -455,14 +477,14 @@ const Dashboard = () => {
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={12} xl={6}>
-                                <div className="admin-glass-card">
+                            <Col xs={24} lg={12} xl={6} style={{ display: 'flex' }}>
+                                <div className="admin-glass-card" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                     <div className="card-header" onClick={() => fetchDetails('customers')} style={{ cursor: 'pointer' }}>
                                         <Title level={5}>{t('admin_dashboard_top_customers')}</Title>
                                         <ExportOutlined className="admin-text-muted" />
                                     </div>
-                                    <div className="chart-body">
-                                        <ResponsiveContainer width="100%" height={300} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
+                                    <div className="chart-body" style={{ flex: 1 }}>
+                                        <ResponsiveContainer width="100%" height={320} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
                                             <BarChart data={topCustomersData}>
                                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                                                 <YAxis hide />
@@ -474,13 +496,13 @@ const Dashboard = () => {
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={12} xl={6}>
-                                <div className="admin-glass-card">
+                            <Col xs={24} lg={12} xl={6} style={{ display: 'flex' }}>
+                                <div className="admin-glass-card" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                     <div className="card-header">
                                         <Title level={5}>{t('admin_best_brand')}</Title>
                                     </div>
-                                    <div className="chart-body flex-center">
-                                        <ResponsiveContainer width="100%" height={300} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
+                                    <div className="chart-body flex-center" style={{ flex: 1 }}>
+                                        <ResponsiveContainer width="100%" height={320} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
                                             <PieChart>
                                                 <Pie data={topBrandsData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
                                                     {(topBrandsData ?? []).map((entry, index) => (
@@ -495,8 +517,8 @@ const Dashboard = () => {
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={12} xl={12}>
-                                <div className="admin-glass-card">
+                            <Col xs={24} lg={12} xl={12} style={{ display: 'flex' }}>
+                                <div className="admin-glass-card" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                     <div className="card-header">
                                         <Title level={5}>{t('admin_recent_orders')}</Title>
                                     </div>
@@ -514,8 +536,8 @@ const Dashboard = () => {
                                 </div>
                             </Col>
 
-                            <Col xs={24} lg={12} xl={12}>
-                                <div className="admin-glass-card">
+                            <Col xs={24} lg={12} xl={12} style={{ display: 'flex' }}>
+                                <div className="admin-glass-card" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                     <div className="card-header">
                                         <Title level={5}>{t('admin_best_product')}</Title>
                                     </div>
