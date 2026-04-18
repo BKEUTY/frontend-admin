@@ -570,3 +570,44 @@
     background: #ffffff !important;
     box-shadow: 0 0 0 4px rgba(241, 245, 249, 0.8) !important;
 }
+
+/* Modern Notification Styling */
+.admin-notification-modern {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.04) !important;
+    padding: 16px 20px !important;
+    overflow: hidden;
+}
+
+.admin-notification-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--admin-primary, #c2185b) 0%, #ec4899 100%);
+}
+
+.admin-notification-modern .ant-notification-notice-message {
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    color: #0f172a !important;
+    margin-left: 8px !important;
+}
+
+.admin-notification-modern .ant-notification-notice-description {
+    font-size: 13px !important;
+    color: #64748b !important;
+    margin-left: 8px !important;
+    margin-top: 4px !important;
+}
+
+.admin-notification-modern .ant-notification-notice-close {
+    top: 16px !important;
+    right: 16px !important;
+    color: #94a3b8 !important;
+}

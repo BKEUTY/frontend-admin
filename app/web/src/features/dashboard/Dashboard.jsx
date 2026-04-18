@@ -358,8 +358,12 @@ const Dashboard = () => {
                    'COMPLETED': { class: 'success', text: t('status_completed') },
                    'CANCELLED': { class: 'danger', text: t('status_cancelled') }
                 };
-                const formatted = map[status?.toUpperCase()];
-                return <span className={`admin-status-badge ${formatted?.class}`} style={{ whiteSpace: 'nowrap', minWidth: '80px' }}>{formatted?.text}</span>;
+                const normalizedStatus = status ? String(status).toUpperCase() : '';
+                const formatted = map[normalizedStatus] ?? {
+                    class: 'processing',
+                    text: status ? String(status) : 'Unknown'
+                };
+                return <span className={`admin-status-badge ${formatted.class}`} style={{ whiteSpace: 'nowrap', minWidth: '80px' }}>{formatted.text}</span>;
             } 
         },
     ];
@@ -582,7 +586,7 @@ const Dashboard = () => {
                             ] :
                             detailModal.type === 'new-customers' ? [
                                 { 
-                                    title: 'ID', 
+                                    title: t('admin_user_id'), 
                                     dataIndex: 'userId', 
                                     key: 'userId', 
                                     width: 90, 
@@ -620,7 +624,7 @@ const Dashboard = () => {
                             ] :
                             [
                                 { 
-                                    title: 'ID', 
+                                    title: t('admin_user_id'), 
                                     dataIndex: 'userId', 
                                     key: 'userId', 
                                     width: 90, 
