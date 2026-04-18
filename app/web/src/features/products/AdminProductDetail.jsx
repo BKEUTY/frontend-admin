@@ -23,7 +23,8 @@ export default function AdminProductDetail() {
     const { slug } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
 
     const productId = location.state?.productId ?? getIdFromSlug(slug);
     const fallbackImg = useMemo(() => getRandomImage(), []);
@@ -210,12 +211,12 @@ export default function AdminProductDetail() {
                     <div className="admin-pd-price-box">
                         <div className="admin-pd-current-price-wrapper">
                             <div className="admin-pd-current-price">
-                                {shownPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                {shownPrice.toLocaleString(locale)}{t('admin_unit_vnd')}
                             </div>
                             {currentPrice.hasDiscount && (
                                 <div className="admin-pd-old-price-wrapper">
                                     <span className="admin-pd-old-price-text">
-                                        {currentPrice.originPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                        {currentPrice.originPrice.toLocaleString(locale)}{t('admin_unit_vnd')}
                                     </span>
                                 </div>
                             )}

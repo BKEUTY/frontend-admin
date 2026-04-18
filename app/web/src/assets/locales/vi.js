@@ -66,6 +66,7 @@ export default {
     // --- Sidebar & Modules ---
     dashboard: "Bảng điều khiển",
     orders: "Đơn hàng",
+    product: "Sản phẩm",
     products: "Sản phẩm",
     categories: "Danh mục",
     brands: "Thương hiệu",

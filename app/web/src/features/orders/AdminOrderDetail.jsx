@@ -15,6 +15,7 @@ export default function AdminOrderDetail() {
     const { id } = useParams();
     const { t, language } = useLanguage();
     const navigate = useNavigate();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
 
     const { data: orderDetail, isLoading: detailLoading } = useOrderDetail(id);
     const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
@@ -79,14 +80,14 @@ export default function AdminOrderDetail() {
                         {showDiscount ? (
                             <>
                                 <Text strong style={{ color: 'var(--admin-primary)' }}>
-                                    {promotionPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                    {promotionPrice.toLocaleString(locale)}{t('admin_unit_vnd')}
                                 </Text>
                                 <Text delete type="secondary" style={{ fontSize: '11px' }}>
-                                    {price.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                    {price.toLocaleString(locale)}{t('admin_unit_vnd')}
                                 </Text>
                             </>
                         ) : (
-                            <Text>{price.toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
+                            <Text>{price.toLocaleString(locale)}{t('admin_unit_vnd')}</Text>
                         )}
                     </div>
                 );
@@ -112,7 +113,7 @@ export default function AdminOrderDetail() {
                 const quantity = Number(record.quantity) || 1;
                 return (
                     <Text strong style={{ color: '#10b981' }}>
-                        {(effectivePrice * quantity).toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                        {(effectivePrice * quantity).toLocaleString(locale)}{t('admin_unit_vnd')}
                     </Text>
                 );
             }
@@ -181,22 +182,22 @@ export default function AdminOrderDetail() {
                             <div style={{ width: '100%', maxWidth: '300px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('subtotal')}</Text>
-                                    <Text strong>{(subtotal).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
+                                    <Text strong>{(subtotal).toLocaleString(locale)}{t('admin_unit_vnd')}</Text>
                                 </div>
                                 {totalDiscount > 0 && (
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                         <Text type="secondary">{t('discount')}</Text>
-                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
+                                        <Text strong style={{ color: '#ef4444' }}>-{(totalDiscount).toLocaleString(locale)}{t('admin_unit_vnd')}</Text>
                                     </div>
                                 )}
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                     <Text type="secondary">{t('shipping_fee')}</Text>
-                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text>
+                                    <Text strong>{(orderDetail.shippingFee || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
                                     <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
                                     <Text strong style={{ fontSize: '26px', color: 'var(--admin-primary)' }}>
-                                        {(orderDetail.total || 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                        {(orderDetail.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}
                                     </Text>
                                 </div>
                             </div>

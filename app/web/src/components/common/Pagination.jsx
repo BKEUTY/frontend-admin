@@ -54,7 +54,7 @@ const Pagination = ({ page = 1, totalPages = 0, totalItems = 0, pageSize = 10, o
                     <button
                         className="page-btn nav-btn"
                         disabled={page === 1}
-                        onClick={() => onPageChange(page - 1)}
+                        onClick={() => onPageChange(Math.max(1, page - 1))}
                     >
                         ❮
                     </button>
@@ -76,7 +76,7 @@ const Pagination = ({ page = 1, totalPages = 0, totalItems = 0, pageSize = 10, o
                     <button
                         className="page-btn nav-btn"
                         disabled={page >= totalPages}
-                        onClick={() => onPageChange(page + 1)}
+                        onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                     >
                         ❯
                     </button>

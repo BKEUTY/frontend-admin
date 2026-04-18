@@ -14,9 +14,10 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const OrderList = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const navigate = useNavigate();
     const [query, setQuery] = useQueryParams();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
     
     const page = query.page ? Number(query.page) : 1;
     const pageSize = 10;
@@ -103,8 +104,8 @@ const OrderList = () => {
             align: 'right',
             render: (_, record) => (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString("vi-VN")}{t('admin_unit_vnd')}</span>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString("vi-VN")}{t('admin_unit_vnd')}</span>
+                    <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
                 </div>
             ),
         },

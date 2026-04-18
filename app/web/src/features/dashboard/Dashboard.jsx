@@ -41,7 +41,8 @@ import adminDashboardService from '@/services/adminDashboardService';
 const { Text, Title } = Typography;
 
 const Dashboard = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
     const navigate = useNavigate();
     const showNotification = useNotification();
     const { timeRange, setTimeRange, loading, dashboardData } = useDashboard('month');
@@ -147,6 +148,14 @@ const Dashboard = () => {
                             [t('admin_dashboard_orders')]: item.orderCount,
                             [t('total')]: item.totalSpent
                         }));
+                    } else if (type === 'new-customers') {
+                        formattedData = listData.map(item => ({
+                            [t('admin_user_id')]: item.userId,
+                            [t('full_name')]: `${item.firstname || ''} ${item.lastname || ''}`,
+                            [t('admin_user_email')]: item.email,
+                            [t('admin_user_role')]: item.userRole,
+                            [t('admin_date')]: item.createdAt ? new Date(item.createdAt).toLocaleDateString(locale) : '-'
+                        }));
                     }
                     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(formattedData), sheetName);
                 }
@@ -184,7 +193,7 @@ const Dashboard = () => {
         return [
             {
                 title: t('admin_dashboard_sales'),
-                value: (overview?.totalRevenue ?? 0).toLocaleString('vi-VN') + t('admin_unit_vnd'),
+                value: (overview?.totalRevenue ?? 0).toLocaleString(locale) + t('admin_unit_vnd'),
                 icon: <TransactionOutlined />,
                 trend: 12.5,
                 trendType: 'up',
@@ -192,7 +201,7 @@ const Dashboard = () => {
             },
             {
                 title: t('admin_dashboard_users'),
-                value: (overview?.totalRegisteredCustomers ?? 0).toLocaleString('vi-VN'),
+                value: (overview?.totalRegisteredCustomers ?? 0).toLocaleString(locale),
                 icon: <UserAddOutlined />,
                 trend: 15.2,
                 trendType: 'up',
@@ -200,7 +209,7 @@ const Dashboard = () => {
             },
             {
                 title: t('admin_dashboard_orders'),
-                value: (overview?.totalOrders ?? 0).toLocaleString('vi-VN'),
+                value: (overview?.totalOrders ?? 0).toLocaleString(locale),
                 icon: <ShoppingOutlined />,
                 trend: 8.2,
                 trendType: 'up',
@@ -208,14 +217,14 @@ const Dashboard = () => {
             },
             {
                 title: t('admin_dashboard_products'),
-                value: (overview?.totalProductsSold ?? 0).toLocaleString('vi-VN'),
+                value: (overview?.totalProductsSold ?? 0).toLocaleString(locale),
                 icon: <AppstoreOutlined />,
                 trend: 2.1,
                 trendType: 'up',
                 onClick: () => fetchDetails('products')
             }
         ];
-    }, [t, dashboardData]);
+    }, [t, dashboardData, language]);
 
     const revenueData = useMemo(() => {
         return dashboardData?.revenueChart?.map(c => ({
@@ -268,7 +277,7 @@ const Dashboard = () => {
             key: 'revenue', 
             width: 140,
             align: 'right',
-            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap' }}>{(price ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> 
+            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap' }}>{(price ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text> 
         },
         { 
             title: t('admin_product_sold'), 
@@ -334,7 +343,7 @@ const Dashboard = () => {
             dataIndex: 'date', 
             key: 'date',
             width: 120,
-            render: (date) => <span style={{ whiteSpace: 'nowrap' }}>{date ? new Date(date).toLocaleDateString('vi-VN') : '---'}</span>
+            render: (date) => <span style={{ whiteSpace: 'nowrap' }}>{date ? new Date(date).toLocaleDateString(locale) : '---'}</span>
         },
         { 
             title: t('total'), 
@@ -342,7 +351,7 @@ const Dashboard = () => {
             key: 'total', 
             width: 150,
             align: 'right',
-            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{(price ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> 
+            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{(price ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text> 
         },
         { 
             title: t('status'), 
@@ -669,7 +678,7 @@ const Dashboard = () => {
                                     )
                                 }, 
                                 { title: t('admin_dashboard_orders'), dataIndex: 'orderCount', key: 'orderCount', width: 120, align: 'right', render: v => <Text strong>{v}</Text> },
-                                { title: t('total'), dataIndex: 'totalSpent', key: 'totalSpent', width: 160, align: 'right', render: v => <Text strong className="admin-current-price">{Number(v ?? 0).toLocaleString('vi-VN')}{t('admin_unit_vnd')}</Text> }
+                                { title: t('total'), dataIndex: 'totalSpent', key: 'totalSpent', width: 160, align: 'right', render: v => <Text strong className="admin-current-price">{Number(v ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text> }
                             ]
                         }
                         pagination={false}

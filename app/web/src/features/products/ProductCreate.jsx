@@ -33,7 +33,8 @@ const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
 const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
 
 const ProductCreate = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
     const [form] = Form.useForm();
@@ -397,7 +398,7 @@ const ProductCreate = () => {
                                 </div>
                                 <div className="pc-detail-price-box">
                                     <div className="pc-detail-current-price">
-                                        {shownPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                        {shownPrice.toLocaleString(locale)}{t('admin_unit_vnd')}
                                     </div>
                                 </div>
                                 {renderPreviewOptions()}

@@ -108,7 +108,8 @@ const ReviewList = ({ variantId }) => {
 
     const formatDateTime = (dateString) => {
         if (!dateString) return '';
-        return new Date(dateString).toLocaleString('vi-VN', {
+        const locale = language === 'vi' ? 'vi-VN' : 'en-US';
+        return new Date(dateString).toLocaleString(locale, {
             hour: '2-digit',
             minute: '2-digit',
             day: '2-digit',
@@ -125,7 +126,7 @@ const ReviewList = ({ variantId }) => {
                         {t('admin_review_management_title')}
                     </h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontWeight: 600, color: '#475569' }}>{t('products')}:</span>
+                        <span style={{ fontWeight: 600, color: '#475569' }}>{t('product')}:</span>
                         <Select
                             showSearch
                             className="admin-toolbar-select"

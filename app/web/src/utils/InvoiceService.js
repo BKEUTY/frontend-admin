@@ -4,6 +4,7 @@ import './Roboto-normal.js';
 import './Roboto-bold.js';
 
 const generateInvoice = (orderData, t, language) => {
+    const numLocale = language === 'vi' ? 'vi-VN' : 'en-US';
     const doc = new jsPDF({
         orientation: 'p',
         unit: 'mm',
@@ -70,8 +71,8 @@ const generateInvoice = (orderData, t, language) => {
         return [
             item.productVariantName,
             quantity,
-            `${effectivePrice.toLocaleString("vi-VN")}${t('admin_unit_vnd')}`,
-            `${(effectivePrice * quantity).toLocaleString("vi-VN")}${t('admin_unit_vnd')}`
+            `${effectivePrice.toLocaleString(numLocale)}${t('admin_unit_vnd')}`,
+            `${(effectivePrice * quantity).toLocaleString(numLocale)}${t('admin_unit_vnd')}`
         ];
     });
 
@@ -106,13 +107,13 @@ const generateInvoice = (orderData, t, language) => {
 
     doc.setFontSize(10);
     doc.text(`${t('invoice_shipping')}:`, labelX, finalY, { align: "right" });
-    doc.text(`+${(orderData.shippingFee || 0).toLocaleString("vi-VN")}${t('admin_unit_vnd')}`, valueX, finalY, { align: "right" });
+    doc.text(`+${(orderData.shippingFee || 0).toLocaleString(numLocale)}${t('admin_unit_vnd')}`, valueX, finalY, { align: "right" });
 
     doc.setFont("Roboto", "bold");
     doc.setFontSize(14);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text(`${t('invoice_grand_total')}:`, labelX, finalY + 12, { align: "right" });
-    doc.text(`${(orderData.total || 0).toLocaleString("vi-VN")}${t('admin_unit_vnd')}`, valueX, finalY + 12, { align: "right" });
+    doc.text(`${(orderData.total || 0).toLocaleString(numLocale)}${t('admin_unit_vnd')}`, valueX, finalY + 12, { align: "right" });
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(9);

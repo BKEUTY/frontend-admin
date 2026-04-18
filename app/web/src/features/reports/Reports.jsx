@@ -42,7 +42,8 @@ const ReportBarChart = ({ data, t }) => {
 };
 
 const Reports = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
     const [searchParams, setSearchParams] = useSearchParams();
     const showNotification = useNotification();
     
@@ -341,7 +342,7 @@ const Reports = () => {
                                 <Col xs={24} sm={12} md={12} lg={12} xl={6} key={i}>
                                     <StatsCard 
                                         title={stat.label}
-                                        value={typeof stat.value === 'number' ? `${stat.value.toLocaleString('vi-VN')}${stat.suffix || ''}` : stat.value}
+                                        value={typeof stat.value === 'number' ? `${stat.value.toLocaleString(locale)}${stat.suffix || ''}` : stat.value}
                                         icon={stat.icon}
                                     />
                                 </Col>

@@ -25,7 +25,8 @@ const { Search, TextArea } = Input;
 const { confirm } = Modal;
 
 const ProductList = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const locale = language === 'vi' ? 'vi-VN' : 'en-US';
     const navigate = useNavigate();
     const [editForm] = Form.useForm();
     const [query, setQuery] = useQueryParams();
@@ -247,12 +248,12 @@ const ProductList = () => {
                     {record.hasDiscount && (
                         <div className="admin-old-price-row">
                             <Text delete className="admin-old-price">
-                                {record.originPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                                {record.originPrice.toLocaleString(locale)}{t('admin_unit_vnd')}
                             </Text>
                         </div>
                     )}
                     <Text className={`admin-current-price ${record.hasDiscount ? 'is-sale' : ''}`}>
-                        {discountPrice.toLocaleString('vi-VN')}{t('admin_unit_vnd')}
+                        {discountPrice.toLocaleString(locale)}{t('admin_unit_vnd')}
                     </Text>
                 </div>
             )
