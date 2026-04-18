@@ -63,7 +63,7 @@ const ProductList = () => {
 
     useEffect(() => {
         if (debouncedSearch !== searchText) {
-            setQuery({ search: debouncedSearch || null, page: 1 });
+            setQuery({ search: debouncedSearch?.trim() || null, page: 1 });
         }
     }, [debouncedSearch, searchText, setQuery]);
 
@@ -175,7 +175,7 @@ const ProductList = () => {
     };
 
     const handleSearch = (value) => {
-        setQuery({ search: value || null, page: 1 });
+        setQuery({ search: value?.trim() || null, page: 1 });
     };
 
     const handleResetFilters = () => {

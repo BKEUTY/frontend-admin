@@ -31,7 +31,7 @@ const UserList = () => {
 
     useEffect(() => {
         if (debouncedSearch !== searchText) {
-            setQuery({ search: debouncedSearch || null, page: 1 });
+            setQuery({ search: debouncedSearch?.trim() || null, page: 1 });
         }
     }, [debouncedSearch, searchText, setQuery]);
 
@@ -138,7 +138,7 @@ const UserList = () => {
                             className="admin-toolbar-search"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            onSearch={(v) => setQuery({ search: v || null, page: 1 })}
+                            onSearch={(v) => setQuery({ search: v?.trim() || null, page: 1 })}
                         />
                         <Select
                             allowClear

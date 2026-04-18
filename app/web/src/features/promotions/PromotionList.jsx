@@ -51,7 +51,7 @@ const PromotionList = () => {
 
     useEffect(() => {
         if (debouncedSearch !== titleTerm) {
-            setQuery({ title: debouncedSearch ?? null, page: 1 });
+            setQuery({ title: debouncedSearch?.trim() || null, page: 1 });
         }
     }, [debouncedSearch, titleTerm, setQuery]);
 
@@ -215,7 +215,7 @@ const PromotionList = () => {
                             allowClear
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            onSearch={(v) => setQuery({ title: v || null, page: 1 })}
+                            onSearch={(v) => setQuery({ title: v?.trim() || null, page: 1 })}
                             className="admin-toolbar-search"
                         />
                         <Select
