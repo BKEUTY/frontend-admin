@@ -26,15 +26,16 @@ export default function AdminOrderDetail() {
         } catch (error) {}
     };
 
-    const getStatusColor = (status) => {
-        switch (status?.toUpperCase()) {
-            case 'PAID':
-            case 'COMPLETED': return 'success';
-            case 'IN_PROGRESS': return 'warning';
-            case 'UNPAID': return 'processing';
-            case 'CANCELLED': return 'error';
-            default: return 'default';
-        }
+    const getStatusColor = (order) => {
+        const orderS = order.status?.toUpperCase();
+        const payS = order.paymentStatus?.toUpperCase();
+        const payM = order.paymentMethod?.toUpperCase();
+
+        if (orderS === 'SUCCEEDED') return 'success';
+        if (orderS === 'CANCELLED') return 'error';
+        if (payM === 'BANK' && payS === 'UNPAID') return 'warning';
+        if (orderS === 'CONFIRMED') return 'info';
+        return 'default';
     };
 
     if (detailLoading || !orderDetail) {
@@ -166,7 +167,12 @@ export default function AdminOrderDetail() {
                 </Col>
             </Row>
 
-            <OrderProgress currentStatus={orderDetail.status} />
+            <OrderProgress 
+                currentStatus={orderDetail.status} 
+                shippingStatus={orderDetail.shippingStatus}
+                paymentMethod={orderDetail.paymentMethod}
+                paymentStatus={orderDetail.paymentStatus}
+            />
 
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
@@ -197,7 +203,7 @@ export default function AdminOrderDetail() {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
                                     <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
                                     <Text strong style={{ fontSize: '26px', color: 'var(--admin-primary)' }}>
-                                        {(orderDetail.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}
+                                        {((orderDetail.total || 0) + (orderDetail.shippingFee || 0)).toLocaleString(locale)}{t('admin_unit_vnd')}
                                     </Text>
                                 </div>
                             </div>
@@ -210,14 +216,21 @@ export default function AdminOrderDetail() {
                         <label className="status-control-label">{t('update_order_status')}</label>
                         <Select
                             value={orderDetail.status}
-                            className={`admin-order-status-selector ${getStatusColor(orderDetail.status)}`}
+                            className={`admin-order-status-selector ${getStatusColor(orderDetail)}`}
                             onChange={handleStatusChange}
                             options={[
-                                { value: 'UNPAID', label: t('status_unpaid') },
-                                { value: 'PAID', label: t('status_paid') },
-                                { value: 'IN_PROGRESS', label: t('status_in_progress') },
-                                { value: 'COMPLETED', label: t('status_completed') },
-                                { value: 'CANCELLED', label: t('status_cancelled') }
+                                { 
+                                    value: 'NOT_CONFIRMED', 
+                                    label: t('status_order_received')
+                                },
+                                { 
+                                    value: 'CONFIRMED', 
+                                    label: (orderDetail.paymentMethod?.toUpperCase() === 'BANK' && orderDetail.paymentStatus?.toUpperCase() === 'UNPAID')
+                                        ? `${t('status_shipping')} (${t('status_awaiting_payment')})`
+                                        : t('status_shipping')
+                                },
+                                { value: 'SUCCEEDED', label: t('order_status_SUCCEEDED') },
+                                { value: 'CANCELLED', label: t('order_status_CANCELLED') }
                             ]}
                         />
                     </Card>

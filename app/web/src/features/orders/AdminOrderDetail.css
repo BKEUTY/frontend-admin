@@ -81,34 +81,35 @@
 }
 
 .admin-order-status-selector.success .ant-select-selector {
-    background-color: #f0fdf4 !important;
-    color: #16a34a !important;
-    border-color: #bbf7d0 !important;
+    background-color: #ecfdf5 !important;
+    color: #059669 !important;
+    border-color: #10b98133 !important;
 }
 
 .admin-order-status-selector.warning .ant-select-selector {
     background-color: #fffbeb !important;
     color: #d97706 !important;
-    border-color: #fef3c7 !important;
+    border-color: #f59e0b33 !important;
 }
 
-.admin-order-status-selector.processing .ant-select-selector {
+.admin-order-status-selector.info .ant-select-selector {
     background-color: #eff6ff !important;
     color: #2563eb !important;
-    border-color: #dbeafe !important;
+    border-color: #3b82f633 !important;
 }
 
 .admin-order-status-selector.error .ant-select-selector {
     background-color: #fef2f2 !important;
     color: #dc2626 !important;
-    border-color: #fee2e2 !important;
+    border-color: #ef444433 !important;
 }
 
 .admin-order-status-selector.default .ant-select-selector {
     background-color: #f8fafc !important;
     color: #475569 !important;
-    border-color: #e2e8f0 !important;
+    border-color: #64748b33 !important;
 }
+
 
 .admin-order-status-selector span.ant-select-selection-item {
     font-weight: 600 !important;

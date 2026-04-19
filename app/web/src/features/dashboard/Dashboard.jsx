@@ -361,17 +361,15 @@ const Dashboard = () => {
             align: 'center',
             render: (status) => {
                 const map = {
-                   'UNPAID': { class: 'processing', text: t('status_unpaid') },
-                   'PAID': { class: 'success', text: t('status_paid') },
-                   'PENDING': { class: 'warning', text: t('status_pending') },
-                   'IN_PROGRESS': { class: 'warning', text: t('status_in_progress') },
-                   'COMPLETED': { class: 'success', text: t('status_completed') },
-                   'CANCELLED': { class: 'danger', text: t('status_cancelled') }
+                   'NOT_CONFIRMED': { class: 'warning', text: t('order_status_NOT_CONFIRMED') },
+                   'CONFIRMED': { class: 'processing', text: t('order_status_CONFIRMED') },
+                   'SUCCEEDED': { class: 'success', text: t('order_status_SUCCEEDED') },
+                   'CANCELLED': { class: 'danger', text: t('order_status_CANCELLED') }
                 };
                 const normalizedStatus = status ? String(status).toUpperCase() : '';
                 const formatted = map[normalizedStatus] ?? {
-                    class: 'processing',
-                    text: status ? String(status) : 'Unknown'
+                    class: 'default',
+                    text: status ? String(status) : '---'
                 };
                 return <span className={`admin-status-badge ${formatted.class}`} style={{ whiteSpace: 'nowrap', minWidth: '80px' }}>{formatted.text}</span>;
             } 

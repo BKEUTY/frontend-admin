@@ -49,15 +49,16 @@ const OrderList = () => {
         } catch (error) {}
     };
 
-    const getStatusClass = (status) => {
-        switch (status?.toUpperCase()) {
-            case 'PAID':
-            case 'COMPLETED': return 'success';
-            case 'IN_PROGRESS': return 'warning';
-            case 'UNPAID': return 'processing';
-            case 'CANCELLED': return 'danger';
-            default: return 'default';
-        }
+    const getStatusClass = (order) => {
+        const orderS = order.status?.toUpperCase();
+        const payS = order.paymentStatus?.toUpperCase();
+        const payM = order.paymentMethod?.toUpperCase();
+
+        if (orderS === 'SUCCEEDED') return 'success';
+        if (orderS === 'CANCELLED') return 'danger';
+        if (payM === 'BANK' && payS === 'UNPAID') return 'warning';
+        if (orderS === 'CONFIRMED') return 'info';
+        return 'default';
     };
 
     const columns = [
@@ -116,18 +117,27 @@ const OrderList = () => {
             width: 160,
             align: 'center',
             render: (status, record) => (
-                <div className={`admin-status-badge ${getStatusClass(status)}`} style={{ padding: '0', display: 'inline-block' }}>
+                <div className={`admin-status-badge ${getStatusClass(record)}`} style={{ padding: '0', display: 'inline-block' }}>
                     <Select
                         value={status}
                         variant="borderless"
                         style={{ width: 140, fontWeight: 600 }}
                         onChange={(val) => handleStatusChange(record.id, val)}
                         options={[
-                            { value: 'UNPAID', label: t('status_unpaid') },
-                            { value: 'PAID', label: t('status_paid') },
-                            { value: 'IN_PROGRESS', label: t('status_in_progress') },
-                            { value: 'COMPLETED', label: t('status_completed') },
-                            { value: 'CANCELLED', label: t('status_cancelled') }
+                            { 
+                                value: 'NOT_CONFIRMED', 
+                                label: (record.paymentMethod?.toUpperCase() === 'BANK' && record.paymentStatus?.toUpperCase() === 'UNPAID')
+                                    ? t('status_awaiting_payment')
+                                    : t('status_order_received')
+                            },
+                            { 
+                                value: 'CONFIRMED', 
+                                label: (record.paymentMethod?.toUpperCase() === 'BANK' && record.paymentStatus?.toUpperCase() === 'UNPAID')
+                                    ? t('status_awaiting_payment')
+                                    : t('status_shipping')
+                            },
+                            { value: 'SUCCEEDED', label: t('order_status_SUCCEEDED') },
+                            { value: 'CANCELLED', label: t('order_status_CANCELLED') }
                         ]}
                     />
                 </div>
@@ -178,11 +188,10 @@ const OrderList = () => {
                             style={{ minWidth: 160 }}
                         >
                             <Option value="ALL">{t('all')}</Option>
-                            <Option value="UNPAID">{t('status_unpaid')}</Option>
-                            <Option value="PAID">{t('status_paid')}</Option>
-                            <Option value="IN_PROGRESS">{t('status_in_progress')}</Option>
-                            <Option value="COMPLETED">{t('status_completed')}</Option>
-                            <Option value="CANCELLED">{t('status_cancelled')}</Option>
+                            <Option value="NOT_CONFIRMED">{t('status_order_received')}</Option>
+                            <Option value="CONFIRMED">{t('status_shipping')}</Option>
+                            <Option value="SUCCEEDED">{t('order_status_SUCCEEDED')}</Option>
+                            <Option value="CANCELLED">{t('order_status_CANCELLED')}</Option>
                         </Select>
 
                             <RangePicker 

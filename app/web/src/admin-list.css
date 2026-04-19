@@ -319,10 +319,16 @@
     border: 1px solid #fee2e2;
 }
 
-.admin-status-badge.processing {
+.admin-status-badge.info {
     background: #eff6ff;
-    color: #3b82f6;
+    color: #2563eb;
     border: 1px solid #dbeafe;
+}
+
+.admin-status-badge.default {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #f1f5f9;
 }
 
 .admin-sold-badge {
