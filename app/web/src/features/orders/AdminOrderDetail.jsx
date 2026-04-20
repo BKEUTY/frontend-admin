@@ -138,6 +138,8 @@ export default function AdminOrderDetail() {
         return sum;
     }, 0);
 
+    const grandTotal = (Number(orderDetail.total) || 0) + (Number(orderDetail.shippingFee) || 0);
+
     return (
         <PageWrapper noCard>
             <div className="admin-pd-breadcrumb">
@@ -201,9 +203,9 @@ export default function AdminOrderDetail() {
                                     <Text strong>{(orderDetail.shippingFee || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
-                                    <Text strong style={{ fontSize: '18px' }}>{t('total')}</Text>
+                                    <Text strong style={{ fontSize: '18px' }}>{t('grand_total')}</Text>
                                     <Text strong style={{ fontSize: '26px', color: 'var(--admin-primary)' }}>
-                                        {((orderDetail.total || 0) + (orderDetail.shippingFee || 0)).toLocaleString(locale)}{t('admin_unit_vnd')}
+                                        {grandTotal.toLocaleString(locale)}{t('admin_unit_vnd')}
                                     </Text>
                                 </div>
                             </div>

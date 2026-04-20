@@ -43,7 +43,7 @@ export default {
     total: "Tổng cộng",
     subtotal: "Tạm tính",
     discount: "Giảm giá",
-    grand_total: "Thành tiền",
+    grand_total: "Tổng thanh toán",
     price: "Giá bán",
     quantity: "Số lượng",
     revenue: "Doanh thu",
@@ -237,6 +237,7 @@ export default {
     admin_btn_upload_continue: "Xác nhận ảnh",
     admin_btn_create_continue: "Lưu & Tiếp tục",
     admin_unit_vnd: "đ",
+    currency_symbol: "đ",
 
     // --- Categories ---
     admin_category_name: "Tên ngành hàng",

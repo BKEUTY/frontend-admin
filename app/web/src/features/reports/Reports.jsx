@@ -78,7 +78,7 @@ const Reports = () => {
                 const formatDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 const params = { startDate: formatDate(start), endDate: formatDate(end) };
                 
-                const response = await adminReportService.getReportData(reportType, params);
+                const response = await adminReportService.getReportData(params);
                 setReportData(response.data);
             } catch (err) {
                 console.error('Failed to fetch report data', err);
@@ -166,8 +166,8 @@ const Reports = () => {
                         [t('admin_col_time')]: dayjs(d.date).format('YYYY-MM-DD HH:mm:ss'),
                         [t('admin_col_brand_id')]: d.entityId,
                         [t('admin_col_brand_name')]: d.entityName,
-                        [t('admin_col_product_id')]: d.variantId,
-                        [t('admin_product_name')]: d.name,
+                        [t('admin_col_product_id')]: d.productId,
+                        [t('admin_product_name')]: d.productVariantName,
                         [t('admin_col_quantity')]: d.quantity || 0,
                         [t('admin_col_revenue_vnd')]: d.revenue || 0
                     }),
@@ -175,8 +175,8 @@ const Reports = () => {
                         [t('admin_col_time')]: dayjs(d.date).format('YYYY-MM-DD HH:mm:ss'),
                         [t('admin_col_category_id')]: d.entityId,
                         [t('admin_col_category_name')]: d.entityName,
-                        [t('admin_col_product_id')]: d.variantId,
-                        [t('admin_product_name')]: d.name,
+                        [t('admin_col_product_id')]: d.productId,
+                        [t('admin_product_name')]: d.productVariantName,
                         [t('admin_col_quantity')]: d.quantity || 0,
                         [t('admin_col_revenue_vnd')]: d.revenue || 0
                     })

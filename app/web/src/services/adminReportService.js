@@ -1,11 +1,11 @@
 import { axiosClient } from './axiosClient';
 
 class AdminReportService {
-    getReportData(type, params = {}, config = {}) {
+    getReportData(params = {}, config = {}) {
         const { params: configParams, ...restConfig } = config;
-        return axiosClient.get('/api/admin/dashboard/data', { 
-            params: { ...configParams, ...params, type }, 
-            ...restConfig 
+        return axiosClient.get('/api/admin/reports/data', {
+            params: { ...configParams, ...params },
+            ...restConfig
         });
     }
 }

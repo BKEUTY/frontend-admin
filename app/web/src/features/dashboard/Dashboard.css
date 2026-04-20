@@ -256,8 +256,42 @@
     width: 100%;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 1200px) {
     .admin-stat-card-modern {
+        padding: 20px !important;
+        gap: 15px;
+    }
+    .stat-value {
+        font-size: 22px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .admin-dashboard-container {
         padding: 16px;
     }
 }
+
+@media (max-width: 768px) {
+    .admin-glass-card {
+        padding: 16px !important;
+    }
+    .stat-icon-wrapper {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 20px !important;
+    }
+    .stat-value {
+        font-size: 20px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-dashboard-container {
+        padding: 12px;
+    }
+    .admin-stat-card-modern {
+        padding: 16px !important;
+        gap: 12px;
+    }
+}

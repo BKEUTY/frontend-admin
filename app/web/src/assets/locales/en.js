@@ -43,7 +43,7 @@ export default {
     total: "Total",
     subtotal: "Subtotal",
     discount: "Discount",
-    grand_total: "Amount Paid",
+    grand_total: "Grand Total",
     price: "Price",
     quantity: "Quantity",
     revenue: "Revenue",
@@ -237,6 +237,7 @@ export default {
     admin_btn_upload_continue: "Confirm media",
     admin_btn_create_continue: "Save & Next",
     admin_unit_vnd: "đ",
+    currency_symbol: "đ",
 
     // --- Categories ---
     admin_category_name: "Category Name",

@@ -130,7 +130,7 @@ const Dashboard = () => {
                             [t('admin_order_id')]: `#${item.id}`,
                             [t('admin_date')]: item.date,
                             [t('admin_customer')]: item.customerName,
-                            [t('total')]: item.total,
+                            [t('grand_total')]: (item.total || 0) + (item.shippingFee || 0),
                             [t('status')]: item.status
                         }));
                     } else if (type === 'products') {
@@ -346,12 +346,14 @@ const Dashboard = () => {
             render: (date) => <span style={{ whiteSpace: 'nowrap' }}>{date ? new Date(date).toLocaleDateString(locale) : '---'}</span>
         },
         { 
-            title: t('total'), 
-            dataIndex: 'total', 
+            title: t('grand_total'), 
             key: 'total', 
             width: 150,
             align: 'right',
-            render: (price) => <Text className="price-cell" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{(price ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text> 
+            render: (_, record) => {
+                const grandTotal = (record.total || 0) + (record.shippingFee || 0);
+                return <Text className="price-cell" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{grandTotal.toLocaleString(locale)}{t('admin_unit_vnd')}</Text>;
+            }
         },
         { 
             title: t('status'), 
@@ -362,9 +364,13 @@ const Dashboard = () => {
             render: (status) => {
                 const map = {
                    'NOT_CONFIRMED': { class: 'warning', text: t('order_status_NOT_CONFIRMED') },
-                   'CONFIRMED': { class: 'processing', text: t('order_status_CONFIRMED') },
+                   '0': { class: 'warning', text: t('order_status_NOT_CONFIRMED') },
+                   'CONFIRMED': { class: 'info', text: t('order_status_CONFIRMED') },
+                   '1': { class: 'info', text: t('order_status_CONFIRMED') },
                    'SUCCEEDED': { class: 'success', text: t('order_status_SUCCEEDED') },
-                   'CANCELLED': { class: 'danger', text: t('order_status_CANCELLED') }
+                   '2': { class: 'success', text: t('order_status_SUCCEEDED') },
+                   'CANCELLED': { class: 'danger', text: t('order_status_CANCELLED') },
+                   '3': { class: 'danger', text: t('order_status_CANCELLED') }
                 };
                 const normalizedStatus = status ? String(status).toUpperCase() : '';
                 const formatted = map[normalizedStatus] ?? {
@@ -535,6 +541,7 @@ const Dashboard = () => {
                                         pagination={false}
                                         className="admin-compact-table"
                                         size="small"
+                                        scroll={{ x: 'max-content' }}
                                         onRow={(record) => ({
                                             onClick: () => navigate(`/admin/orders/${record.id}`),
                                             className: "admin-table-row-pointer"
@@ -554,6 +561,7 @@ const Dashboard = () => {
                                         pagination={false}
                                         className="admin-compact-table"
                                         size="small"
+                                        scroll={{ x: 'max-content' }}
                                         onRow={(record) => ({
                                             onClick: () => {
                                                 const slug = generateSlug(record.name, record.key);
@@ -676,7 +684,7 @@ const Dashboard = () => {
                                     )
                                 }, 
                                 { title: t('admin_dashboard_orders'), dataIndex: 'orderCount', key: 'orderCount', width: 120, align: 'right', render: v => <Text strong>{v}</Text> },
-                                { title: t('total'), dataIndex: 'totalSpent', key: 'totalSpent', width: 160, align: 'right', render: v => <Text strong className="admin-current-price">{Number(v ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text> }
+                                { title: t('grand_total'), dataIndex: 'totalSpent', key: 'totalSpent', width: 160, align: 'right', render: v => <Text strong className="admin-current-price">{Number(v ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}</Text> }
                             ]
                         }
                         pagination={false}

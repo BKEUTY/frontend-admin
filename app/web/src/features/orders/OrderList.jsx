@@ -99,16 +99,25 @@ const OrderList = () => {
             render: (method) => <span className="admin-table-tag">{method}</span>,
         },
         {
-            title: t('total'),
+            title: t('grand_total'),
             key: 'total',
             width: 160,
             align: 'right',
-            render: (_, record) => (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <span className="admin-current-price" style={{ color: '#10b981' }}>{(record.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
-                </div>
-            ),
+            render: (_, record) => {
+                const grandTotal = (Number(record.total) || 0) + (Number(record.shippingFee) || 0);
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        <span className="admin-current-price" style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '15px' }}>
+                            {grandTotal.toLocaleString(locale)}{t('admin_unit_vnd')}
+                        </span>
+                        <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>
+                            <span>{t('subtotal')}: {(record.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
+                            <span style={{ margin: '0 4px' }}>•</span>
+                            <span>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
+                        </div>
+                    </div>
+                );
+            },
         },
         {
             title: t('status'),
