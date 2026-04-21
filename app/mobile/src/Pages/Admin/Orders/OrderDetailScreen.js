@@ -175,9 +175,23 @@ const OrderDetailScreen = () => {
                 </View>
 
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>{t('order_info')}</Text>
+                    <Text style={styles.sectionTitle}>{t('order_items')}</Text>
+                </View>
+                <View style={styles.itemsCard}>
+                    {orderDetail.orderItems?.map((item, index) => (
+                        <View key={index} style={styles.itemRow}>
+                            <View style={styles.itemInfo}>
+                                <Text style={styles.itemName} numberOfLines={1}>{item.productVariantName}</Text>
+                                <Text style={styles.itemQty}>{t('quantity')}: {item.quantity}</Text>
+                            </View>
+                            <Text style={styles.itemPrice}>{(item.price * item.quantity).toLocaleString()}đ</Text>
+                        </View>
+                    ))}
                 </View>
 
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>{t('shipping_timeline')}</Text>
+                </View>
                 <View style={styles.timelineCard}>
                     <View style={styles.timelineLine} />
                     {renderTimelineStep('cart-outline', t('status_pending'), orderData.createdAt, false, true)}
@@ -187,7 +201,7 @@ const OrderDetailScreen = () => {
                 </View>
 
                 <View style={styles.summaryCard}>
-                    <Text style={styles.summaryTitle}>{t('total')}</Text>
+                    <Text style={styles.summaryTitle}>{t('grand_total')}</Text>
                     <View style={styles.summaryRow}>
                         <Text style={styles.summaryLabel}>{t('subtotal')}</Text>
                         <Text style={styles.summaryValue}>{orderData.subtotal.toLocaleString()}đ</Text>
@@ -250,7 +264,13 @@ const styles = StyleSheet.create({
     summaryValueGreen: { fontSize: 14, color: COLORS.success, fontWeight: '700' },
     totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 18, paddingTop: 18, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.14)', borderStyle: 'dashed' },
     totalLabel: { fontSize: 18, fontWeight: '900', color: 'white' },
-    totalValue: { fontSize: 24, fontWeight: '900', color: COLORS.primary }
+    totalValue: { fontSize: 24, fontWeight: '900', color: COLORS.primary },
+    itemsCard: { backgroundColor: 'white', borderRadius: 24, padding: 20, marginBottom: 24, ...SHADOWS.light },
+    itemRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border + '50' },
+    itemInfo: { flex: 1, marginRight: 10 },
+    itemName: { fontSize: 14, fontWeight: '700', color: COLORS.text, marginBottom: 4 },
+    itemQty: { fontSize: 12, color: COLORS.textSecondary },
+    itemPrice: { fontSize: 15, fontWeight: '800', color: COLORS.primary }
 });
 
 export default OrderDetailScreen;

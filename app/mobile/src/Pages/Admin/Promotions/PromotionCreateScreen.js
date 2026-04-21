@@ -46,7 +46,7 @@ const PromotionCreateScreen = ({ navigation, route }) => {
 
     const handleSave = async () => {
         if (!form.title || !form.discountValue) {
-            Alert.alert(t('error'), 'Vui lòng điền đầy đủ các trường bắt buộc');
+            Alert.alert(t('error'), t('promo_required_fields'));
             return;
         }
 
@@ -80,7 +80,7 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                     <Ionicons name="arrow-back" size={24} color={COLORS.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>
-                    {promotionId ? t('edit') : t('create_account') || 'Tạo mới'} {t('promotions')}
+                    {promotionId ? t('edit') : t('admin_promotion_create')} {promotionId ? t('promotions') : ''}
                 </Text>
             </View>
 
@@ -91,17 +91,17 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                         style={styles.input}
                         value={form.title}
                         onChangeText={(val) => setForm({ ...form, title: val })}
-                        placeholder="Nhập tên chương trình"
+                        placeholder={t('promo_placeholder_title')}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>{t('description')}</Text>
+                    <Text style={styles.label}>{t('admin_label_desc')}</Text>
                     <TextInput
                         style={[styles.input, styles.textArea]}
                         value={form.description}
                         onChangeText={(val) => setForm({ ...form, description: val })}
-                        placeholder="Nhập mô tả chi tiết"
+                        placeholder={t('promo_label_description')}
                         multiline
                     />
                 </View>
@@ -113,12 +113,12 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                             style={styles.input}
                             value={form.discountValue}
                             onChangeText={(val) => setForm({ ...form, discountValue: val.replace(/[^0-9]/g, '') })}
-                            placeholder="Giá trị"
+                            placeholder={t('promo_placeholder_discount_value')}
                             keyboardType="numeric"
                         />
                     </View>
                     <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                        <Text style={styles.label}>Loại</Text>
+                        <Text style={styles.label}>{t('promo_label_discount_type')}</Text>
                         <View style={styles.typeSelector}>
                             <TouchableOpacity 
                                 style={[styles.typeBtn, form.discountType === 'PERCENTAGE' && styles.typeBtnActive]}
@@ -130,26 +130,26 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                                 style={[styles.typeBtn, form.discountType === 'AMOUNT' && styles.typeBtnActive]}
                                 onPress={() => setForm({...form, discountType: 'AMOUNT'})}
                             >
-                                <Text style={[styles.typeBtnText, form.discountType === 'AMOUNT' && styles.typeBtnTextActive]}>VNĐ</Text>
+                                <Text style={[styles.typeBtnText, form.discountType === 'AMOUNT' && styles.typeBtnTextActive]}>{t('currency_symbol') || 'đ'}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Giảm tối đa (đ)</Text>
+                    <Text style={styles.label}>{t('promo_label_max_discount')}</Text>
                     <TextInput
                         style={styles.input}
                         value={form.maxDiscount}
                         onChangeText={(val) => setForm({ ...form, maxDiscount: val.replace(/[^0-9]/g, '') })}
-                        placeholder="0 nếu không giới hạn"
+                        placeholder={t('promo_placeholder_max_discount')}
                         keyboardType="numeric"
                     />
                 </View>
 
                 <View style={styles.row}>
                     <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                        <Text style={styles.label}>Ngày bắt đầu</Text>
+                        <Text style={styles.label}>{t('promo_label_start_at')}</Text>
                         <TextInput
                             style={styles.input}
                             value={form.startAt}
@@ -158,7 +158,7 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                         />
                     </View>
                     <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                        <Text style={styles.label}>Ngày kết thúc</Text>
+                        <Text style={styles.label}>{t('promo_label_end_at')}</Text>
                         <TextInput
                             style={styles.input}
                             value={form.endAt}
@@ -169,12 +169,12 @@ const PromotionCreateScreen = ({ navigation, route }) => {
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Áp dụng cho</Text>
+                    <Text style={styles.label}>{t('promo_label_promotion_type')}</Text>
                     <TextInput
                         style={styles.input}
                         value={form.promotionType}
                         onChangeText={(val) => setForm({ ...form, promotionType: val })}
-                        placeholder="ALL, CATEGORY_ID, v.v."
+                        placeholder="ALL, CATEGORY_ID, etc."
                     />
                 </View>
 

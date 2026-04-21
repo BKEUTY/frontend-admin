@@ -10,12 +10,14 @@ export const useAdminPromotions = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 30, total: 0 });
 
-    const fetchPromotions = useCallback(async (page = 1, isRefresh = false) => {
+    const fetchPromotions = useCallback(async (page = 1, isRefresh = false, title = '') => {
         if (isRefresh) setRefreshing(true);
         else setLoading(true);
         
         try {
-            const res = await promotionApi.getAll({ page });
+            const params = { page };
+            if (title) params.title = title;
+            const res = await promotionApi.getAll(params);
             const data = res.data || res;
             if (data && data.content) {
                 setPromotions(data.content);

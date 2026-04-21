@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator, Platform, TextInput } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useLanguage } from '../../../../i18n/LanguageContext';
 import { COLORS, SHADOWS, SIZES } from '../../../../constants/Theme';
@@ -8,19 +8,34 @@ import { useAdminOrders } from '../../../../hooks/useAdminOrders';
 
 const { width } = Dimensions.get('window');
 
+import { useDebounce } from '../../../../hooks/useDebounce';
+
 const OrderListScreen = () => {
     const navigation = useNavigation();
     const { t } = useLanguage();
     const { orders, loading, refreshing, setRefreshing, fetchOrders, pagination } = useAdminOrders();
+    const [searchInput, setSearchInput] = useState('');
+    const debouncedSearch = useDebounce(searchInput, 500);
+
+    useEffect(() => {
+        if (debouncedSearch !== searchInput) return;
+        fetchOrders(1, 10, false, debouncedSearch);
+    }, [debouncedSearch]);
 
     useFocusEffect(
         React.useCallback(() => {
-            fetchOrders(1, 10);
+            fetchOrders(1, 10, false, searchInput);
         }, [fetchOrders])
     );
 
     const onRefresh = () => {
-        fetchOrders(1, 10, true);
+        fetchOrders(1, 10, true, searchInput);
+    };
+
+    const loadMore = () => {
+        if (pagination.current < Math.ceil(pagination.total / pagination.pageSize) && !loading) {
+            fetchOrders(pagination.current + 1, pagination.pageSize, false, searchInput);
+        }
     };
 
     const getStatusColor = (status) => {
@@ -60,7 +75,7 @@ const OrderListScreen = () => {
                     </View>
                     <View style={styles.row}>
                         <Ionicons name="person-outline" size={16} color={COLORS.textLight} />
-                        <Text style={styles.textValue}>{item.userId || t('guest')}</Text>
+                        <Text style={styles.textValue}>{item.customerName || item.userId || t('guest')}</Text>
                     </View>
                 </View>
                 <View style={styles.totalBox}>
@@ -76,8 +91,24 @@ const OrderListScreen = () => {
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>{t('orders')}</Text>
             </View>
+
+            <View style={styles.searchContainer}>
+                <Ionicons name="search" size={20} color={COLORS.textLight} style={styles.searchIcon} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder={t('admin_search_placeholder')}
+                    placeholderTextColor={COLORS.textLight}
+                    value={searchInput}
+                    onChangeText={setSearchInput}
+                />
+                {searchInput.length > 0 && (
+                    <TouchableOpacity onPress={() => setSearchInput('')} style={styles.clearIcon}>
+                        <Ionicons name="close-circle" size={20} color={COLORS.textLight} />
+                    </TouchableOpacity>
+                )}
+            </View>
             
-            {loading && !refreshing && (
+            {loading && !refreshing && pagination.current === 1 && (
                 <View style={styles.loader}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
@@ -89,6 +120,8 @@ const OrderListScreen = () => {
                 renderItem={renderOrderItem}
                 contentContainerStyle={styles.listContainer}
                 showsVerticalScrollIndicator={false}
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.5}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />}
                 ListEmptyComponent={
                     !loading && (
@@ -139,7 +172,31 @@ const styles = StyleSheet.create({
     totalLabel: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '500' },
     totalValue: { fontSize: 18, fontWeight: '900', color: COLORS.primary },
     emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingTop: 100 },
-    emptyText: { marginTop: 15, fontSize: 16, color: COLORS.textLight, fontWeight: '600' }
+    emptyText: { marginTop: 15, fontSize: 16, color: COLORS.textLight, fontWeight: '600' },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        margin: 16,
+        paddingHorizontal: 16,
+        borderRadius: 16,
+        height: 50,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        ...SHADOWS.light,
+    },
+    searchIcon: {
+        marginRight: 10,
+    },
+    clearIcon: {
+        padding: 4,
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 15,
+        color: COLORS.text,
+        fontWeight: '500',
+    },
 });
 
 export default OrderListScreen;

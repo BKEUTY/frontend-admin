@@ -10,15 +10,19 @@ export const useAdminOrders = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
-    const fetchOrders = useCallback(async (page = 1, size = 10, isRefresh = false) => {
+    const fetchOrders = useCallback(async (page = 1, size = 10, isRefresh = false, search = '') => {
         if (isRefresh) setRefreshing(true);
-        else setLoading(true);
-
+        else if (page === 1) setLoading(true);
+        
         try {
-            const res = await orderApi.getAllOrders(page, size);
+            const res = await orderApi.getAllOrders(page, size, search);
             const data = res.data || res;
             if (data && data.content) {
-                setOrders(data.content);
+                if (page === 1) {
+                    setOrders(data.content);
+                } else {
+                    setOrders(prev => [...prev, ...data.content]);
+                }
                 setPagination({
                     current: (data.number || 0) + 1,
                     pageSize: data.size || size,

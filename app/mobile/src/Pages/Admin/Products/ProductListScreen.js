@@ -10,21 +10,24 @@ import { useLanguage } from '../../../../i18n/LanguageContext';
 import adminApi from '../../../../api/adminApi';
 import { getImageUrl } from '../../../../api/axiosClient';
 
+import { useDebounce } from '../../../../hooks/useDebounce';
+
 const ProductListScreen = ({ navigation }) => {
     const { t } = useLanguage();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+    const debouncedSearch = useDebounce(searchInput, 500);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
-    const fetchProducts = async (pageNum = 1, isRefresh = false) => {
+    const fetchProducts = async (pageNum = 1, isRefresh = false, search = searchInput) => {
         if (isRefresh) setRefreshing(true);
         else if (pageNum === 1) setLoading(true);
 
         try {
-            const res = await adminApi.getAllProducts(pageNum, 10);
+            const res = await adminApi.getAllProducts(pageNum, 10, search);
             if (res.data) {
                 if (isRefresh || pageNum === 1) {
                     setProducts(res.data.content || []);
@@ -42,9 +45,14 @@ const ProductListScreen = ({ navigation }) => {
         }
     };
 
+    useEffect(() => {
+        if (debouncedSearch !== searchInput) return;
+        fetchProducts(1, false, debouncedSearch);
+    }, [debouncedSearch]);
+
     useFocusEffect(
         useCallback(() => {
-            fetchProducts(1);
+            fetchProducts(1, false, searchInput);
         }, [])
     );
 
@@ -57,10 +65,6 @@ const ProductListScreen = ({ navigation }) => {
             fetchProducts(page + 1);
         }
     };
-
-    const filteredProducts = products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     const renderProductItem = ({ item }) => (
         <TouchableOpacity 
@@ -108,15 +112,25 @@ const ProductListScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color={COLORS.textLight} style={styles.searchIcon} />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder={t('search')}
-                    placeholderTextColor={COLORS.textLight}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
+            <View style={styles.filterBar}>
+                <View style={styles.searchContainer}>
+                    <Ionicons name="search" size={18} color={COLORS.textLight} style={styles.searchIcon} />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder={t('search')}
+                        placeholderTextColor={COLORS.textLight}
+                        value={searchInput}
+                        onChangeText={setSearchInput}
+                    />
+                    {searchInput.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchInput('')} style={styles.clearIcon}>
+                            <Ionicons name="close-circle" size={20} color={COLORS.textLight} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+                <TouchableOpacity style={styles.filterButton}>
+                    <Ionicons name="funnel-outline" size={20} color={COLORS.primary} />
+                </TouchableOpacity>
             </View>
 
             {loading && page === 1 ? (
@@ -125,7 +139,7 @@ const ProductListScreen = ({ navigation }) => {
                 </View>
             ) : (
                 <FlatList
-                    data={filteredProducts}
+                    data={products}
                     renderItem={renderProductItem}
                     keyExtractor={item => item.id.toString()}
                     contentContainerStyle={styles.listContent}
@@ -177,19 +191,41 @@ const styles = StyleSheet.create({
         ...SHADOWS.medium,
         shadowColor: COLORS.primary,
     },
+    filterBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        gap: 12,
+        marginBottom: 8
+    },
     searchContainer: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'white',
-        margin: 16,
         paddingHorizontal: 16,
         borderRadius: 16,
-        height: 50,
+        height: 48,
         borderWidth: 1,
         borderColor: COLORS.border,
+        ...SHADOWS.light,
+    },
+    filterButton: {
+        width: 48,
+        height: 48,
+        borderRadius: 16,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        ...SHADOWS.light
     },
     searchIcon: {
-        marginRight: 10,
+        marginRight: 8,
+    },
+    clearIcon: {
+        padding: 4,
     },
     searchInput: {
         flex: 1,

@@ -9,25 +9,31 @@ import { COLORS, SHADOWS } from '../../../../constants/Theme';
 import { useLanguage } from '../../../../i18n/LanguageContext';
 import { useAdminPromotions } from '../../../../hooks/useAdminPromotions';
 
+import { useDebounce } from '../../../../hooks/useDebounce';
+
 const PromotionListScreen = ({ navigation }) => {
     const { t } = useLanguage();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+    const debouncedSearch = useDebounce(searchInput, 500);
     const { promotions, loading, refreshing, fetchPromotions } = useAdminPromotions();
+
+    useEffect(() => {
+        if (debouncedSearch !== searchInput) return;
+        fetchPromotions(1, false, debouncedSearch);
+    }, [debouncedSearch]);
 
     useFocusEffect(
         useCallback(() => {
-            fetchPromotions(1);
-        }, [fetchPromotions])
+            fetchPromotions(1, false, searchInput);
+        }, [])
     );
 
     const onRefresh = () => {
-        fetchPromotions(1, true);
+        fetchPromotions(1, true, searchInput);
     };
 
-    const filteredPromotions = promotions.filter(p =>
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // API search is now used instead of local filter
+    const filteredPromotions = promotions;
 
     const formatCurrency = (val) => {
         return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
@@ -52,7 +58,10 @@ const PromotionListScreen = ({ navigation }) => {
             >
                 <View style={styles.promoInfo}>
                     <View style={styles.titleRow}>
-                        <Text style={styles.promoTitle} numberOfLines={1}>{item.title}</Text>
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.promoId}>ID: #{item.id}</Text>
+                            <Text style={styles.promoTitle} numberOfLines={1}>{item.title}</Text>
+                        </View>
                         <View style={[
                             styles.statusBadge,
                             isStarting && styles.statusStarting,
@@ -103,15 +112,25 @@ const PromotionListScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color={COLORS.textLight} style={styles.searchIcon} />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder={t('search_placeholder')}
-                    placeholderTextColor={COLORS.textLight}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
+            <View style={styles.filterBar}>
+                <View style={styles.searchContainer}>
+                    <Ionicons name="search" size={18} color={COLORS.textLight} style={styles.searchIcon} />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder={t('search_placeholder')}
+                        placeholderTextColor={COLORS.textLight}
+                        value={searchInput}
+                        onChangeText={setSearchInput}
+                    />
+                    {searchInput.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchInput('')} style={styles.clearIcon}>
+                            <Ionicons name="close-circle" size={20} color={COLORS.textLight} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+                <TouchableOpacity style={styles.filterButton}>
+                    <Ionicons name="funnel-outline" size={20} color={COLORS.primary} />
+                </TouchableOpacity>
             </View>
 
             {loading && !refreshing ? (
@@ -169,19 +188,41 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         ...SHADOWS.medium,
     },
+    filterBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        gap: 12,
+        marginBottom: 8
+    },
     searchContainer: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'white',
-        margin: 16,
         paddingHorizontal: 16,
         borderRadius: 16,
-        height: 50,
+        height: 48,
         borderWidth: 1,
         borderColor: COLORS.border || '#e2e8f0',
+        ...SHADOWS.light,
+    },
+    filterButton: {
+        width: 48,
+        height: 48,
+        borderRadius: 16,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border || '#e2e8f0',
+        ...SHADOWS.light
     },
     searchIcon: {
-        marginRight: 10,
+        marginRight: 8,
+    },
+    clearIcon: {
+        padding: 4,
     },
     searchInput: {
         flex: 1,
@@ -219,6 +260,12 @@ const styles = StyleSheet.create({
         color: COLORS.text || '#1e293b',
         flex: 1,
         marginRight: 8,
+    },
+    promoId: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: COLORS.primary,
+        marginBottom: 2
     },
     statusBadge: {
         paddingHorizontal: 8,
