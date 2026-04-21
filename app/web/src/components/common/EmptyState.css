@@ -1,48 +1,43 @@
 .empty-state-container {
-    padding: 60px 20px;
+    padding: 20px;
     text-align: center;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 24px;
+    border: 1px dashed #e2e8f0;
+    margin: 5px;
 }
 
 .empty-state-content {
-    margin-top: 16px;
+    margin-top: 20px;
 }
 
 .empty-state-icon {
-    font-size: 48px;
-    color: var(--color_main_title, #ec4899);
+    font-size: 56px;
+    color: var(--admin-primary);
     margin-bottom: 16px;
+    opacity: 0.8;
 }
 
 .empty-state-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1f2937;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
     margin-bottom: 8px;
+    letter-spacing: -0.01em;
 }
 
 .empty-state-description {
-    font-size: 14px;
-    color: #6b7280;
+    font-size: 15px;
+    color: #64748b;
     margin-bottom: 24px;
-    max-width: 400px;
+    max-width: 320px;
     margin-left: auto;
     margin-right: auto;
+    line-height: 1.6;
 }
 
 @media (max-width: 768px) {
     .empty-state-container {
         padding: 40px 16px;
-    }
-
-    .empty-state-icon {
-        font-size: 40px;
-    }
-
-    .empty-state-title {
-        font-size: 16px;
-    }
-
-    .empty-state-description {
-        font-size: 13px;
     }
 }

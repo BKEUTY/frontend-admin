@@ -2,12 +2,33 @@ import orderService from '@/features/orders/services/orderService';
 import { useLanguage } from '@/store/LanguageContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
+import { useMemo } from 'react';
 
 export const useOrders = (params = {}, options = {}) => {
+    const { t } = useLanguage();
+
+    const queryParams = useMemo(() => {
+        const cleanParams = { ...params };
+        
+        Object.keys(cleanParams).forEach((key) => {
+            if (cleanParams[key] === null || cleanParams[key] === undefined || cleanParams[key] === '') {
+                delete cleanParams[key];
+            }
+        });
+
+        if (cleanParams.status === 'ALL') delete cleanParams.status;
+        if (cleanParams.sort === 'default') delete cleanParams.sort;
+        if (cleanParams.search) {
+            cleanParams.search = String(cleanParams.search).trim();
+        }
+        
+        return cleanParams;
+    }, [params]);
+
     const ordersQuery = useQuery({
-        queryKey: ['adminOrders', params],
+        queryKey: ['adminOrders', queryParams],
         queryFn: async () => {
-            const response = await orderService.getAll(params);
+            const response = await orderService.getAll(queryParams);
             const data = response.data || response;
             return {
                 content: data?.content || [],

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Tooltip, Space, Select, DatePicker } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Table, Tooltip, Space, Select, DatePicker, Input } from 'antd';
 import { SyncOutlined, EyeOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -7,11 +7,13 @@ import { useLanguage } from '@/store/LanguageContext';
 import { useOrders, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
 import { EmptyState, PageWrapper, CButton, Pagination } from '@/components/common';
 import useQueryParams from '@/hooks/useQueryParams';
+import { useDebounce } from '@/hooks/useDebounce';
 import '@/components/layouts/AdminLayout.css';
-import '@/admin-list.css';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+const { Search } = Input;
+import '@/admin-list.css';
 
 const OrderList = () => {
     const { t, language } = useLanguage();
@@ -25,6 +27,19 @@ const OrderList = () => {
     const sort = query.sort || 'default';
     const startDate = query.startDate || null;
     const endDate = query.endDate || null;
+    const searchText = query.search || '';
+    const [searchInput, setSearchInput] = useState(searchText);
+    const debouncedSearch = useDebounce(searchInput, 500);
+
+    const queryParams = useMemo(() => ({
+        page,
+        size: pageSize,
+        status: status,
+        sort,
+        startDate,
+        endDate,
+        search: searchText,
+    }), [page, pageSize, status, sort, startDate, endDate, searchText]);
 
     const { 
         orders, 
@@ -32,16 +47,22 @@ const OrderList = () => {
         totalPages, 
         isLoading, 
         refetchOrders 
-    } = useOrders({
-        page,
-        size: pageSize,
-        status: status === 'ALL' ? null : status,
-        sort,
-        startDate,
-        endDate,
-    });
+    } = useOrders(queryParams);
 
     const { mutateAsync: updateOrderStatus, isPending: isUpdating } = useUpdateOrderStatus();
+
+    useEffect(() => {
+        if (!searchText) setSearchInput('');
+    }, [searchText]);
+
+    useEffect(() => {
+        if (debouncedSearch !== searchInput) return;
+
+        const cleanSearch = String(debouncedSearch ?? '').trim();
+        if (cleanSearch !== searchText) {
+            setQuery({ search: cleanSearch || null, page: 1 });
+        }
+    }, [debouncedSearch, searchInput, searchText, setQuery]);
 
     const handleStatusChange = async (orderId, value) => {
         try {
@@ -188,26 +209,40 @@ const OrderList = () => {
             >
                 <div className="admin-filter-bar">
                     <div className="admin-filter-left">
-                        <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
-                        <Select 
-                            value={status} 
-                            onChange={(val) => setQuery({ ...query, status: val, page: 1 })} 
-                            className="admin-toolbar-select"
-                            placeholder={t('status')}
-                            style={{ minWidth: 160 }}
-                        >
-                            <Option value="ALL">{t('all')}</Option>
-                            <Option value="NOT_CONFIRMED">{t('status_order_received')}</Option>
-                            <Option value="CONFIRMED">{t('status_shipping')}</Option>
-                            <Option value="SUCCEEDED">{t('order_status_SUCCEEDED')}</Option>
-                            <Option value="CANCELLED">{t('order_status_CANCELLED')}</Option>
-                        </Select>
+                        <Search
+                            placeholder={t('admin_order_search_placeholder')}
+                            allowClear
+                            value={searchInput}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchInput(val);
+                                if (!val) {
+                                    setQuery({ search: null, page: 1 });
+                                }
+                            }}
+                            onSearch={(v) => setQuery({ search: v?.trim() || null, page: 1 })}
+                            className="admin-toolbar-search"
+                        />
+                        <div className="admin-filter-group">
+                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select 
+                                value={status} 
+                                onChange={(val) => setQuery({ status: val, page: 1 })} 
+                                className="admin-toolbar-select"
+                                placeholder={t('status')}
+                                style={{ minWidth: 140 }}
+                            >
+                                <Option value="ALL">{t('all')}</Option>
+                                <Option value="NOT_CONFIRMED">{t('status_order_received')}</Option>
+                                <Option value="CONFIRMED">{t('status_shipping')}</Option>
+                                <Option value="SUCCEEDED">{t('order_status_SUCCEEDED')}</Option>
+                                <Option value="CANCELLED">{t('order_status_CANCELLED')}</Option>
+                            </Select>
 
                             <RangePicker 
                                 value={startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null}
                                 onChange={(dates) => {
                                     setQuery({
-                                        ...query,
                                         startDate: dates ? dates[0].format('YYYY-MM-DD') : null,
                                         endDate: dates ? dates[1].format('YYYY-MM-DD') : null,
                                         page: 1
@@ -216,22 +251,25 @@ const OrderList = () => {
                                 className="admin-date-picker-range-luxury"
                                 placeholder={[t('startDate'), t('endDate')]}
                             />
+                        </div>
                     </div>
 
                     <div className="admin-toolbar-right">
-                        <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
-                        <Select 
-                            value={sort} 
-                            onChange={(val) => setQuery({ ...query, sort: val, page: 1 })} 
-                            className="admin-toolbar-select"
-                            style={{ minWidth: 200 }}
-                        >
-                            <Option value="default">{t('sort_default')}</Option>
-                            <Option value="date_desc">{t('sort_time_newest')}</Option>
-                            <Option value="date_asc">{t('sort_time_oldest')}</Option>
-                            <Option value="total_desc">{t('sort_price_desc')}</Option>
-                            <Option value="total_asc">{t('sort_price_asc')}</Option>
-                        </Select>
+                        <div className="admin-filter-group">
+                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select 
+                                value={sort} 
+                                onChange={(val) => setQuery({ sort: val, page: 1 })} 
+                                className="admin-toolbar-select"
+                                style={{ minWidth: 200 }}
+                            >
+                                <Option value="default">{t('sort_default')}</Option>
+                                <Option value="date_desc">{t('sort_time_newest')}</Option>
+                                <Option value="date_asc">{t('sort_time_oldest')}</Option>
+                                <Option value="total_desc">{t('sort_price_desc')}</Option>
+                                <Option value="total_asc">{t('sort_price_asc')}</Option>
+                            </Select>
+                        </div>
                     </div>
                 </div>
 
@@ -257,7 +295,7 @@ const OrderList = () => {
                                 totalPages={totalPages} 
                                 totalItems={totalItems}
                                 pageSize={pageSize}
-                                onPageChange={(p) => setQuery({ ...query, page: p })} 
+                                onPageChange={(p) => setQuery({ page: p })} 
                             />
                         </div>
                     )}

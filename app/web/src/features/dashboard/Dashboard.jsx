@@ -33,7 +33,7 @@ import {
 import './Dashboard.css';
 import '@/admin-list.css';
 import StatsCard from '@/components/common/StatsCard';
-import { PageWrapper, CButton, Pagination } from '@/components/common';
+import { PageWrapper, CButton, Pagination, EmptyState } from '@/components/common';
 import { useDashboard } from '@/hooks/useDashboard';
 import { generateSlug } from '@/utils/helpers';
 import adminDashboardService from '@/services/adminDashboardService';
@@ -461,9 +461,6 @@ const Dashboard = () => {
                                 <div className="admin-glass-card main-chart-card" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                                     <div className="card-header">
                                         <Title level={5}>{t('admin_dashboard_revenue_chart')}</Title>
-                                        <div className="admin-badge-dot">
-                                            <span className="dot" style={{ background: '#8b5cf6' }}></span> {t('admin_dashboard_revenue')}
-                                        </div>
                                     </div>
                                     <div className="chart-body" style={{ flex: 1 }}>
                                         <ResponsiveContainer width="100%" height={320} style={{ fontFamily: 'var(--font-main, Inter, sans-serif)' }}>
@@ -546,6 +543,7 @@ const Dashboard = () => {
                                             onClick: () => navigate(`/admin/orders/${record.id}`),
                                             className: "admin-table-row-pointer"
                                         })}
+                                        locale={{ emptyText: <EmptyState title={t('no_orders')} /> }}
                                     />
                                 </div>
                             </Col>
@@ -571,6 +569,7 @@ const Dashboard = () => {
                                             },
                                             className: "admin-table-row-pointer"
                                         })}
+                                        locale={{ emptyText: <EmptyState title={t('no_products_found')} /> }}
                                     />
                                 </div>
                             </Col>
@@ -689,6 +688,7 @@ const Dashboard = () => {
                         }
                         pagination={false}
                         scroll={{ y: 450 }}
+                        locale={{ emptyText: <EmptyState /> }}
                     />
                     
                     {detailModal.data?.length > 0 && !detailModal.loading && (

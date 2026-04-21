@@ -24,9 +24,9 @@ const EmptyState = ({
                         <h3 className="empty-state-title">
                             {title || t('no_data')}
                         </h3>
-                        {description && (
-                            <p className="empty-state-description">{description}</p>
-                        )}
+                        <p className="empty-state-description">
+                            {description || t('admin_report_no_data')}
+                        </p>
                     </div>
                 }
             >

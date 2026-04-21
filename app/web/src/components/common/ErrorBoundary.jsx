@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { notifyError } from '@/services/NotificationService';
 import { getTranslation } from '@/utils/translate';
 
+import { Result, Button, Typography } from 'antd';
+const { Paragraph, Text } = Typography;
+
 class ErrorBoundary extends Component {
     constructor(props) {
         super(props);
@@ -14,32 +17,49 @@ class ErrorBoundary extends Component {
 
     componentDidCatch(error, errorInfo) {
         console.error("ErrorBoundary caught an error:", error, errorInfo);
-        notifyError('error', 'error_unknown');
+        // notifyError is available if needed, but let's focus on UI
     }
 
     render() {
         if (this.state.hasError) {
             return (
-                <div style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: '#fffbfb', minHeight: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ maxWidth: '600px', width: '100%', background: 'white', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                        <p style={{ color: '#e11d48', fontSize: '18px', fontWeight: '700', marginBottom: '15px' }}>
-                            {getTranslation('api_error_general')}
-                        </p>
-                        
-                        {import.meta.env.DEV && (
-                            <div style={{ marginTop: '20px', padding: '15px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', textAlign: 'left', overflowX: 'auto' }}>
-                                <code style={{ fontSize: '13px', color: '#9f1239', fontFamily: 'monospace' }}>
-                                    {this.state.error?.toString()}
-                                </code>
-                            </div>
-                        )}
-                        
-                        <button 
-                            onClick={() => window.location.reload()}
-                            style={{ marginTop: '24px', padding: '10px 24px', background: 'var(--color_main_title)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
+                <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6">
+                    <div className="admin-glass-card max-w-2xl w-full p-8 text-center">
+                        <Result
+                            status="error"
+                            title={<span className="text-2xl font-bold">Oops! Something went wrong</span>}
+                            subTitle={getTranslation('api_error_general')}
+                            extra={[
+                                <Button 
+                                    type="primary" 
+                                    key="refresh" 
+                                    size="large"
+                                    onClick={() => window.location.reload()}
+                                    className="bg-primary hover:bg-primary-hover border-none h-12 px-8 rounded-xl font-semibold"
+                                >
+                                    {getTranslation('refresh')}
+                                </Button>,
+                                <Button 
+                                    key="home" 
+                                    size="large"
+                                    onClick={() => window.location.href = '/admin'}
+                                    className="h-12 px-8 rounded-xl font-semibold"
+                                >
+                                    Go to Dashboard
+                                </Button>
+                            ]}
                         >
-                            {getTranslation('refresh')}
-                        </button>
+                            {import.meta.env.DEV && (
+                                <div className="mt-6 text-left">
+                                    <Paragraph>
+                                        <Text strong className="text-red-500">Error Details:</Text>
+                                    </Paragraph>
+                                    <pre className="bg-red-50 p-4 rounded-xl border border-red-100 overflow-auto max-h-48 text-xs text-red-700">
+                                        {this.state.error?.stack || this.state.error?.toString()}
+                                    </pre>
+                                </div>
+                            )}
+                        </Result>
                     </div>
                 </div>
             );
@@ -48,6 +68,7 @@ class ErrorBoundary extends Component {
         return this.props.children;
     }
 }
+
 
 export default ErrorBoundary;
 

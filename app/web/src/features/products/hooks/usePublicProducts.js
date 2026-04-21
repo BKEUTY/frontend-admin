@@ -17,10 +17,10 @@ export const usePublicProducts = (params = {}) => {
         const cleanParams = { ...params };
 
         if (cleanParams.search) {
-            cleanParams.name = cleanParams.search.trim();
-            delete cleanParams.search;
+            cleanParams.search = String(cleanParams.search).trim();
         } else if (cleanParams.name) {
-            cleanParams.name = cleanParams.name.trim();
+            cleanParams.search = String(cleanParams.name).trim();
+            delete cleanParams.name;
         }
 
         if (cleanParams.categoryId === 'all' || !cleanParams.categoryId) {

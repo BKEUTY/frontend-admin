@@ -1,4 +1,3 @@
-import '@/admin-list.css';
 import { CButton, EmptyState, PageWrapper, Pagination, Skeleton } from '@/components/common';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { usePublicProducts } from '@/features/products/hooks/usePublicProducts';
@@ -7,10 +6,11 @@ import useQueryParams from '@/hooks/useQueryParams';
 import { getImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug } from '@/utils/helpers';
-import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import { Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '@/admin-list.css';
 
 import dummy1 from '@/assets/images/products/product_dummy_1.jpg';
 import dummy2 from '@/assets/images/products/product_dummy_2.jpg';
@@ -59,14 +59,17 @@ const ProductList = () => {
     const [selectedRecord, setSelectedRecord] = useState(null);
 
     useEffect(() => {
-        setSearchInput(searchText);
+        if (!searchText) setSearchInput('');
     }, [searchText]);
 
     useEffect(() => {
-        if (debouncedSearch !== searchText) {
-            setQuery({ search: debouncedSearch?.trim() || null, page: 1 });
+        if (debouncedSearch !== searchInput) return;
+
+        const cleanSearch = String(debouncedSearch ?? '').trim();
+        if (cleanSearch !== searchText) {
+            setQuery({ search: cleanSearch || null, page: 1 });
         }
-    }, [debouncedSearch, searchText, setQuery]);
+    }, [debouncedSearch, searchInput, searchText, setQuery]);
 
     const tableData = useMemo(() => products.map(p => ({
         ...p,
@@ -353,38 +356,53 @@ const ProductList = () => {
                             allowClear
                             className="admin-toolbar-search"
                             value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchInput(val);
+                                if (!val) {
+                                    setQuery({ search: null, page: 1 });
+                                }
+                            }}
                             onSearch={handleSearch}
                         />
-                        <Select
-                            showSearch
-                            allowClear
-                            placeholder={t('categories')}
-                            options={categoryOptions}
-                            onChange={handleCategorySelect}
-                            className="admin-toolbar-select"
-                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                            value={selectedCategoryId}
-                            style={{ minWidth: 180 }}
-                        />
+                        <div className="admin-filter-group">
+                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                showSearch
+                                allowClear
+                                placeholder={t('categories')}
+                                options={categoryOptions}
+                                onChange={handleCategorySelect}
+                                className="admin-toolbar-select"
+                                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                value={selectedCategoryId}
+                                style={{ minWidth: 150 }}
+                            />
+                        </div>
                     </div>
                     <div className="admin-toolbar-right">
-                        <Select
-                            allowClear
-                            placeholder={t('status')}
-                            options={statusOptions}
-                            onChange={handleStatusChange}
-                            className="admin-toolbar-select"
-                            value={statusFilter}
-                        />
-                        <Select
-                            placeholder={t('sort_default')}
-                            options={sortOptions}
-                            onChange={handleSortChange}
-                            className="admin-toolbar-select"
-                            value={sortOption}
-                            style={{ minWidth: 200 }}
-                        />
+                        <div className="admin-filter-group">
+                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                allowClear
+                                placeholder={t('status')}
+                                options={statusOptions}
+                                onChange={handleStatusChange}
+                                className="admin-toolbar-select"
+                                value={statusFilter}
+                            />
+                        </div>
+                        <div className="admin-filter-group">
+                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                placeholder={t('sort_default')}
+                                options={sortOptions}
+                                onChange={handleSortChange}
+                                className="admin-toolbar-select"
+                                value={sortOption}
+                                style={{ minWidth: 200 }}
+                            />
+                        </div>
                     </div>
                 </div>
 

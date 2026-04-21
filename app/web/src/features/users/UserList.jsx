@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Table, Typography, Tag, Space, Input, Select, Avatar } from 'antd';
-import { SyncOutlined, UserOutlined } from '@ant-design/icons';
+import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
 import { useUsers } from '@/features/users/hooks/useUsers';
 import { PageWrapper, Skeleton, Pagination, EmptyState, CButton } from '@/components/common';
 import useQueryParams from '@/hooks/useQueryParams';
 import { useDebounce } from '@/hooks/useDebounce';
-import '@/admin-list.css';
+// moved to bottom
 
 const { Text } = Typography;
 const { Search } = Input;
+import '@/admin-list.css';
 
 const UserList = () => {
     const { t } = useLanguage();
@@ -26,14 +27,17 @@ const UserList = () => {
     const { data: users = [], isLoading, refetch } = useUsers(roleFilter);
 
     useEffect(() => {
-        setSearchInput(searchText);
+        if (!searchText) setSearchInput('');
     }, [searchText]);
 
     useEffect(() => {
-        if (debouncedSearch !== searchText) {
-            setQuery({ search: debouncedSearch?.trim() || null, page: 1 });
+        if (debouncedSearch !== searchInput) return;
+
+        const cleanSearch = String(debouncedSearch ?? '').trim();
+        if (cleanSearch !== searchText) {
+            setQuery({ search: cleanSearch || null, page: 1 });
         }
-    }, [debouncedSearch, searchText, setQuery]);
+    }, [debouncedSearch, searchInput, searchText, setQuery]);
 
     const filteredUsers = useMemo(() => {
         const lowerSearch = searchText.toLowerCase();
@@ -66,7 +70,7 @@ const UserList = () => {
             render: (id) => <span className="admin-table-id">#{id.substring(0, 8)}...</span>
         },
         {
-            title: t('admin_user_name'),
+            title: t('full_name'),
             key: 'fullName',
             width: 200,
             render: (_, record) => (
@@ -137,18 +141,40 @@ const UserList = () => {
                             allowClear
                             className="admin-toolbar-search"
                             value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchInput(val);
+                                if (!val) {
+                                    setQuery({ search: null, page: 1 });
+                                }
+                            }}
                             onSearch={(v) => setQuery({ search: v?.trim() || null, page: 1 })}
                         />
+                        <div className="admin-filter-group">
+                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                allowClear
+                                placeholder={t('admin_user_role')}
+                                options={roleOptions}
+                                onChange={(v) => setQuery({ role: v || null, page: 1 })}
+                                className="admin-toolbar-select"
+                                value={roleFilter}
+                                style={{ minWidth: 140 }}
+                            />
+                        </div>
+                    </div>
+                    <div className="admin-toolbar-right">
+                        <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
                         <Select
-                            allowClear
-                            placeholder={t('admin_user_role')}
-                            options={roleOptions}
-                            onChange={(v) => setQuery({ role: v || null, page: 1 })}
+                            placeholder={t('sort_default')}
+                            defaultValue="default"
                             className="admin-toolbar-select"
-                            value={roleFilter}
-                            style={{ minWidth: 160 }}
-                        />
+                            style={{ minWidth: 200 }}
+                        >
+                            <Option value="default">{t('sort_default')}</Option>
+                            <Option value="newest">{t('sort_time_newest')}</Option>
+                            <Option value="oldest">{t('sort_time_oldest')}</Option>
+                        </Select>
                     </div>
                 </div>
 
@@ -171,7 +197,7 @@ const UserList = () => {
                                 onRow={(record) => ({
                                     className: "admin-table-row-pointer"
                                 })}
-                                locale={{ emptyText: <EmptyState description={t('no_data')} /> }}
+                                locale={{ emptyText: <EmptyState title={t('no_data')} /> }}
                             />
                             {filteredUsers.length > pageSize && (
                                 <div className="admin-custom-pagination">

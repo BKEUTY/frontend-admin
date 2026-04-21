@@ -6,9 +6,9 @@ import useQueryParams from '@/hooks/useQueryParams';
 import { getImageUrl } from '@/services/axiosClient';
 import { useAuth } from '@/store/AuthContext';
 import { useLanguage } from '@/store/LanguageContext';
-import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SortAscendingOutlined, SyncOutlined } from '@ant-design/icons';
 import { Form, Input, Modal, Select, Space, Table, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const { Text } = Typography;
 const { Search, TextArea } = Input;
@@ -31,8 +31,14 @@ const BrandList = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingBrand, setEditingBrand] = useState(null);
 
+    const queryParams = useMemo(() => ({
+        page: currentPage,
+        size: pageSize,
+        search: searchTerm
+    }), [currentPage, pageSize, searchTerm]);
+
     const { brands, totalPages, totalItems, isLoading, refetchBrands } = useBrands(
-        { page: currentPage, size: pageSize, search: searchTerm },
+        queryParams,
         { enabled: isAuthenticated }
     );
     const { mutateAsync: createBrand, isPending: isCreating } = useCreateBrand();
@@ -40,14 +46,17 @@ const BrandList = () => {
     const { mutateAsync: deleteBrand, isPending: isDeleting } = useDeleteBrand();
 
     useEffect(() => {
-        setSearchInput(searchTerm);
+        if (!searchTerm) setSearchInput('');
     }, [searchTerm]);
 
     useEffect(() => {
-        if (debouncedSearch !== searchTerm) {
-            setQuery({ search: debouncedSearch || null, page: 1 });
+        if (debouncedSearch !== searchInput) return;
+
+        const cleanSearch = String(debouncedSearch ?? '').trim();
+        if (cleanSearch !== searchTerm) {
+            setQuery({ search: cleanSearch || null, page: 1 });
         }
-    }, [debouncedSearch, searchTerm, setQuery]);
+    }, [debouncedSearch, searchInput, searchTerm, setQuery]);
 
     const handleRefresh = () => {
         setQuery({ search: null, page: null });
@@ -175,6 +184,13 @@ const BrandList = () => {
         },
     ];
 
+    const sortOptions = [
+        { label: t('sort_default'), value: 'default' },
+        { label: t('sort_name_asc'), value: 'name_asc' },
+        { label: t('sort_name_desc'), value: 'name_desc' },
+        { label: t('status'), value: 'status_asc' },
+    ];
+
     return (
         <div className="admin-list-container">
             <PageWrapper
@@ -182,10 +198,10 @@ const BrandList = () => {
                 subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('brands').toLowerCase()}</>}
                 extra={
                     <div className="admin-header-buttons">
-                        <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={isLoading}>
+                        <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={isLoading} className="admin-btn-responsive">
                             {t('refresh')}
                         </CButton>
-                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => openModal()} className="admin-btn-responsive">
                             {t('admin_brand_add')}
                         </CButton>
                     </div>
@@ -197,11 +213,32 @@ const BrandList = () => {
                             placeholder={t('admin_brand_search')}
                             allowClear
                             value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchInput(val);
+                                if (!val) {
+                                    setQuery({ search: null, page: 1 });
+                                }
+                            }}
                             onSearch={(v) => setQuery({ search: v || null, page: 1 })}
                             className="admin-toolbar-search"
-                            style={{ maxWidth: 400 }}
                         />
+                    </div>
+                    <div className="admin-toolbar-right">
+                        <div className="admin-filter-group">
+                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                placeholder={t('sort_default')}
+                                onChange={(val) => setQuery({ sort: val === 'default' ? null : val, page: 1 })}
+                                className="admin-toolbar-select"
+                                value={query.sort || 'default'}
+                                style={{ minWidth: 200 }}
+                            >
+                                {sortOptions.map(opt => (
+                                    <Option key={opt.value} value={opt.value}>{opt.label}</Option>
+                                ))}
+                            </Select>
+                        </div>
                     </div>
                 </div>
 

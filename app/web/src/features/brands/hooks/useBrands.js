@@ -2,12 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
 import brandService from '@/features/brands/services/brandService';
 import { useLanguage } from '@/store/LanguageContext';
+import { useMemo } from 'react';
 
 export const useBrands = (params = {}, options = {}) => {
+    const queryParams = useMemo(() => {
+        const cleanParams = { ...params };
+        if (cleanParams.search) {
+            cleanParams.search = String(cleanParams.search).trim();
+        }
+        return cleanParams;
+    }, [params]);
+
     const brandsQuery = useQuery({
-        queryKey: ['adminBrands', params],
+        queryKey: ['adminBrands', queryParams],
         queryFn: async () => {
-            const response = await brandService.getAll(params);
+            const response = await brandService.getAll(queryParams);
             return {
                 content: response.data?.content || [],
                 totalPages: response.data?.totalPages || 0,

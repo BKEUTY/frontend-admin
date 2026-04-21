@@ -5,12 +5,13 @@ import { useDebounce } from '@/hooks/useDebounce';
 import useQueryParams from '@/hooks/useQueryParams';
 import { useAuth } from '@/store/AuthContext';
 import { useLanguage } from '@/store/LanguageContext';
-import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
-import { Form, Input, Modal, Space, Table, Tooltip } from 'antd';
-import { useEffect, useState } from 'react';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SortAscendingOutlined, SyncOutlined } from '@ant-design/icons';
+import { Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 
 const { Search } = Input;
 const { confirm } = Modal;
+const { Option } = Select;
 
 const CategoryList = () => {
     const { t } = useLanguage();
@@ -19,6 +20,7 @@ const CategoryList = () => {
     const [query, setQuery] = useQueryParams();
 
     const searchTerm = query.search || '';
+    const sortOption = query.sort || 'default';
     const currentPage = query.page ? Number(query.page) : 1;
     const pageSize = 10;
 
@@ -28,23 +30,39 @@ const CategoryList = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
 
+    const queryParams = useMemo(() => ({
+        page: currentPage,
+        size: pageSize,
+        search: searchTerm,
+        sort: sortOption === 'default' ? null : sortOption
+    }), [currentPage, pageSize, searchTerm, sortOption]);
+
     const { categories, totalPages, totalItems, isLoading, refetchCategories } = useCategories(
-        { page: currentPage, size: pageSize, search: searchTerm },
+        queryParams,
         { enabled: isAuthenticated }
     );
+
+    const sortOptions = [
+        { label: t('sort_default'), value: 'default' },
+        { label: t('sort_name_asc'), value: 'name_asc' },
+        { label: t('sort_name_desc'), value: 'name_desc' },
+    ];
     const { mutateAsync: createCategory, isPending: isCreating } = useCreateCategory();
     const { mutateAsync: updateCategory, isPending: isUpdating } = useUpdateCategory();
     const { mutateAsync: deleteCategory, isPending: isDeleting } = useDeleteCategory();
 
     useEffect(() => {
-        setSearchInput(searchTerm);
+        if (!searchTerm) setSearchInput('');
     }, [searchTerm]);
 
     useEffect(() => {
-        if (debouncedSearch !== searchTerm) {
-            setQuery({ search: debouncedSearch || null, page: 1 });
+        if (debouncedSearch !== searchInput) return;
+
+        const cleanSearch = String(debouncedSearch ?? '').trim();
+        if (cleanSearch !== searchTerm) {
+            setQuery({ search: cleanSearch || null, page: 1 });
         }
-    }, [debouncedSearch, searchTerm, setQuery]);
+    }, [debouncedSearch, searchInput, searchTerm, setQuery]);
 
     const handleRefresh = () => {
         setQuery({ search: null, page: null });
@@ -133,10 +151,10 @@ const CategoryList = () => {
                 subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('categories').toLowerCase()}</>}
                 extra={
                     <div className="admin-header-buttons">
-                        <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={isLoading}>
+                        <CButton type="secondary" icon={<SyncOutlined />} onClick={handleRefresh} loading={isLoading} className="admin-btn-responsive">
                             {t('refresh')}
                         </CButton>
-                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                        <CButton type="primary" icon={<PlusOutlined />} onClick={() => openModal()} className="admin-btn-responsive">
                             {t('admin_category_add')}
                         </CButton>
                     </div>
@@ -148,11 +166,32 @@ const CategoryList = () => {
                             placeholder={t('admin_category_search')}
                             allowClear
                             value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchInput(val);
+                                if (!val) {
+                                    setQuery({ search: null, page: 1 });
+                                }
+                            }}
                             onSearch={(v) => setQuery({ search: v || null, page: 1 })}
                             className="admin-toolbar-search"
-                            style={{ maxWidth: 400 }}
                         />
+                    </div>
+                    <div className="admin-toolbar-right">
+                        <div className="admin-filter-group">
+                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                placeholder={t('sort_default')}
+                                onChange={(val) => setQuery({ sort: val === 'default' ? null : val, page: 1 })}
+                                className="admin-toolbar-select"
+                                value={sortOption}
+                                style={{ minWidth: 200 }}
+                            >
+                                {sortOptions.map(opt => (
+                                    <Option key={opt.value} value={opt.value}>{opt.label}</Option>
+                                ))}
+                            </Select>
+                        </div>
                     </div>
                 </div>
 

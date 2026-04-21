@@ -74,6 +74,14 @@
     box-shadow: 0 4px 12px rgba(194, 24, 91, 0.2);
 }
 
+.page-btn.active:hover {
+    background-color: var(--color_main_title);
+    color: #ffffff;
+    border-color: var(--color_main_title);
+    box-shadow: 0 6px 14px rgba(194, 24, 91, 0.3);
+    transform: translateY(-2px);
+}
+
 .nav-btn {
     font-size: 12px;
 }
@@ -95,11 +103,11 @@
         font-size: 13px;
         border-radius: 8px;
     }
-    
+
     .pagination-info {
         font-size: 12px;
     }
-    
+
     .pagination {
         gap: 4px;
     }

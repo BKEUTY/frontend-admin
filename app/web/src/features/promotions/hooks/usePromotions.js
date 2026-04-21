@@ -2,12 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
 import promotionService from '@/features/promotions/services/promotionService';
 import { useLanguage } from '@/store/LanguageContext';
+import { useMemo } from 'react';
 
 export const usePromotions = (params = {}, options = {}) => {
+    const queryParams = useMemo(() => {
+        const cleanParams = { ...params };
+        if (cleanParams.title) {
+            cleanParams.title = String(cleanParams.title).trim();
+        }
+        return cleanParams;
+    }, [params]);
+
     const promotionsQuery = useQuery({
-        queryKey: ['adminPromotions', params],
+        queryKey: ['adminPromotions', queryParams],
         queryFn: async () => {
-            const response = await promotionService.getAll(params);
+            const response = await promotionService.getAll(queryParams);
             const data = response.data;
             return {
                 content: data?.content || [],

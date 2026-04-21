@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Table, Typography, Tooltip, Space, Modal, Input, Select, DatePicker } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 import { useNavigate } from 'react-router-dom';
@@ -26,37 +26,44 @@ const PromotionList = () => {
     const statusFilter = query.status ?? null;
     const startAtParam = query.startAt ?? null;
     const endAtParam = query.endAt ?? null;
+    const sortParam = query.sort ?? null;
     const currentPage = query.page ? Number(query.page) : 1;
     const pageSize = 10;
 
     const [searchInput, setSearchInput] = useState(titleTerm);
     const debouncedSearch = useDebounce(searchInput, 500);
 
+    const queryParams = useMemo(() => ({
+        page: currentPage,
+        size: pageSize,
+        title: titleTerm,
+        status: statusFilter,
+        startAt: startAtParam,
+        endAt: endAtParam,
+        sort: sortParam
+    }), [currentPage, pageSize, titleTerm, statusFilter, startAtParam, endAtParam, sortParam]);
+
     const { data: promotions, totalPages, totalItems, isLoading: loading, refetchPromotions } = usePromotions(
-        { 
-            page: currentPage, 
-            size: pageSize, 
-            title: titleTerm, 
-            status: statusFilter, 
-            startAt: startAtParam, 
-            endAt: endAtParam 
-        },
+        queryParams,
         { enabled: isAuthenticated }
     );
     const { mutateAsync: deletePromotion, isPending: isDeleting } = useDeletePromotion();
 
     useEffect(() => {
-        setSearchInput(titleTerm);
+        if (!titleTerm) setSearchInput('');
     }, [titleTerm]);
 
     useEffect(() => {
-        if (debouncedSearch !== titleTerm) {
-            setQuery({ title: debouncedSearch?.trim() || null, page: 1 });
+        if (debouncedSearch !== searchInput) return;
+
+        const cleanSearch = String(debouncedSearch ?? '').trim();
+        if (cleanSearch !== titleTerm) {
+            setQuery({ title: cleanSearch || null, page: 1 });
         }
-    }, [debouncedSearch, titleTerm, setQuery]);
+    }, [debouncedSearch, searchInput, titleTerm, setQuery]);
 
     const handleRefresh = () => {
-        setQuery({ title: null, status: null, startAt: null, endAt: null, page: null });
+        setQuery({ title: null, status: null, startAt: null, endAt: null, sort: null, page: null });
         setSearchInput('');
         refetchPromotions();
     };
@@ -126,8 +133,8 @@ const PromotionList = () => {
             title: t('promo_col_type'),
             dataIndex: 'promotionType',
             key: 'type',
-            width: 150,
-            render: (type) => <span className="admin-table-tag">{type ? t(`promo_type_${type.toLowerCase()}`) : t('all_caps')}</span>
+            width: 180,
+            render: (type) => <span className="admin-table-tag" style={{ whiteSpace: 'nowrap' }}>{type ? t(`promo_type_${type.toLowerCase()}`) : t('all_caps')}</span>
         },
         {
             title: t('promo_col_start_time'), 
@@ -214,32 +221,59 @@ const PromotionList = () => {
                             placeholder={t('promo_search_placeholder')}
                             allowClear
                             value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSearchInput(val);
+                                if (!val) {
+                                    setQuery({ title: null, page: 1 });
+                                }
+                            }}
                             onSearch={(v) => setQuery({ title: v?.trim() || null, page: 1 })}
                             className="admin-toolbar-search"
                         />
-                        <Select
-                            placeholder={t('promo_col_status')}
-                            allowClear
-                            value={statusFilter}
-                            onChange={handleStatusChange}
-                            className="admin-toolbar-select"
-                            style={{ minWidth: 160 }}
-                        >
-                            <Select.Option value="STARTING">{t('promo_status_STARTING')}</Select.Option>
-                            <Select.Option value="INCOMING">{t('promo_status_INCOMING')}</Select.Option>
-                            <Select.Option value="ENDED">{t('promo_status_ENDED')}</Select.Option>
-                            <Select.Option value="DISABLED">{t('promo_status_DISABLED')}</Select.Option>
-                        </Select>
+                        <div className="admin-filter-group">
+                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                placeholder={t('promo_col_status')}
+                                allowClear
+                                value={statusFilter}
+                                onChange={handleStatusChange}
+                                className="admin-toolbar-select"
+                                style={{ minWidth: 160 }}
+                            >
+                                <Select.Option value="STARTING">{t('promo_status_STARTING')}</Select.Option>
+                                <Select.Option value="INCOMING">{t('promo_status_INCOMING')}</Select.Option>
+                                <Select.Option value="ENDED">{t('promo_status_ENDED')}</Select.Option>
+                                <Select.Option value="DISABLED">{t('promo_status_DISABLED')}</Select.Option>
+                            </Select>
 
-                        <DatePicker.RangePicker
-                            showTime
-                            format="DD/MM/YYYY HH:mm"
-                            value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
-                            onChange={handleDateRangeChange}
-                            placeholder={[t('promo_col_start_time'), t('promo_col_end_time')]}
-                            className="admin-date-picker-range-luxury"
-                        />
+                            <DatePicker.RangePicker
+                                showTime
+                                format="DD/MM/YYYY HH:mm"
+                                value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
+                                onChange={handleDateRangeChange}
+                                placeholder={[t('promo_col_start_time'), t('promo_col_end_time')]}
+                                className="admin-date-picker-range-luxury"
+                            />
+                        </div>
+                    </div>
+                    <div className="admin-toolbar-right">
+                        <div className="admin-filter-group">
+                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                            <Select
+                                placeholder={t('sort_default')}
+                                value={query.sort || 'default'}
+                                onChange={(val) => setQuery({ sort: val === 'default' ? null : val, page: 1 })}
+                                className="admin-toolbar-select"
+                                style={{ minWidth: 200 }}
+                            >
+                                <Select.Option value="default">{t('sort_default')}</Select.Option>
+                                <Select.Option value="id_desc">{t('sort_time_newest')}</Select.Option>
+                                <Select.Option value="id_asc">{t('sort_time_oldest')}</Select.Option>
+                                <Select.Option value="discount_desc">{t('sort_price_desc')}</Select.Option>
+                                <Select.Option value="discount_asc">{t('sort_price_asc')}</Select.Option>
+                            </Select>
+                        </div>
                     </div>
                 </div>
 

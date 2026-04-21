@@ -2,12 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
 import categoryService from '@/features/categories/services/categoryService';
 import { useLanguage } from '@/store/LanguageContext';
+import { useMemo } from 'react';
 
 export const useCategories = (params = {}, options = {}) => {
+    const queryParams = useMemo(() => {
+        const cleanParams = { ...params };
+        if (cleanParams.search) {
+            cleanParams.search = String(cleanParams.search).trim();
+        }
+        return cleanParams;
+    }, [params]);
+
     const categoriesQuery = useQuery({
-        queryKey: ['adminCategories', params],
+        queryKey: ['adminCategories', queryParams],
         queryFn: async () => {
-            const response = await categoryService.getAll(params);
+            const response = await categoryService.getAll(queryParams);
             return {
                 content: response.data,
                 totalPages: 1,

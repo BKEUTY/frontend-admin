@@ -293,5 +293,11 @@
     .admin-stat-card-modern {
         padding: 16px !important;
         gap: 12px;
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
     }
-}
+    .stat-content {
+        align-items: center;
+    }
+}

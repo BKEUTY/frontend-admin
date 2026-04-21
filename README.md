@@ -1,68 +1,58 @@
-# BKEUTY - Enterprise Management Portal (Admin System)
+# BKEUTY Admin - Enterprise Management Portal
 
 [English](#english) | [Tiếng Việt](#tiếng-việt)
 
 ---
 
 <a name="english"></a>
-## English
+## English - Administration System
 
 ### 🏢 Overview
-BKEUTY Admin is a robust enterprise resource planning (ERP) and management portal designed to centralize control over all business operations. It provides administrative staff with powerful tools for inventory oversight, order fulfillment, marketing management, and deep data analytics.
+BKEUTY Admin is a sophisticated **Enterprise Resource Planning (ERP)** portal designed to centralize and automate business operations. It empowers administrators with deep insights and granular control over the entire commerce lifecycle.
 
-### 🚀 Core Management Modules
+### 🛠 Core Technical Stack
+- **Admin Web:** React 19, Vite, Ant Design 6, Recharts.
+- **Admin Mobile:** React Native, Expo 50+, React Navigation 7.
+- **Security:** Role-Based Access Control (RBAC) via Keycloak.
+- **Data Integration:** RESTful APIs with TanStack Query for optimistic UI updates.
 
-#### 1. Strategic Analytics & Reporting
-- **Real-time Performance Dashboard:** Instant overview of revenue, order volume, and customer growth trends using Recharts.
-- **Reporting Engine:** Generate professional-grade insights into sales performance and product popularity.
+### 📊 Strategic Modules
+- **Analytics Engine:** Dynamic dashboards for revenue, orders, and customer acquisition metrics.
+- **Unified Catalog:** Management of complex product matrices, variants, and stock levels.
+- **Operational Center:** Lifecycle management for orders, shipping integrations, and return approvals.
+- **Marketing Suite:** Campaign management for discounts, coupons, and customer reviews.
 
-#### 2. Advanced Catalog & Inventory Control
-- **Product Matrix:** Manage complex product catalogs with multi-layered variants, categories, and brand alignments.
-- **Global Inventory Management:** Centralized control over stock levels and availability across the ecosystem.
-
-#### 3. Operational Excellence
-- **Order Fulfillment Center:** End-to-end management of the order lifecycle from validation to shipping integration.
-- **Return & Refund Operations:** Oversight and processing of customer return requests with evidence review.
-- **Marketing & Promotions:** Design and deploy dynamic discount campaigns (Percentage-based, Fixed value, Mini-games).
-
-#### 4. Governance & Role Management
-- **RBAC (Role-Based Access Control):** Secure administrative layers powered by Keycloak, ensuring data access is limited to authorized personnel only.
-- **Community Management:** Official response and moderation system for customer reviews and feedback.
-
-### 🛠 Technical Architecture
-- **Web Portal**: React 19, Vite, Ant Design 6, Recharts, TanStack Query.
-- **Mobile Admin**: React Native, Expo 50+, React Navigation 7.
+### 🚦 Development & Ports
+| Module | Environment | Port | Startup Command |
+| :--- | :--- | :--- | :--- |
+| **Admin Web** | Development | 3100 | `npm run dev` |
+| **Admin Mobile** | Expo Metro | 8082 | `npx expo start` |
 
 ---
 
 <a name="tiếng-việt"></a>
-## Tiếng Việt
+## Tiếng Việt - Hệ thống Quản trị
 
 ### 🏢 Tổng quan
-BKEUTY Admin là hệ thống quản trị doanh nghiệp (ERP) mạnh mẽ, được thiết kế để tập trung hóa việc điều hành toàn bộ hoạt động kinh doanh. Hệ thống cung cấp cho đội ngũ quản trị các công cụ chuyên sâu để kiểm soát kho vận, hoàn tất đơn hàng, quản lý marketing và phân tích dữ liệu chuyên sâu.
+BKEUTY Admin là cổng thông tin **Quản trị doanh nghiệp (ERP)** tinh vi được thiết kế để tập trung hóa và tự động hóa các hoạt động kinh doanh. Hệ thống cho phép người quản trị nắm bắt thông tin chuyên sâu và kiểm soát chi tiết toàn bộ vòng đời thương mại.
 
-### 🚀 Các Module Điều hành Cốt lõi
+### 🛠 Công nghệ Cốt lõi
+- **Admin Web:** React 19, Vite, Ant Design 6, Recharts.
+- **Admin Mobile:** React Native, Expo 50+, React Navigation 7.
+- **Bảo mật:** Quản lý truy cập dựa trên vai trò (RBAC) thông qua Keycloak.
+- **Tích hợp dữ liệu:** RESTful APIs với TanStack Query giúp cập nhật giao diện tối ưu (Optimistic UI).
 
-#### 1. Phân tích Chiến lược & Báo cáo
-- **Dashboard Tổng quan:** Theo dõi tức thời doanh thu, lượng đơn hàng và xu hướng tăng trưởng khách hàng thông qua biểu đồ Recharts trực quan.
-- **Hệ thống Báo cáo:** Cung cấp thông tin chuyên sâu về hiệu suất bán hàng và mức độ ưa chuộng của sản phẩm.
+### 📊 Module Chiến lược
+- **Công cụ Phân tích:** Dashboard động hiển thị doanh thu, đơn hàng và các chỉ số tăng trưởng khách hàng.
+- **Danh mục Nhất quán:** Quản lý ma trận sản phẩm phức tạp, các biến thể và mức tồn kho.
+- **Trung tâm Điều hành:** Quản lý vòng đời đơn hàng, tích hợp vận chuyển và phê duyệt hoàn hàng.
+- **Bộ công cụ Marketing:** Quản lý chiến dịch giảm giá, mã khuyến mãi và kiểm duyệt đánh giá.
 
-#### 2. Kiểm soát Danh mục & Kho hàng Nâng cao
-- **Ma trận Sản phẩm:** Quản lý danh mục sản phẩm phức tạp với nhiều tầng biến thể, ngành hàng và thương hiệu.
-- **Quản lý Kho vận Tập trung:** Điều hành mức tồn kho và khả năng cung ứng trên toàn hệ thống.
-
-#### 3. Tối ưu hóa Vận hành
-- **Trung tâm Xử lý Đơn hàng:** Quản lý vòng đời đơn hàng toàn diện từ khâu xác nhận đến tích hợp vận chuyển.
-- **Xử lý Hoàn hàng & Hoàn tiền:** Giám sát và phê duyệt các yêu cầu hoàn trả đơn hàng từ phía khách hàng.
-- **Tiếp thị & Khuyến mãi:** Thiết kế và triển khai linh hoạt các chiến dịch giảm giá (Theo phần trăm, Giá trị cố định, Mini-games).
-
-#### 4. Quản trị & Phân quyền
-- **RBAC (Role-Based Access Control):** Hệ thống phân quyền nghiêm ngặt dựa trên Keycloak, đảm bảo dữ liệu chỉ được truy cập bởi nhân sự có thẩm quyền.
-- **Quản lý Cộng đồng:** Hệ thống phản hồi chính thức và kiểm duyệt các đánh giá, phản hồi từ khách hàng.
-
-### 🛠 Nền tảng Kỹ thuật
-- **Web Portal**: React 19, Vite, Ant Design 6, Recharts, TanStack Query.
-- **Mobile Admin**: React Native, Expo 50+, React Navigation 7.
+### 🚦 Triển khai & Port
+| Module | Môi trường | Port | Lệnh khởi chạy |
+| :--- | :--- | :--- | :--- |
+| **Admin Web** | Phát triển | 3100 | `npm run dev` |
+| **Admin Mobile** | Expo Metro | 8082 | `npx expo start` |
 
 ---
-© 2026 BKEUTY Admin Solutions. Professional ERP for Modern Commerce.
+© 2026 BKEUTY Admin. Enterprise Solutions for Modern Commerce.

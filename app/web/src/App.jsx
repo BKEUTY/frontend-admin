@@ -7,22 +7,36 @@ import router from '@/routes';
 import { ErrorBoundary, Skeleton } from "@/components/common";
 import "./App.css";
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: 1,
+            refetchOnWindowFocus: false,
+        },
+    },
+});
+
 function App() {
     return (
-        <LanguageProvider>
-            <NotificationProvider>
-                <AuthProvider>
-                    <ErrorBoundary>
-                        <Suspense fallback={<div style={{ padding: '20px' }}><Skeleton width="100%" height="400px" /></div>}>
-                            <div className="App">
-                                <RouterProvider router={router} />
-                            </div>
-                        </Suspense>
-                    </ErrorBoundary>
-                </AuthProvider>
-            </NotificationProvider>
-        </LanguageProvider>
+        <QueryClientProvider client={queryClient}>
+            <LanguageProvider>
+                <NotificationProvider>
+                    <AuthProvider>
+                        <ErrorBoundary>
+                            <Suspense fallback={<div style={{ padding: '20px' }}><Skeleton width="100%" height="400px" /></div>}>
+                                <div className="App">
+                                    <RouterProvider router={router} />
+                                </div>
+                            </Suspense>
+                        </ErrorBoundary>
+                    </AuthProvider>
+                </NotificationProvider>
+            </LanguageProvider>
+        </QueryClientProvider>
     );
 }
+
 
 export default App;
