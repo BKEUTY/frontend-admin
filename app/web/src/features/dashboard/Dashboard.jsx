@@ -12,7 +12,8 @@ import {
     DownloadOutlined,
     ExportOutlined,
     UserAddOutlined,
-    UserOutlined
+    UserOutlined,
+    RocketOutlined
 } from '@ant-design/icons';
 import {
     AreaChart,
@@ -29,7 +30,6 @@ import {
     Bar,
     Legend
 } from 'recharts';
-// import * as XLSX from 'xlsx'; // Lazy loaded in exportToExcel
 import './Dashboard.css';
 import '@/admin-list.css';
 import StatsCard from '@/components/common/StatsCard';
@@ -112,61 +112,72 @@ const Dashboard = () => {
                 const XLSX = await import('xlsx');
                 const wb = XLSX.utils.book_new();
                 
+                const sanitizeSheetName = (name) => {
+                    if (!name) return 'Sheet';
+                    return name.replace(/[\\/?*[\]:]/g, '_').substring(0, 31);
+                };
+
                 const overview = dashboardData.overview || {};
                 const overviewData = [
-                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: overview.totalRevenue ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: overview.totalOrders ?? 0, [t('admin_col_unit')]: t('admin_unit_order') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: overview.totalProfit ?? 0, [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_products'), [t('admin_col_value')]: overview.totalProductsSold ?? 0, [t('admin_col_unit')]: t('admin_unit_product') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: Number(overview.totalRevenue ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_total_shipping_fee'), [t('admin_col_value')]: Number(overview.totalShippingFee ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: Number(overview.totalOrders ?? 0), [t('admin_col_unit')]: t('admin_unit_order') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: Number(overview.totalProfit ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_products'), [t('admin_col_value')]: Number(overview.totalProductsSold ?? 0), [t('admin_col_unit')]: t('admin_unit_product') },
                 ];
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(overviewData), t('admin_sheet_overview'));
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(overviewData), sanitizeSheetName(t('admin_sheet_overview')));
 
                 if (listData?.length > 0) {
                     let formattedData = [];
-                    const sheetName = t('admin_sheet_daily_detail');
+                    const sheetName = sanitizeSheetName(t('admin_sheet_daily_detail'));
 
                     if (type === 'orders') {
                         formattedData = listData.map(item => ({
-                            [t('admin_order_id')]: `#${item.id}`,
-                            [t('admin_date')]: item.date,
-                            [t('admin_customer')]: item.customerName,
-                            [t('grand_total')]: (item.total || 0) + (item.shippingFee || 0),
-                            [t('status')]: item.status
+                            [t('admin_order_id')]: `#${item.id || ''}`,
+                            [t('admin_date')]: item.date || '-',
+                            [t('admin_customer')]: item.customerName || '-',
+                            [t('total')]: Number(item.total || 0),
+                            [t('admin_col_shipping_fee')]: Number(item.shippingFee || 0),
+                            [t('grand_total')]: (Number(item.total || 0)) + (Number(item.shippingFee || 0)),
+                            [t('status')]: item.status || '-'
                         }));
                     } else if (type === 'products') {
                         formattedData = listData.map(item => ({
-                            [t('admin_product_id')]: item.id,
-                            [t('admin_product_name')]: item.name,
-                            [t('admin_product_sold')]: item.quantity,
-                            [t('revenue')]: item.revenue,
-                            [t('admin_dashboard_profit')]: item.profit ?? 0
+                            [t('admin_product_id')]: item.id || '-',
+                            [t('admin_product_name')]: item.name || '-',
+                            [t('admin_product_sold')]: Number(item.quantity || 0),
+                            [t('revenue')]: Number(item.revenue || 0),
+                            [t('admin_dashboard_profit')]: Number(item.profit ?? 0)
                         }));
                     } else if (type === 'customers') {
                         formattedData = listData.map(item => ({
-                            [t('admin_user_id')]: item.userId,
-                            [t('admin_customer')]: item.userName,
-                            [t('admin_dashboard_orders')]: item.orderCount,
-                            [t('total')]: item.totalSpent
+                            [t('admin_user_id')]: item.userId || '-',
+                            [t('admin_customer')]: item.userName || '-',
+                            [t('admin_dashboard_orders')]: Number(item.orderCount || 0),
+                            [t('total')]: Number(item.totalSpent || 0)
                         }));
                     } else if (type === 'new-customers') {
                         formattedData = listData.map(item => ({
-                            [t('admin_user_id')]: item.userId,
-                            [t('full_name')]: `${item.firstname || ''} ${item.lastname || ''}`,
-                            [t('admin_user_email')]: item.email,
-                            [t('admin_user_role')]: item.userRole,
+                            [t('admin_user_id')]: item.userId || '-',
+                            [t('full_name')]: `${item.firstname || ''} ${item.lastname || ''}`.trim(),
+                            [t('admin_user_email')]: item.email || '-',
+                            [t('admin_user_role')]: item.userRole || '-',
                             [t('admin_date')]: item.createdAt ? new Date(item.createdAt).toLocaleDateString(locale) : '-'
                         }));
                     }
-                    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(formattedData), sheetName);
+                    if (formattedData.length > 0) {
+                        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(formattedData), sheetName);
+                    }
                 }
 
                 if (dashboardData.revenueChart?.length) {
                     const dailyData = dashboardData.revenueChart.map(d => ({
-                        [t('admin_date')]: d.date,
-                        [t('admin_dashboard_revenue')]: d.revenue ?? 0,
-                        [t('admin_dashboard_orders')]: d.orders ?? 0
+                        [t('admin_date')]: d.date || '-',
+                        [t('admin_dashboard_revenue')]: Number(d.revenue ?? 0),
+                        [t('admin_col_shipping_fee')]: Number(d.shippingFee ?? 0),
+                        [t('admin_dashboard_orders')]: Number(d.orders ?? 0)
                     }));
-                    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dailyData), t('admin_sheet_daily_summary'));
+                    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dailyData), sanitizeSheetName(t('admin_sheet_daily_summary')));
                 }
 
                 const timeRangeLabels = {
@@ -176,8 +187,10 @@ const Dashboard = () => {
                     'year': t('admin_report_1_year')
                 };
                 const rangeLabel = timeRangeLabels[timeRange] || t('admin_report_1_month');
-                const fileName = `Bkeuty_Dashboard_${rangeLabel}_${new Date().getTime()}.xlsx`.replace(/\s+/g, '_');
-                XLSX.writeFile(wb, fileName);
+                const rawFileName = `Bkeuty_Dashboard_${rangeLabel}_${new Date().getTime()}.xlsx`;
+                const safeFileName = rawFileName.replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, '_');
+                
+                XLSX.writeFile(wb, safeFileName);
                 showNotification(t('admin_export_success'), 'success');
             } catch (err) {
                 console.error("Excel Export Error:", err);
@@ -224,12 +237,13 @@ const Dashboard = () => {
                 onClick: () => fetchDetails('products')
             }
         ];
-    }, [t, dashboardData, language]);
+    }, [t, dashboardData, language, locale]);
 
     const revenueData = useMemo(() => {
         return dashboardData?.revenueChart?.map(c => ({
             name: c.date ? c.date.substring(5).replace('-', '/') : '',
             revenue: c.revenue ?? 0,
+            shippingFee: c.shippingFee ?? 0,
             profit: c.profit ?? 0,
             orders: c.orders ?? 0
         })) ?? [];
@@ -467,20 +481,25 @@ const Dashboard = () => {
                                             <AreaChart data={revenueData}>
                                                 <defs>
                                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
-                                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                                    </linearGradient>
+                                                    <linearGradient id="colorShipping" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                                                     </linearGradient>
                                                     <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                                                     </linearGradient>
                                                 </defs>
                                                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
                                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
                                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                                                 <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} />
-                                                <Area type="monotone" dataKey="revenue" name={t('admin_dashboard_revenue')} stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" animationDuration={1500} />
-                                                <Area type="monotone" dataKey="profit" name={t('admin_dashboard_profit')} stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorProfit)" animationDuration={1500} />
+                                                <Area type="monotone" dataKey="revenue" name={t('revenue')} stroke="#3b82f6" fillOpacity={1} fill="url(#colorRevenue)" animationDuration={1500} />
+                                                <Area type="monotone" dataKey="shippingFee" name={t('admin_total_shipping_fee')} stroke="#8b5cf6" fillOpacity={1} fill="url(#colorShipping)" animationDuration={1500} />
+                                                <Area type="monotone" dataKey="profit" name={t('admin_dashboard_profit')} stroke="#10b981" fillOpacity={1} fill="url(#colorProfit)" animationDuration={1500} />
                                             </AreaChart>
                                         </ResponsiveContainer>
                                     </div>

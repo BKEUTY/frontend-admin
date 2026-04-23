@@ -256,48 +256,88 @@
     width: 100%;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
     .admin-stat-card-modern {
         padding: 20px !important;
-        gap: 15px;
+        gap: 16px;
     }
     .stat-value {
-        font-size: 22px !important;
+        font-size: 24px !important;
     }
 }
 
-@media (max-width: 992px) {
-    .admin-dashboard-container {
-        padding: 16px;
-    }
-}
-
-@media (max-width: 768px) {
-    .admin-glass-card {
-        padding: 16px !important;
+@media (max-width: 1200px) {
+    .admin-stat-card-modern {
+        gap: 12px;
     }
     .stat-icon-wrapper {
         width: 50px !important;
         height: 50px !important;
         font-size: 20px !important;
     }
+}
+
+@media (max-width: 992px) {
+    .admin-dashboard-container {
+        padding: 20px 16px;
+    }
+    .admin-stat-card-modern {
+        padding: 16px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard-root {
+        padding-bottom: 80px;
+    }
+    .admin-dashboard-container {
+        padding: 12px;
+    }
+    .admin-glass-card {
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
     .stat-value {
         font-size: 20px !important;
+    }
+    .admin-stat-card-modern {
+        margin-bottom: 12px;
     }
 }
 
 @media (max-width: 576px) {
     .admin-dashboard-container {
-        padding: 12px;
+        padding: 10px;
     }
     .admin-stat-card-modern {
         padding: 16px !important;
-        gap: 12px;
-        flex-direction: column;
-        text-align: center;
+        gap: 14px;
+        flex-direction: row;
+        text-align: left;
         align-items: center;
     }
-    .stat-content {
-        align-items: center;
+    .stat-icon-wrapper {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 18px !important;
+        flex-shrink: 0;
+    }
+    .stat-value {
+        font-size: 18px !important;
+    }
+    .admin-dashboard-root h1 {
+        font-size: 24px !important;
+        margin-bottom: 20px !important;
     }
 }
+
+/* Table and Chart fixes */
+.ant-table-wrapper { overflow-x: auto; }
+.recharts-responsive-container { min-height: 250px; }
+@media (max-width: 768px) { .recharts-responsive-container { min-height: 300px; } }
