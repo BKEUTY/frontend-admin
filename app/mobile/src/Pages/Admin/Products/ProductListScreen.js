@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity,
-    Image, ActivityIndicator, RefreshControl, TextInput
+    Image, ActivityIndicator, RefreshControl, TextInput, Platform
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -88,10 +88,17 @@ const ProductListScreen = ({ navigation }) => {
                             ? `${item.variants[0].price.toLocaleString()}đ` 
                             : '0đ'}
                     </Text>
-                    <View style={styles.stockBadge}>
-                        <Text style={styles.stockText}>
-                            {t('admin_product_stock')}: {item.variants ? item.variants.reduce((sum, v) => sum + v.stockQuantity, 0) : 0}
-                        </Text>
+                    <View style={styles.metaRight}>
+                        <View style={styles.soldBadge}>
+                            <Text style={styles.soldText}>
+                                {t('sold')}: {item.variants ? item.variants.reduce((sum, v) => sum + (v.sold || 0), 0) : 0}
+                            </Text>
+                        </View>
+                        <View style={styles.stockBadge}>
+                            <Text style={styles.stockText}>
+                                {t('admin_product_stock')}: {item.variants ? item.variants.reduce((sum, v) => sum + v.stockQuantity, 0) : 0}
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -288,6 +295,10 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         color: COLORS.primary,
     },
+    metaRight: {
+        flexDirection: 'row',
+        gap: 8,
+    },
     stockBadge: {
         paddingHorizontal: 8,
         paddingVertical: 4,
@@ -298,6 +309,19 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '700',
         color: COLORS.textSecondary,
+    },
+    soldBadge: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        backgroundColor: '#fef3f2',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#fee2e2',
+    },
+    soldText: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: '#b91c1c',
     },
     centerContainer: {
         flex: 1,

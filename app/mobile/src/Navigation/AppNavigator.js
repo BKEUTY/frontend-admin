@@ -15,6 +15,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import AdminDashboard from '../Pages/Admin/Dashboard/DashboardScreen';
 import AdminProductList from '../Pages/Admin/Products/ProductListScreen';
 import AdminProductCreate from '../Pages/Admin/Products/ProductCreateScreen';
+import AdminReports from '../Pages/Admin/Reports/ReportsScreen';
 
 import NotFoundScreen from '../Pages/ErrorPages/NotFoundScreen';
 import ServerErrorScreen from '../Pages/ErrorPages/ServerErrorScreen';
@@ -76,6 +77,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="AdminDashboard" component={AdminDashboard} options={{ headerShown: false }} />
                     <Stack.Screen name="AdminProductCreate" component={AdminProductCreate} options={{ headerShown: false }} />
                     <Stack.Screen name="AdminPromotionCreate" component={PromotionCreateScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="AdminReports" component={AdminReports} options={{ headerShown: false }} />
 
                     <Stack.Screen name="NotFound" component={NotFoundScreen} />
                     <Stack.Screen name="ServerError" component={ServerErrorScreen} />

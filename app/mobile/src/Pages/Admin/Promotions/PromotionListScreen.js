@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity,
     ActivityIndicator, RefreshControl, TextInput, Platform
@@ -8,6 +8,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SHADOWS } from '../../../../constants/Theme';
 import { useLanguage } from '../../../../i18n/LanguageContext';
 import { useAdminPromotions } from '../../../../hooks/useAdminPromotions';
+import productApi from '../../../../api/productApi';
 
 import { useDebounce } from '../../../../hooks/useDebounce';
 
@@ -15,12 +16,45 @@ const PromotionListScreen = ({ navigation }) => {
     const { t } = useLanguage();
     const [searchInput, setSearchInput] = useState('');
     const debouncedSearch = useDebounce(searchInput, 500);
+    const [metadata, setMetadata] = useState({ brandNames: {}, categoryNames: {}, productNames: {} });
     const { promotions, loading, refreshing, fetchPromotions } = useAdminPromotions();
 
     useEffect(() => {
-        if (debouncedSearch !== searchInput) return;
-        fetchPromotions(1, false, debouncedSearch);
+        const load = async () => {
+            const data = await fetchPromotions(1, false, debouncedSearch);
+            if (data && data.length > 0) {
+                fetchMetadata(data);
+            }
+        };
+        load();
     }, [debouncedSearch]);
+
+    const fetchMetadata = async (promoList) => {
+        const productIds = new Set();
+        const categoryIds = new Set();
+        const brandIds = new Set();
+
+        promoList.forEach(p => {
+            if (p.productIds) p.productIds.forEach(id => productIds.add(id));
+            if (p.categoryIds) p.categoryIds.forEach(id => categoryIds.add(id));
+            if (p.brandIds) p.brandIds.forEach(id => brandIds.add(id));
+        });
+
+        if (productIds.size > 0 || categoryIds.size > 0 || brandIds.size > 0) {
+            try {
+                const metaRes = await productApi.getPromotionMetadata({
+                    productIds: Array.from(productIds),
+                    categoryIds: Array.from(categoryIds),
+                    brandIds: Array.from(brandIds)
+                });
+                if (metaRes.data) {
+                    setMetadata(metaRes.data);
+                }
+            } catch (err) {
+                console.error('Metadata fetch error:', err);
+            }
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -81,6 +115,21 @@ const PromotionListScreen = ({ navigation }) => {
                     
                     <Text style={styles.promoDesc} numberOfLines={2}>{item.description}</Text>
                     
+                    {(item.brandIds?.length > 0 || item.categoryIds?.length > 0) && (
+                        <View style={styles.scopeRow}>
+                            {item.brandIds?.map(id => (
+                                <View key={`b-${id}`} style={styles.scopeBadge}>
+                                    <Text style={styles.scopeText}>{metadata.brandNames[id] || id}</Text>
+                                </View>
+                            ))}
+                            {item.categoryIds?.map(id => (
+                                <View key={`c-${id}`} style={[styles.scopeBadge, { backgroundColor: '#f0fdf4' }]}>
+                                    <Text style={[styles.scopeText, { color: '#15803d' }]}>{metadata.categoryNames[id] || id}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    )}
+
                     <View style={styles.promoDetails}>
                         <View style={styles.detailItem}>
                             <MaterialCommunityIcons name="ticket-percent" size={16} color={COLORS.primary} />

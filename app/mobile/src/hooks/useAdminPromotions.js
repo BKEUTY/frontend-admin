@@ -26,7 +26,9 @@ export const useAdminPromotions = () => {
                     pageSize: data.size || 30,
                     total: data.totalElements || 0,
                 });
+                return data.content;
             }
+            return [];
         } catch (error) {
             showToast(t('error'), 'error', t('api_error_general'));
         } finally {

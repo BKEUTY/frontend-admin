@@ -79,8 +79,8 @@ const OrderListScreen = () => {
                     </View>
                 </View>
                 <View style={styles.totalBox}>
-                    <Text style={styles.totalLabel}>{t('total')}:</Text>
-                    <Text style={styles.totalValue}>{item.total?.toLocaleString()}đ</Text>
+                    <Text style={styles.totalLabel}>{t('grand_total')}:</Text>
+                    <Text style={styles.totalValue}>{(item.grandTotal || item.total)?.toLocaleString()}đ</Text>
                 </View>
             </View>
         </TouchableOpacity>

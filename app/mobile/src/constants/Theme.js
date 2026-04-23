@@ -4,10 +4,10 @@ const { width, height } = Dimensions.get('window');
 
 export const COLORS = {
   // Main System Colors (Synced with Web)
-  primary: '#ba1a56',
-  primaryHover: '#e91e63',
-  mainTitle: '#ba1a56',
-  mainTitleDark: '#880e4f',
+  primary: '#8b5cf6',
+  primaryHover: '#7c3aed',
+  mainTitle: '#8b5cf6',
+  mainTitleDark: '#6d28d9',
   mainTitleText: '#ffffff',
   
   // Text Colors

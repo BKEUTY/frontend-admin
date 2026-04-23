@@ -43,10 +43,10 @@ const OrderDetailScreen = () => {
         id: orderDetail.id,
         createdAt: orderDetail.orderDate ? new Date(orderDetail.orderDate).toLocaleDateString() : 'N/A',
         status: orderDetail.status,
-        subtotal: orderDetail.total || 0,
-        discount: 0,
-        shipping: 0,
-        total: orderDetail.total || 0,
+        subtotal: orderDetail.subtotal || 0,
+        discount: orderDetail.discount || 0,
+        shipping: orderDetail.shippingFee || 0,
+        total: orderDetail.grandTotal || orderDetail.total || 0,
         paymentMethod: orderDetail.paymentMethod || 'COD',
         address: orderDetail.address || 'N/A',
         user: { username: orderDetail.userId || t('guest') }
@@ -121,7 +121,7 @@ const OrderDetailScreen = () => {
                             <>
                                 <TouchableOpacity 
                                     style={[styles.btnAction, { borderColor: COLORS.danger }]} 
-                                    onPress={() => updateStatus(orderData.id, 'CANCELLED')}
+                                    onPress={() => updateOrderStatus({ id: orderData.id, status: 'CANCELLED' })}
                                 >
                                     <Ionicons name="close-circle-outline" size={18} color={COLORS.danger} />
                                     <Text style={[styles.btnText, { color: COLORS.danger }]}>{t('cancel')}</Text>
@@ -201,7 +201,7 @@ const OrderDetailScreen = () => {
                 </View>
 
                 <View style={styles.summaryCard}>
-                    <Text style={styles.summaryTitle}>{t('grand_total')}</Text>
+                    <Text style={styles.summaryTitle}>{t('order_overview')}</Text>
                     <View style={styles.summaryRow}>
                         <Text style={styles.summaryLabel}>{t('subtotal')}</Text>
                         <Text style={styles.summaryValue}>{orderData.subtotal.toLocaleString()}đ</Text>
@@ -215,7 +215,7 @@ const OrderDetailScreen = () => {
                         <Text style={styles.summaryValue}>{orderData.shipping.toLocaleString()}đ</Text>
                     </View>
                     <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>{t('total')}</Text>
+                        <Text style={styles.totalLabel}>{t('grand_total')}</Text>
                         <Text style={styles.totalValue}>{orderData.total.toLocaleString()}đ</Text>
                     </View>
                 </View>

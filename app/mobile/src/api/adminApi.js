@@ -6,6 +6,17 @@ class AdminApi extends BaseApi {
         super('', axiosClient);
     }
 
+    async getDashboardData(startDate, endDate, config = {}) {
+        const params = {};
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+        return this.client.get('/api/admin/reports/data', { ...config, params });
+    }
+
+    getReportData(params, config = {}) {
+        return this.client.get('/api/admin/reports/data', { ...config, params });
+    }
+
     async getStats() {
         try {
             const config = { skipGlobalErrorHandler: true };
