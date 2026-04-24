@@ -25,10 +25,10 @@
 
 .review-images-admin img:hover {
     transform: scale(1.05);
-    border-color: var(--color_main_title, #c2185b);
+    border-color: var(--color_main_title);
 }
 
-/* Review Dashboard Statistics */
+
 .review-dashboard-admin {
     display: flex;
     background: #ffffff;
@@ -100,7 +100,7 @@
 }
 
 .bar-row-admin.active {
-    color: var(--color_main_title, #c2185b);
+    color: var(--color_main_title);
 }
 
 .star-label-admin {
@@ -125,7 +125,7 @@
     transition: width 0.3s ease;
 }
 
-/* Review Filter Chips */
+
 .review-filters-admin {
     display: flex;
     gap: 10px;
@@ -135,7 +135,7 @@
 
 .filter-chip-admin {
     padding: 8px 20px;
-    border-radius: 12px;
+    border-radius: 16px;
     border: 1px solid #e2e8f0;
     background: #fff;
     cursor: pointer;
@@ -151,11 +151,11 @@
 
 .filter-chip-admin.active,
 .filter-chip-admin:hover {
-    border-color: var(--color_main_title, #c2185b);
-    color: var(--color_main_title, #c2185b);
+    border-color: var(--color_main_title);
+    color: var(--color_main_title);
     background: #fff1f6;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(193, 24, 91, 0.1);
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.1);
 }
 
 .no-reviews-msg-admin {
@@ -308,7 +308,7 @@
     color: #64748b;
     font-style: italic;
     background: #f8fafc;
-    border-radius: 12px;
+    border-radius: 16px;
 }
 
 .admin-pr-card {
@@ -318,7 +318,7 @@
     margin-bottom: 16px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     transition: box-shadow 0.2s ease;
 }
@@ -393,3 +393,5 @@
     margin-top: 16px;
     justify-content: flex-end;
 }
+
+

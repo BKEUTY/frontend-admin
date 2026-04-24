@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
 import { ToolOutlined } from '@ant-design/icons';
-import { CButton } from '@/components/common';
+import { CButton, ScrollToTop } from '@/components/common';
 import './ErrorPage.css';
 
 const ServerError = () => {
@@ -11,6 +11,7 @@ const ServerError = () => {
 
     return (
         <div className="error-page-container error-page-500">
+            <ScrollToTop />
             <h1 className="error-code">500</h1>
             <div className="error-content">
                 <ToolOutlined className="error-icon" />

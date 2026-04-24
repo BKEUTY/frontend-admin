@@ -1,7 +1,7 @@
 .admin-stat-card-modern {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
+    border-radius: 24px !important;
     padding: 24px !important;
     display: flex !important;
     align-items: center !important;
@@ -25,15 +25,15 @@
 
 .admin-stat-card-modern:hover {
     transform: translate(-3px, -3px) !important;
-    box-shadow: 12px 12px 0px rgba(139, 92, 246, 0.1) !important;
+    box-shadow: 12px 12px 0px rgba(161, 5, 80, 0.1) !important;
     border-color: var(--admin-primary) !important;
 }
 
 .stat-icon-wrapper {
     width: 60px !important;
     height: 60px !important;
-    border-radius: 12px !important;
-    background: rgba(139, 92, 246, 0.08) !important;
+    border-radius: 18px !important;
+    background: rgba(161, 5, 80, 0.08) !important;
     color: var(--admin-primary) !important;
     display: flex !important;
     align-items: center !important;
@@ -47,7 +47,7 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    min-height: 80px !important; /* Ensure consistent content area */
+    min-height: 80px !important; 
 }
 
 .stat-label {
@@ -84,7 +84,7 @@
     line-height: 1 !important;
 }
 
-/* Auto-scale font size for very long numbers */
+
 .stat-value.has-currency {
     font-size: clamp(18px, 1.5vw, 24px) !important;
 }
@@ -115,3 +115,5 @@
     font-weight: 400 !important;
     margin-left: 4px !important;
 }
+
+

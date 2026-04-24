@@ -125,7 +125,7 @@ const UserList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_users_title')}
-                subtitle={<Text type="secondary">{t('total')} • <Text strong className="admin-subtitle-count">{filteredUsers.length}</Text> {t('admin_user_items').toLowerCase()}</Text>}
+                subtitle={<Text type="secondary">{t('total')} • <Text strong className="admin-subtitle-count">{filteredUsers.length}</Text> {t('admin_unit_person')}</Text>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={handleResetFilters} loading={isLoading}>
@@ -182,7 +182,7 @@ const UserList = () => {
                     {isLoading ? (
                         <div style={{ padding: 24 }}>
                             {[...Array(5)].map((_, i) => (
-                                <Skeleton key={i} width="100%" height="60px" borderRadius="8px" style={{ marginBottom: 16 }} />
+                                <Skeleton key={i} width="100%" height="60px" borderRadius="16px" style={{ marginBottom: 16 }} />
                             ))}
                         </div>
                     ) : (

@@ -12,7 +12,7 @@
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(16px);
     padding: 10px 20px;
-    border-radius: 16px;
+    border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -6px rgba(0, 0, 0, 0.03);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -120,7 +120,7 @@
 }
 
 .admin-toolbar-search.ant-input-affix-wrapper {
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     height: 44px !important;
     border: 1.5px solid #e2e8f0 !important;
     background: #ffffff !important;
@@ -135,7 +135,7 @@
 .admin-toolbar-search.ant-input-affix-wrapper-focused {
     border-color: var(--admin-primary) !important;
     background: #ffffff !important;
-    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
 }
 
 .admin-toolbar-select {
@@ -149,7 +149,7 @@
 
 .admin-toolbar-select .ant-select-selector,
 .admin-toolbar-select.ant-select .ant-select-selector {
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     height: 44px !important;
     display: flex !important;
     align-items: center !important;
@@ -162,7 +162,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 
-/* Ensure the selection item is centered */
+
 .admin-toolbar-select .ant-select-selection-item,
 .admin-toolbar-select .ant-select-selection-placeholder,
 .admin-toolbar-select .ant-select-selection-search-input {
@@ -175,11 +175,11 @@
 .admin-toolbar-select.ant-select-focused .ant-select-selector,
 .admin-toolbar-select:hover .ant-select-selector {
     border-color: var(--admin-primary) !important;
-    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
 }
 
 .admin-date-picker-range {
-    border-radius: 12px !important;
+    border-radius: 16px !important;
     height: 42px !important;
     border: 1.5px solid #f1f5f9 !important;
     background: #f8fafc !important;
@@ -272,14 +272,14 @@
 }
 
 .admin-current-price.is-sale {
-    color: #c2185b;
+    color: var(--color_main_title);
     font-size: 15px;
 }
 
 .admin-table-image-wrapper {
     width: 60px;
     height: 60px;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
     border: 1px solid #f1f5f9;
     background: #f8fafc;
@@ -290,8 +290,8 @@
 }
 
 .admin-table-row-pointer:hover .admin-table-image-wrapper {
-    border-color: #c2185b;
-    box-shadow: 0 4px 12px rgba(193, 24, 91, 0.15);
+    border-color: var(--color_main_title);
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.15);
 }
 
 .admin-table-image {
@@ -303,7 +303,7 @@
 .admin-table-tag {
     background: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 6px !important;
+    border-radius: 12px !important;
     color: #475569 !important;
     font-weight: 600 !important;
     padding: 2px 10px !important;
@@ -359,7 +359,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 10px !important;
+    border-radius: 14px !important;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -397,7 +397,7 @@
 
 .admin-status-badge {
     padding: 6px 14px;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 12px;
     font-weight: 800;
     display: inline-flex;
@@ -496,7 +496,7 @@
     background: linear-gradient(90deg, #f0f2f5 25%, #e6e8eb 37%, #f0f2f5 63%);
     background-size: 400% 100%;
     animation: skeleton-loading 1.4s ease infinite;
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 .admin-glass-effect {
@@ -515,7 +515,7 @@
 }
 
 .admin-text-gradient-primary {
-    background: linear-gradient(135deg, #c2185b 0%, #ec4899 100%);
+    background: linear-gradient(135deg, var(--color_main_title) 0%, var(--color_secondary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -611,7 +611,7 @@
 
     .admin-table-wrapper {
         padding: 12px;
-        border-radius: 12px;
+        border-radius: 16px;
     }
 
     .beauty-table .ant-table-thead>tr>th,
@@ -654,7 +654,7 @@
 .admin-segmented-luxury {
     background: #f8fafc !important;
     padding: 4px !important;
-    border-radius: 12px !important;
+    border-radius: 16px !important;
 }
 
 .admin-segmented-luxury .ant-segmented-item {
@@ -664,15 +664,15 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 8px !important;
+    border-radius: 12px !important;
     color: #94a3b8 !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .admin-segmented-luxury .ant-segmented-item-selected {
-    background: var(--admin-primary, #c2185b) !important;
+    background: var(--admin-primary) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(193, 24, 91, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.2) !important;
 }
 
 .admin-picker-container-luxury {
@@ -682,8 +682,8 @@
 }
 
 .admin-date-picker-range-luxury {
-    width: 260px !important;
-    border-radius: 14px !important;
+    width: 320px !important;
+    border-radius: 16px !important;
     border: 1.5px solid #e2e8f0 !important;
     background: #ffffff !important;
     height: 44px !important;
@@ -705,15 +705,15 @@
 .admin-date-picker-range-luxury.ant-picker-focused {
     border-color: var(--admin-primary) !important;
     background: #ffffff !important;
-    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
 }
 
-/* Modern Notification Styling */
+
 .admin-notification-modern {
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(10px) saturate(180%) !important;
     border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    border-radius: 16px !important;
+    border-radius: 24px !important;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.04) !important;
     padding: 16px 20px !important;
     overflow: hidden;
@@ -726,7 +726,7 @@
     left: 0;
     width: 6px;
     height: 100%;
-    background: linear-gradient(180deg, var(--admin-primary, #c2185b) 0%, #ec4899 100%);
+    background: linear-gradient(180deg, var(--admin-primary) 0%, var(--color_secondary) 100%);
 }
 
 .admin-notification-modern .ant-notification-notice-message {
@@ -748,3 +748,4 @@
     right: 16px !important;
     color: #94a3b8 !important;
 }
+

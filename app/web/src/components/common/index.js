@@ -10,3 +10,4 @@ export { default as CInput } from './CInput';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as StatsCard } from './StatsCard';
 export { default as LazyImage } from './LazyImage';
+export { default as ScrollToTop } from './ScrollToTop';

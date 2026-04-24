@@ -13,7 +13,7 @@ import adminReportService from '@/services/adminReportService';
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
-const COLORS = ['#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', '#10b981'];
+const COLORS = ['#8b5cf6', '#6366f1', '#f59e0b', '#f43f5e', '#10b981'];
 
 const ReportBarChart = ({ data, t }) => {
     if (!data || data.length === 0) return (
@@ -29,7 +29,7 @@ const ReportBarChart = ({ data, t }) => {
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} dy={10} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
-                <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
+                <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: 16, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
                 <Bar dataKey="revenue" radius={[4, 4, 0, 0]} barSize={40}>
                     {(data || []).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -193,7 +193,7 @@ const Reports = () => {
                             [`${t('admin_order_id')}`]: o.id || '-',
                             [`${t('admin_col_time')}`]: o.date ? dayjs(o.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_customer')}`]: o.customerName || '-',
-                            [`${t('total')} (${t('admin_unit_vnd')})`]: totalVal,
+                            [`${t('report_subtotal')} (${t('admin_unit_vnd')})`]: totalVal,
                             [`${t('admin_col_shipping_fee')} (${t('admin_unit_vnd')})`]: shipVal,
                             [`${t('grand_total')} (${t('admin_unit_vnd')})`]: totalVal + shipVal
                         };
@@ -262,7 +262,7 @@ const Reports = () => {
                 const colProfit = `${t('admin_col_profit_vnd')} (${vnd})`;
                 const colOrd = `${t('admin_total_orders')} (${t('admin_unit_order')})`;
                 const colAvg = `${t('admin_col_avg_order_value')} (${vnd})`;
-                const colSubtotal = `${t('total')} (${vnd})`;
+                const colSubtotal = `${t('report_subtotal')} (${vnd})`;
                 const colGrandTotal = `${t('grand_total')} (${vnd})`;
 
                 if (reportType === 'combined') {
@@ -396,7 +396,7 @@ const Reports = () => {
                                 value={dates}
                                 onChange={(val) => setDates(val)}
                                 className="range-picker-modern-v2"
-                                placeholder={[t('admin_report_start_date'), t('admin_report_end_date')]}
+                                placeholder={[t('startDate'), t('endDate')]}
                                 allowClear
                             />
                         </div>

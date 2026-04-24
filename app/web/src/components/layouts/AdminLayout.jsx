@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
-import { ErrorBoundary } from '@/components/common';
+import { ErrorBoundary, ScrollToTop } from '@/components/common';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import CommandPalette from '@/components/admin/CommandPalette';
@@ -30,6 +30,7 @@ const AdminLayout = () => {
 
     return (
         <Layout className="admin-layout-container">
+            <ScrollToTop />
             <AdminHeader onSearchOpen={() => setIsSearchOpen(true)} />
             
             <AdminSidebar items={navItems} />

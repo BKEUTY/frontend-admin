@@ -5,6 +5,7 @@ import { MailOutlined, LockOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
 import { useAuth } from '@/store/AuthContext';
 import { notifyError, notifySuccess } from '@/services/NotificationService';
+import { ScrollToTop } from '@/components/common';
 import auth_bg from '@/assets/images/banners/auth_background.png';
 import './Auth.css';
 
@@ -32,6 +33,7 @@ const Login = () => {
 
     return (
         <div className="auth-container">
+            <ScrollToTop />
             <div className="auth-image-side" style={{ backgroundImage: `url(${auth_bg})` }}>
                 <div className="auth-image-overlay">
                     <div className="auth-brand-section">

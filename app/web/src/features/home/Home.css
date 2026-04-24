@@ -93,7 +93,7 @@
     height: 100%;
     background: #fff;
     border: 1px solid #f1f5f9;
-    border-radius: 16px;
+    border-radius: 24px;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -121,7 +121,7 @@
 
 .app-card-v2:hover {
     transform: translateY(-8px);
-    border-color: rgba(99, 102, 241, 0.2);
+    border-color: rgba(161, 5, 80, 0.2);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
 }
 
@@ -140,7 +140,7 @@
     width: 44px;
     height: 44px;
     background: #f8fafc;
-    border-radius: 12px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -240,3 +240,5 @@
     .section-title { font-size: 11px; }
     .app-content h3 { font-size: 16px; }
 }
+
+

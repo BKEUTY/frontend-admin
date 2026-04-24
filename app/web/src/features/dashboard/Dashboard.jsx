@@ -30,8 +30,8 @@ import {
     Bar,
     Legend
 } from 'recharts';
-import './Dashboard.css';
 import '@/admin-list.css';
+import './Dashboard.css';
 import StatsCard from '@/components/common/StatsCard';
 import { PageWrapper, CButton, Pagination, EmptyState } from '@/components/common';
 import { useDashboard } from '@/hooks/useDashboard';
@@ -329,7 +329,7 @@ const Dashboard = () => {
             title: t('admin_order_id'), 
             dataIndex: 'id', 
             key: 'id', 
-            width: 90,
+            width: 70,
             render: (text) => (
                 <button 
                     type="button"
@@ -373,7 +373,7 @@ const Dashboard = () => {
             title: t('status'), 
             dataIndex: 'status', 
             key: 'status', 
-            width: 120,
+            width: 100,
             align: 'center',
             render: (status) => {
                 const map = {
@@ -555,9 +555,8 @@ const Dashboard = () => {
                                         columns={recentOrdersColumns}
                                         dataSource={recentOrders}
                                         pagination={false}
-                                        className="admin-compact-table"
+                                        className="dashboard-compact-table"
                                         size="small"
-                                        scroll={{ x: 'max-content' }}
                                         onRow={(record) => ({
                                             onClick: () => navigate(`/admin/orders/${record.id}`),
                                             className: "admin-table-row-pointer"
@@ -576,9 +575,8 @@ const Dashboard = () => {
                                         columns={topProductsColumns}
                                         dataSource={topProductsData}
                                         pagination={false}
-                                        className="admin-compact-table"
+                                        className="dashboard-compact-table"
                                         size="small"
-                                        scroll={{ x: 'max-content' }}
                                         onRow={(record) => ({
                                             onClick: () => {
                                                 const slug = generateSlug(record.name, record.key);
@@ -632,7 +630,7 @@ const Dashboard = () => {
                             )} 
                         rowKey={(record) => record.id || record.userId || record.key}
                         loading={detailModal.loading}
-                        className="admin-compact-table"
+                        className="dashboard-compact-table"
                         columns={
                             detailModal.type === 'orders' ? recentOrdersColumns : 
                             detailModal.type === 'products' ? [

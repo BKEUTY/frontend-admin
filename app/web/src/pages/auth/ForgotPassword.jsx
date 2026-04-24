@@ -3,6 +3,7 @@ import { Form, Input, Button, Typography, Modal } from 'antd';
 import { MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
+import { ScrollToTop } from '@/components/common';
 import auth_bg from '@/assets/images/banners/auth_background.png';
 import './Auth.css';
 
@@ -37,6 +38,7 @@ const ForgotPassword = () => {
 
     return (
         <div className="auth-container">
+            <ScrollToTop />
             <div className="auth-image-side" style={{ backgroundImage: `url(${auth_bg})` }}>
                 <div className="auth-image-overlay">
                     <div className="auth-brand-section">

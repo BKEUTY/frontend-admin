@@ -21,5 +21,6 @@
 }
 
 .ant-spin-dot-item {
-    background-color: var(--color_main_title, #ec4899) !important;
+    background-color: var(--color_main_title) !important;
 }
+

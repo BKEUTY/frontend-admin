@@ -190,7 +190,7 @@
 .admin-pd-current-price {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #c2185b;
+    color: var(--color_main_title);
     letter-spacing: -1px;
     line-height: 1;
 }
@@ -230,7 +230,7 @@
 
 .admin-pd-size-btn {
     padding: 10px 24px;
-    border-radius: 12px;
+    border-radius: 16px;
     border: 1px solid #e2e8f0;
     background: #fff;
     font-weight: 700;
@@ -458,7 +458,7 @@
 
     .admin-pd-tabs-container {
         margin-top: 30px;
-        border-radius: 12px;
+        border-radius: 16px;
     }
 
     .admin-pd-tab-headers {
@@ -490,3 +490,4 @@
         height: 350px !important;
     }
 }
+

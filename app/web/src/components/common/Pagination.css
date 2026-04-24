@@ -40,7 +40,7 @@
     border: 1px solid #e2e8f0;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
+    border-radius: 50px;
     cursor: pointer;
     font-size: 14px;
     color: #475569;
@@ -71,14 +71,14 @@
     background-color: var(--color_main_title);
     color: #ffffff;
     border-color: var(--color_main_title);
-    box-shadow: 0 4px 12px rgba(194, 24, 91, 0.2);
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.2);
 }
 
 .page-btn.active:hover {
     background-color: var(--color_main_title);
     color: #ffffff;
     border-color: var(--color_main_title);
-    box-shadow: 0 6px 14px rgba(194, 24, 91, 0.3);
+    box-shadow: 0 6px 14px rgba(161, 5, 80, 0.3);
     transform: translateY(-2px);
 }
 
@@ -101,7 +101,7 @@
         width: 32px;
         height: 32px;
         font-size: 13px;
-        border-radius: 8px;
+        border-radius: 50px;
     }
 
     .pagination-info {
@@ -112,3 +112,5 @@
         gap: 4px;
     }
 }
+
+

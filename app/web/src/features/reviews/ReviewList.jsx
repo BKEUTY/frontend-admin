@@ -233,7 +233,7 @@ const ReviewList = ({ variantId }) => {
                                     ) : (
                                         reviewsData.content.map((rev) => (
                                             <div key={rev.id} className="admin-pr-card">
-                                                <Avatar size={48} className="admin-pr-user-avatar" style={{ backgroundColor: '#c2185b' }}>
+                                                <Avatar size={48} className="admin-pr-user-avatar" style={{ backgroundColor: 'var(--color_main_title)' }}>
                                                     {rev.userName?.charAt(0) || 'U'}
                                                 </Avatar>
                                                 <div className="admin-pr-main-content">
@@ -300,7 +300,7 @@ const ReviewList = ({ variantId }) => {
                             </div>
                         </>
                     ) : (
-                        <div className="load-reviews-prompt-container" style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        <div className="load-reviews-prompt-container" style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '24px', border: '1px dashed #cbd5e1' }}>
                             <CButton 
                                 type="primary" 
                                 size="large" 
@@ -332,7 +332,7 @@ const ReviewList = ({ variantId }) => {
                 centered
             >
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', alignItems: 'center' }}>
-                    <Avatar size={48} style={{ backgroundColor: '#c2185b' }}>{selectedReview?.userName?.charAt(0) || 'U'}</Avatar>
+                    <Avatar size={48} style={{ backgroundColor: 'var(--color_main_title)' }}>{selectedReview?.userName?.charAt(0) || 'U'}</Avatar>
                     <div>
                         <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#0f172a' }}>{selectedReview?.userName || 'User'}</div>
                         <Rate disabled defaultValue={selectedReview?.rating} style={{ fontSize: '14px', color: '#f59e0b' }} />
@@ -355,7 +355,7 @@ const ReviewList = ({ variantId }) => {
                     value={replyComment}
                     onChange={(e) => setReplyComment(e.target.value)}
                     placeholder={t('admin_review_reply_placeholder')}
-                    style={{ borderRadius: '8px' }}
+                    style={{ borderRadius: '16px' }}
                 />
             </Modal>
         </div>

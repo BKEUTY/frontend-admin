@@ -1,5 +1,5 @@
 .c-input-field {
-    border-radius: 8px !important;
+    border-radius: 16px !important;
     border: 1.5px solid #e2e8f0 !important;
     background: #ffffff !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -7,7 +7,7 @@
 
 .c-input-field:focus {
     border-color: var(--color_main_title) !important;
-    box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
     background: #fff !important;
 }
 
@@ -22,3 +22,5 @@
     color: #1e293b !important;
     font-family: var(--inter_font);
 }
+
+

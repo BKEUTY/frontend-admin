@@ -337,7 +337,7 @@ const ProductList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_products_title')}
-                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('product_items').toLowerCase()}</>}
+                subtitle={<>{t('total')} • <Text strong className="admin-subtitle-count">{totalItems}</Text> {t('admin_unit_product')}</>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={handleResetFilters} loading={isLoading} className="admin-btn-responsive">
@@ -410,7 +410,7 @@ const ProductList = () => {
                     {isLoading && products.length === 0 ? (
                         <div style={{ padding: 24 }}>
                             {[...Array(5)].map((_, i) => (
-                                <Skeleton key={i} width="100%" height="60px" borderRadius="8px" style={{ marginBottom: 16 }} />
+                                <Skeleton key={i} width="100%" height="60px" borderRadius="16px" style={{ marginBottom: 16 }} />
                             ))}
                         </div>
                     ) : (

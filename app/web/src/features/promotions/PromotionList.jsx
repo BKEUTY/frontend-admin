@@ -252,7 +252,7 @@ const PromotionList = () => {
                                 format="DD/MM/YYYY HH:mm"
                                 value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
                                 onChange={handleDateRangeChange}
-                                placeholder={[t('promo_col_start_time'), t('promo_col_end_time')]}
+                                placeholder={[t('startDate'), t('endDate')]}
                                 className="admin-date-picker-range-luxury"
                             />
                         </div>

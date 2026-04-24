@@ -193,7 +193,7 @@ const OrderList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_home_orders_title')}
-                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('admin_dashboard_orders')?.toLowerCase()}</>}
+                subtitle={<>{t('total')} • <strong className="admin-subtitle-count">{totalItems}</strong> {t('admin_unit_order')}</>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton
@@ -250,6 +250,7 @@ const OrderList = () => {
                                 }}
                                 className="admin-date-picker-range-luxury"
                                 placeholder={[t('startDate'), t('endDate')]}
+                                allowClear
                             />
                         </div>
                     </div>

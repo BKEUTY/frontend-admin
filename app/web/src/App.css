@@ -1,6 +1,6 @@
 :root {
-  --color-primary: #c2185b;
-  --color-primary-hover: #d81b60;
+  --color-primary: var(--color_main_title);
+  --color-primary-hover: var(--color_main_title_hover);
   --color-text-main: #333;
   --color-text-secondary: #666;
   --color-bg-light: #f9f9f9;
@@ -9,9 +9,9 @@
   --transition-normal: 0.3s ease;
   --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
   --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.1);
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
 }
 
 body {
@@ -135,3 +135,4 @@ body {
   margin: 0 auto;
   padding: 0 20px;
 }
+

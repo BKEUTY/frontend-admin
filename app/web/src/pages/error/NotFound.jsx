@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
 import { WarningOutlined } from '@ant-design/icons';
-import { CButton } from '@/components/common';
+import { CButton, ScrollToTop } from '@/components/common';
 import './ErrorPage.css';
 
 const NotFound = () => {
@@ -11,6 +11,7 @@ const NotFound = () => {
 
     return (
         <div className="error-page-container">
+            <ScrollToTop />
             <h1 className="error-code">404</h1>
             <div className="error-content">
                 <WarningOutlined className="error-icon" />

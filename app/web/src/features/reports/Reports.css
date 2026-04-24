@@ -31,14 +31,14 @@
 .admin-reports-glass-panel {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
+    border-radius: 24px !important;
     box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.05) !important;
     margin-bottom: 32px !important;
     transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .admin-reports-glass-panel:hover {
-    box-shadow: 12px 12px 0px rgba(139, 92, 246, 0.1) !important;
+    box-shadow: 12px 12px 0px rgba(161, 5, 80, 0.1) !important;
     transform: translate(-2px, -2px);
     border-color: var(--admin-primary) !important;
 }
@@ -78,7 +78,7 @@
     flex: 1 !important;
     background: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important;
+    border-radius: 16px !important;
     padding: 10px 10px !important;
     font-size: 11px !important;
     font-weight: 500 !important;
@@ -95,7 +95,7 @@
     background: #ffffff !important;
     color: var(--admin-primary) !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.08) !important;
 }
 
 .luxury-type-card-v2.active {
@@ -103,7 +103,7 @@
     color: #ffffff !important;
     font-weight: 600 !important;
     border-color: var(--admin-primary) !important;
-    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2) !important;
+    box-shadow: 0 6px 16px rgba(161, 5, 80, 0.2) !important;
 }
 
 .horizontal-divider-minimal {
@@ -122,7 +122,7 @@
 .segmented-modern-v2 {
     background: #f1f5f9 !important;
     padding: 6px !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     display: inline-flex !important;
     flex-shrink: 0 !important;
 }
@@ -143,8 +143,8 @@
 .segmented-modern-v2 .ant-segmented-item-selected {
     background: var(--admin-primary) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2) !important;
-    border-radius: 10px !important;
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.2) !important;
+    border-radius: 12px !important;
 }
 
 .segmented-modern-v2 .ant-segmented-item-selected .ant-segmented-item-label {
@@ -155,7 +155,7 @@
 .range-picker-modern-v2 {
     width: 380px !important;
     height: 44px !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     border: 1.5px solid #e2e8f0 !important;
     background: #ffffff !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -164,7 +164,7 @@
 .range-picker-modern-v2:hover,
 .range-picker-modern-v2.ant-picker-focused {
     border-color: var(--admin-primary) !important;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12) !important;
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.12) !important;
     background: #fafbfc !important;
 }
 
@@ -184,7 +184,7 @@
 .chart-mini-card {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 16px !important;
+    border-radius: 24px !important;
     box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.02) !important;
 }
 
@@ -206,19 +206,19 @@
 .btn-export-reports-v3 {
     height: 48px !important;
     padding: 0 40px !important;
-    border-radius: 12px !important;
+    border-radius: 16px !important;
     background: var(--admin-primary) !important;
     color: #ffffff !important;
     border: none !important;
     font-weight: 700 !important;
     font-size: 14px !important;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.2) !important;
     transition: all 0.3s ease !important;
 }
 
 .btn-export-reports-v3:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3) !important;
+    box-shadow: 0 8px 24px rgba(161, 5, 80, 0.3) !important;
     filter: brightness(1.05) !important;
 }
 
@@ -318,7 +318,7 @@
 
     .admin-reports-glass-panel {
         box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.05) !important;
-        border-radius: 12px !important;
+        border-radius: 16px !important;
     }
 
     .chart-main-card {
@@ -326,6 +326,8 @@
     }
 }
 
-/* Global table & chart scroll fixes for reports */
+
 .ant-table-wrapper { overflow-x: auto; }
-.recharts-responsive-container { min-height: 300px; }
+.recharts-responsive-container { min-height: 300px; }
+
+

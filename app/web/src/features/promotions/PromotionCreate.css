@@ -5,14 +5,14 @@
 .promo-form-wrapper {
     background: #fff;
     padding: 24px;
-    border-radius: 8px;
+    border-radius: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .promo-form-section {
     background: #fbfbfb;
     padding: 24px;
-    border-radius: 12px;
+    border-radius: 16px;
     border: 1px solid #f0f0f0;
     margin-bottom: 24px;
     transition: box-shadow 0.3s ease;
@@ -49,12 +49,12 @@
 @media (max-width: 768px) {
     .promo-form-wrapper {
         padding: 16px;
-        border-radius: 6px;
+        border-radius: 16px;
     }
 
     .promo-form-section {
         padding: 16px;
-        border-radius: 8px;
+        border-radius: 16px;
         margin-bottom: 16px;
     }
 
@@ -88,3 +88,4 @@
         margin-bottom: 12px;
     }
 }
+
