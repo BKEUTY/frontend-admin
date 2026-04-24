@@ -451,9 +451,9 @@ const ProductCreateScreen = ({ navigation }) => {
                     ))}
                 </View>
                 <Text style={styles.stepLabel}>
-                    {currentStep === 0 ? t('admin_step_info') :
-                        currentStep === 1 ? t('admin_step_media') :
-                            currentStep === 2 ? t('admin_step_options') : t('admin_step_variants')}
+                    {currentStep === 0 ? t('admin_step_1') :
+                        currentStep === 1 ? t('admin_step_2') :
+                            currentStep === 2 ? t('admin_step_3') : t('admin_step_4')}
                 </Text>
             </View>
 

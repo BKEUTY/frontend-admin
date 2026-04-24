@@ -91,12 +91,12 @@ const ProductListScreen = ({ navigation }) => {
                     <View style={styles.metaRight}>
                         <View style={styles.soldBadge}>
                             <Text style={styles.soldText}>
-                                {t('sold')}: {item.variants ? item.variants.reduce((sum, v) => sum + (v.sold || 0), 0) : 0}
+                                {t('sold_label')}: {item.variants ? item.variants.reduce((sum, v) => sum + (v.sold || 0), 0) : 0} {t('items_sold')}
                             </Text>
                         </View>
                         <View style={styles.stockBadge}>
                             <Text style={styles.stockText}>
-                                {t('admin_product_stock')}: {item.variants ? item.variants.reduce((sum, v) => sum + v.stockQuantity, 0) : 0}
+                                {t('in_stock_label')}: {item.variants ? item.variants.reduce((sum, v) => sum + v.stockQuantity, 0) : 0} {t('items_available')}
                             </Text>
                         </View>
                     </View>
@@ -124,7 +124,7 @@ const ProductListScreen = ({ navigation }) => {
                     <Ionicons name="search" size={18} color={COLORS.textLight} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder={t('search')}
+                        placeholder={t('admin_search_products')}
                         placeholderTextColor={COLORS.textLight}
                         value={searchInput}
                         onChangeText={setSearchInput}
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     },
     productMeta: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         justifyContent: 'space-between',
     },
     productPrice: {
@@ -296,8 +296,9 @@ const styles = StyleSheet.create({
         color: COLORS.primary,
     },
     metaRight: {
-        flexDirection: 'row',
-        gap: 8,
+        flexDirection: 'column',
+        gap: 6,
+        alignItems: 'flex-end',
     },
     stockBadge: {
         paddingHorizontal: 8,

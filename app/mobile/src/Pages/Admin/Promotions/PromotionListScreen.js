@@ -166,7 +166,7 @@ const PromotionListScreen = ({ navigation }) => {
                     <Ionicons name="search" size={18} color={COLORS.textLight} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder={t('search_placeholder')}
+                        placeholder={t('promo_search_placeholder')}
                         placeholderTextColor={COLORS.textLight}
                         value={searchInput}
                         onChangeText={setSearchInput}
