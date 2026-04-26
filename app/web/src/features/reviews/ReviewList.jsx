@@ -130,7 +130,7 @@ const ReviewList = ({ variantId }) => {
                         <Select
                             showSearch
                             className="admin-toolbar-select"
-                            style={{ width: 350 }}
+                            style={{ width: '100%', maxWidth: '350px' }}
                             placeholder={t('admin_review_product_select')}
                             optionFilterProp="children"
                             onChange={(val) => { 

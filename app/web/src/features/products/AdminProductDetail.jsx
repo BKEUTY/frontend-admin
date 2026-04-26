@@ -79,10 +79,6 @@ export default function AdminProductDetail() {
                 });
 
                 const targetVariant = responseData.variants?.find(v => v.id === responseData.id) || responseData.variants?.[0];
-                const correctSlug = generateSlug(targetVariant.productVariantName, productId);
-                if (slug && slug !== correctSlug) {
-                    throw new Error('Invalid product slug');
-                }
                 setProductData(responseData);
                 setSelectedOptions(targetVariant?.variantOptions || {});
                 setStockQuantity(targetVariant?.stockQuantity || 0);
@@ -247,7 +243,7 @@ export default function AdminProductDetail() {
 
                         {Object.keys(selectedOptions).length > 0 && (
                             <div className="admin-pd-selected-variant">
-                                <span className="admin-pd-variant-label">{t('variant_selected_label')}: </span>
+                                <span className="admin-pd-variant-label">{t('product_selected')} </span>
                                 <strong className="admin-pd-variant-value">
                                     {Object.values(selectedOptions).join(' - ')}
                                 </strong>
@@ -255,11 +251,11 @@ export default function AdminProductDetail() {
                         )}
 
                         <div className="admin-pd-stock-info">
-                            {t('in_stock_label')} <strong>{stockQuantity}</strong> {t('items_available')}
+                            {t('product_stock_count').replace('{count}', stockQuantity)}
                         </div>
 
                         <div className="admin-pd-sold-info">
-                            {t('sold_label')} <strong>{soldQuantity}</strong> {t('items_sold')}
+                            {t('product_sold_count').replace('{count}', soldQuantity)}
                         </div>
                     </div>
                 </div>

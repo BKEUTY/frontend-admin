@@ -61,7 +61,7 @@ export default function AdminOrderDetail() {
                         style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }}
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/50'; }}
                     />
-                    <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`}>
+                    <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`} state={{ productId: record.productVariantId }}>
                         <Text strong style={{ color: 'var(--admin-primary)', cursor: 'pointer' }}>{text}</Text>
                     </Link>
                 </div>
