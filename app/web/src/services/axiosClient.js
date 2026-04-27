@@ -67,6 +67,9 @@ const createAxiosClient = () => {
             const status = error.response?.status;
 
             if (status === 401 && !originalRequest._retry) {
+                const isAuthPath = ['/login', '/register'].some(path => originalRequest.url?.includes(path));
+                if (isAuthPath) return Promise.reject(error);
+
                 if (originalRequest.url.includes('/api/auth/refresh')) {
                     forceLogout();
                     return Promise.reject(error);

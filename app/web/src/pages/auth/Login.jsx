@@ -24,8 +24,11 @@ const Login = () => {
             notifySuccess('success', t('login_success'));
             navigate('/admin');
         } catch (error) {
-            const apiMsg = error.response?.data?.message || error.message;
-            notifyError('error', apiMsg || t('error'));
+            const apiMsg = error.response?.data;
+            const isInvalid = error.response?.status === 401 || apiMsg === 'invalid_credentials';
+            const displayMsg = (typeof apiMsg === 'string' && apiMsg.length > 5) ? (t(apiMsg) || apiMsg) : t(isInvalid ? 'api_error_wrong_credentials' : 'admin_error_general');
+
+            notifyError('error', displayMsg);
         } finally {
             setLoading(false);
         }

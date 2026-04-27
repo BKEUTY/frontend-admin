@@ -1,6 +1,6 @@
 import React from 'react';
 import { Avatar, Dropdown } from 'antd';
-import { SearchOutlined, HomeOutlined, LogoutOutlined } from '@ant-design/icons';
+import { SearchOutlined, HomeOutlined, LogoutOutlined, UserOutlined, HistoryOutlined, DownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/store/AuthContext';
 import { useLanguage } from '@/store/LanguageContext';
@@ -18,9 +18,13 @@ const AdminHeader = ({ onSearchOpen }) => {
     };
 
     const userMenuItems = [
-        { key: 'home', icon: <HomeOutlined />, label: t('home_page'), onClick: () => { navigate('/'); window.location.reload(); } },
-        { type: 'divider' },
-        { key: 'logout', icon: <LogoutOutlined />, label: t('logout'), onClick: handleLogout, danger: true },
+        { 
+            key: 'logout', 
+            icon: <LogoutOutlined />, 
+            label: t('logout'), 
+            onClick: handleLogout, 
+            danger: true 
+        },
     ];
 
     return (
@@ -47,13 +51,17 @@ const AdminHeader = ({ onSearchOpen }) => {
                     menu={{ items: userMenuItems }}
                     placement='bottomRight'
                     trigger={['click']}
-                    className='admin-user-dropdown'
+                    overlayClassName="admin-user-dropdown-menu"
                 >
-                    <button type="button" className='admin-user-profile'>
-                        <Avatar size={28} style={{ backgroundColor: 'var(--admin-primary)' }}>
+                    <button type="button" className='admin-user-profile-trigger'>
+                        <Avatar 
+                            size={32} 
+                            className="admin-avatar-custom"
+                        >
                             {user?.name?.[0]?.toUpperCase() || 'A'}
                         </Avatar>
-                        <span className='admin-username'>{user?.name || 'Admin'}</span>
+                        <span className='admin-username-text'>{user?.name || 'Admin'}</span>
+                        <DownOutlined className="admin-chevron-icon" />
                     </button>
                 </Dropdown>
             </div>
