@@ -139,12 +139,8 @@
 }
 
 .admin-toolbar-select {
-    min-width: 180px;
-}
-
-.admin-toolbar-select {
     height: 44px !important;
-    min-width: 140px;
+    min-width: 160px;
 }
 
 .admin-toolbar-select .ant-select-selector,

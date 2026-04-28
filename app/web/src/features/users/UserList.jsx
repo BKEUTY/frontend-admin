@@ -159,7 +159,7 @@ const UserList = () => {
                                 onChange={(v) => setQuery({ role: v || null, page: 1 })}
                                 className="admin-toolbar-select"
                                 value={roleFilter}
-                                style={{ minWidth: 140 }}
+                                style={{ minWidth: 160 }}
                             />
                         </div>
                     </div>

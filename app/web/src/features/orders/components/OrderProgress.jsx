@@ -10,19 +10,19 @@ import {
 } from 'react-icons/fa';
 import './OrderProgress.css';
 
-const OrderProgress = ({ currentStatus, shippingStatus, paymentMethod, paymentStatus }) => {
+const OrderProgress = ({ currentStatus, shippingStatus, paymentMethod, paymentStatus, orderDate, estShippingDate }) => {
     const { t } = useLanguage();
 
     const isBank = paymentMethod?.toUpperCase() === 'BANK';
     const isPaid = paymentStatus?.toUpperCase() === 'PAID';
 
     const steps = [
-        { key: 'RECEIVED', label: t('status_order_received') },
+        { key: 'RECEIVED', label: t('status_order_received'), date: orderDate },
         { key: 'CONFIRMED', label: t('order_status_CONFIRMED') },
         ...(isBank ? [{ key: 'AWAITING_PAY', label: t('status_awaiting_payment') }] : []),
         { key: 'PACKING', label: t('shipping_status_NOT_CREATED') },
         { key: 'SHIPPING', label: t('status_shipping') },
-        { key: 'SUCCEEDED', label: t('order_status_SUCCEEDED') }
+        { key: 'SUCCEEDED', label: t('order_status_SUCCEEDED'), date: (currentStatus === 'SUCCEEDED' ? estShippingDate : null) }
     ];
 
     const getStepIndex = () => {
@@ -72,7 +72,14 @@ const OrderProgress = ({ currentStatus, shippingStatus, paymentMethod, paymentSt
                                     </div>
                                 )}
                             </div>
-                            <div className="step-label">{step.label}</div>
+                            <div className="step-label">
+                                {step.label}
+                                {step.date && (
+                                    <div className="step-date">
+                                        {new Date(step.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     );
                 })}

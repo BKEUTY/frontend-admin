@@ -85,8 +85,8 @@ const OrderList = () => {
     const columns = [
         {
             title: t('admin_order_id'),
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'orderId',
+            key: 'orderId',
             width: 90,
             align: 'center',
             render: (text) => <span className="admin-table-id">#{text}</span>,
@@ -152,7 +152,7 @@ const OrderList = () => {
                         value={status}
                         variant="borderless"
                         style={{ width: 140, fontWeight: 600 }}
-                        onChange={(val) => handleStatusChange(record.id, val)}
+                        onChange={(val) => handleStatusChange(record.orderId, val)}
                         options={[
                             { 
                                 value: 'NOT_CONFIRMED', 
@@ -182,7 +182,7 @@ const OrderList = () => {
             render: (_, record) => (
                 <Space size="middle">
                     <Tooltip title={t('view')}>
-                        <CButton type="text" className="admin-action-btn edit-btn" icon={<EyeOutlined />} onClick={() => navigate(`/admin/orders/${record.id}`)} />
+                        <CButton type="text" className="admin-action-btn edit-btn" icon={<EyeOutlined />} onClick={() => navigate(`/admin/orders/${record.orderId}`)} />
                     </Tooltip>
                 </Space>
             ),
@@ -230,7 +230,7 @@ const OrderList = () => {
                                 onChange={(val) => setQuery({ status: val, page: 1 })} 
                                 className="admin-toolbar-select"
                                 placeholder={t('status')}
-                                style={{ minWidth: 140 }}
+                                style={{ minWidth: 160 }}
                             >
                                 <Option value="ALL">{t('all')}</Option>
                                 <Option value="NOT_CONFIRMED">{t('status_order_received')}</Option>
@@ -278,13 +278,13 @@ const OrderList = () => {
                     <Table
                         columns={columns}
                         dataSource={orders}
-                        rowKey="id"
+                        rowKey="orderId"
                         className="beauty-table"
                         pagination={false}
                         loading={isLoading}
                         scroll={{ x: 'max-content' }}
                         onRow={(record) => ({
-                            onClick: () => navigate(`/admin/orders/${record.id}`),
+                            onClick: () => navigate(`/admin/orders/${record.orderId}`),
                             className: "admin-table-row-pointer"
                         })}
                         locale={{ emptyText: <EmptyState description={t('no_orders')} /> }}

@@ -376,7 +376,7 @@ const ProductList = () => {
                                 className="admin-toolbar-select"
                                 filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                                 value={selectedCategoryId}
-                                style={{ minWidth: 150 }}
+                                style={{ minWidth: 160 }}
                             />
                         </div>
                     </div>
@@ -390,6 +390,7 @@ const ProductList = () => {
                                 onChange={handleStatusChange}
                                 className="admin-toolbar-select"
                                 value={statusFilter}
+                                style={{ minWidth: 160 }}
                             />
                         </div>
                         <div className="admin-filter-group">

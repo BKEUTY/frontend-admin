@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { notification } from 'antd';
 import queryString from 'query-string';
 import { getTranslation } from '@/utils/translate';
 import { notifyError } from '@/services/NotificationService';
@@ -16,6 +17,7 @@ const authClient = axios.create({
 });
 
 let isRefreshing = false;
+let isLoggingOut = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
@@ -30,11 +32,27 @@ const processQueue = (error, token = null) => {
 };
 
 const forceLogout = () => {
+    if (isLoggingOut) return;
+    isLoggingOut = true;
+
     clearAccessToken();
     clearUserSession();
+    
     if (!window.location.pathname.includes('/login')) {
-        notifyError('error', getTranslation('error_session_expired') || 'Session Expired');
-        setTimeout(() => window.location.href = '/login', 1500);
+        notification.error({
+            key: 'session_expired',
+            message: getTranslation('error') || 'Error',
+            description: getTranslation('error_session_expired') || 'Session Expired',
+            duration: 3,
+            onClose: () => {
+                isLoggingOut = false;
+            }
+        });
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 1500);
+    } else {
+        isLoggingOut = false;
     }
 };
 
@@ -107,24 +125,37 @@ const createAxiosClient = () => {
                 }
             }
 
-            if (status !== 401 && !originalRequest.skipGlobalErrorHandler) {
+            if (status !== 401 && !originalRequest.skipGlobalErrorHandler && !isLoggingOut) {
                 const errorData = error.response?.data;
                 const apiMessage = typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error || '');
                 
                 let fallbackKey = 'error_unknown';
+                let notificationKey = `error_${status || 'network'}`;
+
                 if (status === 403) fallbackKey = 'error_403';
                 else if (status === 404) fallbackKey = 'error_404';
                 else if (status >= 500) fallbackKey = 'error_500';
 
                 let title = originalRequest.customErrorTitle || getTranslation('error') || 'Error';
-                let description = originalRequest.customErrorMsg || apiMessage || getTranslation(fallbackKey);
+                
+                // Prioritize translated message over technical API message for standard errors
+                const translatedFallback = getTranslation(fallbackKey);
+                let description = originalRequest.customErrorMsg || 
+                                   (translatedFallback !== fallbackKey ? translatedFallback : apiMessage) || 
+                                   translatedFallback;
 
-                if (error.message === 'Network Error') {
+                if (error.message === 'Network Error' || !error.response) {
                     title = getTranslation('error') || 'Error';
-                    description = getTranslation('api_error_network');
+                    description = getTranslation('api_error_network') || 'Network Error';
+                    notificationKey = 'error_network';
                 }
 
-                notifyError(title, description);
+                notification.error({
+                    key: notificationKey,
+                    message: title,
+                    description: description,
+                    duration: 3
+                });
                 error.isGlobalHandled = true;
             }
 

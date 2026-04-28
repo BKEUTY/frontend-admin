@@ -458,7 +458,7 @@ export default {
     admin_col_avg_order_value: "Giá trị TB",
 
     // --- Invoices ---
-    download_invoice: "Tải hóa đơn (PDF)",
+    download_invoice: "Tải hóa đơn",
     invoice_order: "Mã đơn",
     invoice_date: "Ngày xuất hóa đơn",
     invoice_payment: "Phương thức thanh toán",

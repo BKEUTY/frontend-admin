@@ -75,6 +75,13 @@
     background: var(--admin-primary);
     transform: scale(1.3);
     box-shadow: 0 0 0 3px rgba(var(--admin-primary-rgb, 79, 70, 229), 0.1);
+    animation: active-dot-pulse-admin 2s infinite;
+}
+
+@keyframes active-dot-pulse-admin {
+    0% { box-shadow: 0 0 0 0px rgba(79, 70, 229, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+    100% { box-shadow: 0 0 0 0px rgba(79, 70, 229, 0); }
 }
 
 .progress-step.active .step-label {
@@ -140,5 +147,17 @@
         font-size: 0.55rem;
         max-width: 50px;
     }
+}
+
+.step-date {
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+.progress-step.completed .step-date, 
+.progress-step.active .step-date {
+    color: var(--admin-primary);
 }
 

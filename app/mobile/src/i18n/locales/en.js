@@ -460,7 +460,7 @@ export default {
     admin_col_avg_order_value: "AOV Value",
 
     // --- Invoices ---
-    download_invoice: "Bill (PDF)",
+    download_invoice: "Bill",
     invoice_order: "Order",
     invoice_date: "Print Date",
     invoice_payment: "Terms",

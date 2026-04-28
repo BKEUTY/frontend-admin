@@ -4,8 +4,9 @@ import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/us
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug } from '@/utils/helpers';
 import generateInvoice from '@/utils/InvoiceService';
-import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Card, Col, Descriptions, Row, Select, Table, Tag, Typography } from 'antd';
+import { FaCalendarAlt, FaDownload, FaStickyNote, FaTruck, FaUser } from 'react-icons/fa';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './AdminOrderDetail.css';
 
@@ -152,20 +153,20 @@ export default function AdminOrderDetail() {
                 <Col>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <CButton type="outline" icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/orders')} />
-                        <Title level={4} style={{ margin: 0, color: 'var(--admin-text-main)' }}>{t('order_detail')} #{orderDetail.id || id}</Title>
+                        <Title level={4} style={{ margin: 0, color: 'var(--admin-text-main)' }}>{t('order_detail')} #{orderDetail.orderId || id}</Title>
                         <Tag color="cyan" style={{ padding: '6px 12px', fontSize: '14px', borderRadius: '8px', fontWeight: 600 }}>
                             {orderDetail.paymentMethod}
                         </Tag>
                     </div>
                 </Col>
                 <Col>
-                    <CButton
-                        type="primary"
-                        icon={<DownloadOutlined />}
+                    <button
+                        className="admin-btn-download"
                         onClick={() => generateInvoice(orderDetail, t, language)}
+                        title={t('download_invoice')}
                     >
-                        {t('download_invoice')}
-                    </CButton>
+                        <FaDownload /> {t('invoice')}
+                    </button>
                 </Col>
             </Row>
 
@@ -174,6 +175,8 @@ export default function AdminOrderDetail() {
                 shippingStatus={orderDetail.shippingStatus}
                 paymentMethod={orderDetail.paymentMethod}
                 paymentStatus={orderDetail.paymentStatus}
+                orderDate={orderDetail.orderDate}
+                estShippingDate={orderDetail.estShippingDate}
             />
 
             <Row gutter={[24, 24]}>
@@ -238,17 +241,55 @@ export default function AdminOrderDetail() {
                     </Card>
 
                     <Card title={t('customer_info')} variant="outlined" className="bkeuty-admin-card shadow-card" style={{ marginBottom: 24 }}>
-                        <Descriptions column={1} labelStyle={{ color: '#64748b', fontWeight: 500 }} contentStyle={{ fontWeight: 600 }}>
-                            <Descriptions.Item label={t('username')}>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Text strong>{orderDetail.userName || t('guest')}</Text>
-                                    <Text type="secondary" style={{ fontSize: '11px', fontWeight: 400 }}>ID: {orderDetail.userId || '---'}</Text>
+                        <div className="customer-modern-info">
+                            <div className="customer-main-info">
+                                <div className="customer-avatar-box">
+                                    <FaUser />
                                 </div>
-                            </Descriptions.Item>
-                            <Descriptions.Item label={t('order_date')}>
-                                {orderDetail.orderDate ? new Date(orderDetail.orderDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '---'}
-                            </Descriptions.Item>
-                        </Descriptions>
+                                <div className="customer-text-info">
+                                    <Text strong style={{ fontSize: '16px', display: 'block' }}>{orderDetail.userName || t('guest')}</Text>
+                                    <Text type="secondary" style={{ fontSize: '12px' }}>ID: {orderDetail.userId || '---'}</Text>
+                                </div>
+                            </div>
+
+                            <div className="customer-detail-list">
+                                <div className="detail-item">
+                                    <Text type="secondary">{t('recipient')}:</Text>
+                                    <Text strong>{orderDetail.buyerName || orderDetail.userName}</Text>
+                                </div>
+                                {orderDetail.buyerPhoneNumber && (
+                                    <div className="detail-item">
+                                        <Text type="secondary">{t('tel_label')}:</Text>
+                                        <Text strong>{orderDetail.buyerPhoneNumber}</Text>
+                                    </div>
+                                )}
+                                <div className="detail-item">
+                                    <Text type="secondary">{t('order_date')}:</Text>
+                                    <Text>
+                                        {orderDetail.orderDate ? new Date(orderDetail.orderDate).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '---'}
+                                    </Text>
+                                </div>
+                                {orderDetail.estShippingDate && (
+                                    <div className="detail-item">
+                                        <Text type="secondary">{t('est_delivery_label')}:</Text>
+                                        <Text strong style={{ color: 'var(--admin-primary)' }}>
+                                            {new Date(orderDetail.estShippingDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                        </Text>
+                                    </div>
+                                )}
+                            </div>
+
+                            {orderDetail.buyerNote && (
+                                <div className="customer-note-box">
+                                    <div className="note-header">
+                                        <FaStickyNote /> {t('order_note')}
+                                    </div>
+                                    <div className="note-body">
+                                        {orderDetail.buyerNote}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </Card>
 
                     <Card title={t('shipping_address')} variant="outlined" className="bkeuty-admin-card shadow-card">

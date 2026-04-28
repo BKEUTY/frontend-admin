@@ -18,12 +18,23 @@ const queryClient = new QueryClient({
     },
 });
 
+import { ConfigProvider } from 'antd';
+
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <LanguageProvider>
-                <NotificationProvider>
-                    <AuthProvider>
+            <ConfigProvider
+                theme={{
+                    token: {
+                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                        colorPrimary: '#A10550',
+                        borderRadius: 16,
+                    },
+                }}
+            >
+                <LanguageProvider>
+                    <NotificationProvider>
+                        <AuthProvider>
                         <ErrorBoundary>
                             <Suspense fallback={<div style={{ padding: '20px' }}><Skeleton width="100%" height="400px" /></div>}>
                                 <div className="App">
@@ -34,7 +45,8 @@ function App() {
                     </AuthProvider>
                 </NotificationProvider>
             </LanguageProvider>
-        </QueryClientProvider>
+        </ConfigProvider>
+    </QueryClientProvider>
     );
 }
 

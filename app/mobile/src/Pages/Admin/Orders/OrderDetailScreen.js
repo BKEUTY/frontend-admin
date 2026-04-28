@@ -48,8 +48,14 @@ const OrderDetailScreen = () => {
         shipping: orderDetail.shippingFee || 0,
         total: orderDetail.grandTotal || orderDetail.total || 0,
         paymentMethod: orderDetail.paymentMethod || 'COD',
-        address: orderDetail.address || 'N/A',
-        user: { username: orderDetail.userId || t('guest') }
+        address: typeof orderDetail.address === 'object' 
+            ? `${orderDetail.address.address}, ${orderDetail.address.ward?.wardName}, ${orderDetail.address.district?.districtName}, ${orderDetail.address.province?.provinceName}`
+            : orderDetail.address || 'N/A',
+        user: { username: orderDetail.userId || t('guest') },
+        userName: orderDetail.userName,
+        buyerName: orderDetail.buyerName,
+        buyerPhoneNumber: orderDetail.buyerPhoneNumber,
+        buyerNote: orderDetail.buyerNote
     };
 
     const isPaid = orderData.status === 'PAID' || orderData.status === 'COMPLETED';
@@ -108,7 +114,7 @@ const OrderDetailScreen = () => {
                 <View style={styles.mainCard}>
                     <View style={styles.orderIdHeader}>
                         <View>
-                            <Text style={styles.orderIdLabel}>{t('order_id')} #{orderData.id}</Text>
+                            <Text style={styles.orderIdLabel}>{t('order_id')} #{orderData.id || orderDetail.orderId}</Text>
                             <Text style={styles.orderDate}>{t('admin_date')}: {orderData.createdAt}</Text>
                         </View>
                         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(orderData.status) + '15' }]}>
@@ -162,17 +168,45 @@ const OrderDetailScreen = () => {
                 <View style={styles.infoCard}>
                     <View style={styles.infoRow}>
                         <Ionicons name="person-outline" size={18} color={COLORS.textSecondary} />
-                        <Text style={styles.infoText}>{orderData.user?.username}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Ionicons name="location-outline" size={18} color={COLORS.textSecondary} />
-                        <Text style={styles.infoText}>{orderData.address}</Text>
+                        <View>
+                            <Text style={styles.infoText}>{orderData.userName || t('guest')}</Text>
+                            <Text style={{ fontSize: 11, color: COLORS.textLight }}>ID: {orderData.user?.username}</Text>
+                        </View>
                     </View>
                     <View style={styles.infoRow}>
                         <Ionicons name="card-outline" size={18} color={COLORS.textSecondary} />
                         <Text style={styles.infoText}>{orderData.paymentMethod}</Text>
                     </View>
                 </View>
+
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>{t('delivery_header')}</Text>
+                </View>
+                <View style={styles.infoCard}>
+                    <View style={styles.infoRow}>
+                        <Ionicons name="person-outline" size={18} color={COLORS.primary} />
+                        <Text style={[styles.infoText, { fontWeight: '700', color: COLORS.text }]}>{orderData.buyerName || orderData.userName || t('guest')}</Text>
+                    </View>
+                    {orderData.buyerPhoneNumber && (
+                        <View style={styles.infoRow}>
+                            <Ionicons name="call-outline" size={18} color={COLORS.primary} />
+                            <Text style={styles.infoText}>{orderData.buyerPhoneNumber}</Text>
+                        </View>
+                    )}
+                    <View style={styles.infoRow}>
+                        <Ionicons name="location-outline" size={18} color={COLORS.textSecondary} />
+                        <Text style={styles.infoText}>{orderData.address}</Text>
+                    </View>
+                </View>
+
+                {orderData.buyerNote && (
+                    <View style={styles.infoCard}>
+                        <View style={styles.infoRow}>
+                            <Ionicons name="document-text-outline" size={18} color={COLORS.warning} />
+                            <Text style={styles.infoText}>{orderData.buyerNote}</Text>
+                        </View>
+                    </View>
+                )}
 
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>{t('order_items')}</Text>

@@ -1,7 +1,7 @@
 .admin-pd-breadcrumb {
-    font-size: 14px;
+    font-size: 13px;
     color: #64748b;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     font-weight: 500;
 }
 
@@ -16,12 +16,12 @@
 }
 
 .admin-pd-divider {
-    margin: 0 8px;
+    margin: 0 10px;
     color: #cbd5e1;
 }
 
 .admin-pd-current {
-    color: #1e293b;
+    color: var(--admin-primary);
     font-weight: 600;
 }
 
@@ -34,9 +34,9 @@
 }
 
 .shadow-card {
-    border-radius: 24px;
+    border-radius: 20px;
     border: 1px solid #f1f5f9;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
     overflow: hidden;
 }
 
@@ -44,7 +44,7 @@
     border-bottom: 1px solid #f1f5f9;
     background-color: #ffffff;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     padding: 16px 24px;
 }
 
@@ -147,3 +147,153 @@
     }
 }
 
+
+.ant-descriptions-item-label {
+    color: #64748b !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding-bottom: 4px !important;
+}
+
+.ant-descriptions-item-content {
+    color: #1e293b !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+.status-select-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.status-select-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-btn-download {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--admin-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admin-btn-download:hover {
+    background: #fff;
+    border-color: var(--admin-primary);
+    color: var(--admin-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(136, 19, 55, 0.1), 0 4px 6px -4px rgba(136, 19, 55, 0.1);
+}
+
+.admin-btn-download svg {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+.admin-btn-download:hover svg {
+    transform: scale(1.1);
+}
+
+.customer-modern-info {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.customer-main-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.customer-avatar-box {
+    width: 48px;
+    height: 48px;
+    background: #f8fafc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--admin-primary);
+    font-size: 20px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.customer-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.customer-note-box {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 14px 18px;
+    border-left: 4px solid var(--admin-primary);
+}
+
+.note-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--admin-primary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.note-body {
+    font-size: 14px;
+    color: #475569;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .customer-modern-info {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-mb30 > .ant-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .status-select-card .ant-select {
+        width: 100% !important;
+    }
+
+    .admin-btn-download {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+}
