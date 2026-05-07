@@ -6,8 +6,8 @@ import useQueryParams from '@/hooks/useQueryParams';
 import { getImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug } from '@/utils/helpers';
-import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
-import { Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
+import { Form, Input, InputNumber, Modal, Popover, Select, Slider, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@/admin-list.css';
@@ -36,8 +36,12 @@ const ProductList = () => {
     const statusFilter = query.status || undefined;
     const searchText = query.search || '';
     const selectedCategoryId = query.categoryId ? Number(query.categoryId) : undefined;
+    const minPrice = query.minPrice ? Number(query.minPrice) : undefined;
+    const maxPrice = query.maxPrice ? Number(query.maxPrice) : undefined;
     const pageSize = 10;
     const [searchInput, setSearchInput] = useState(searchText);
+    const [minPriceInput, setMinPriceInput] = useState(minPrice);
+    const [maxPriceInput, setMaxPriceInput] = useState(maxPrice);
     const debouncedSearch = useDebounce(searchInput, 500);
 
     const queryParams = useMemo(() => {
@@ -46,8 +50,10 @@ const ProductList = () => {
         if (sortOption !== 'default') params.sort = sortOption;
         if (statusFilter) params.status = statusFilter;
         if (searchText) params.search = searchText;
+        if (minPrice !== undefined) params.minPrice = minPrice;
+        if (maxPrice !== undefined) params.maxPrice = maxPrice;
         return params;
-    }, [currentPage, pageSize, selectedCategoryId, sortOption, statusFilter, searchText]);
+    }, [currentPage, pageSize, selectedCategoryId, sortOption, statusFilter, searchText, minPrice, maxPrice]);
 
     const { products, totalPages, totalItems, isLoading, refetchProducts, categories } = usePublicProducts(queryParams);
     const { deleteVariant, isDeleting, updateVariant, isUpdatingVariant } = useProducts();
@@ -57,10 +63,19 @@ const ProductList = () => {
     const [actionModalVisible, setActionModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
+    const [popoverOpen, setPopoverOpen] = useState(false);
 
     useEffect(() => {
         if (!searchText) setSearchInput('');
     }, [searchText]);
+
+    useEffect(() => {
+        setMinPriceInput(minPrice);
+    }, [minPrice]);
+
+    useEffect(() => {
+        setMaxPriceInput(maxPrice);
+    }, [maxPrice]);
 
     useEffect(() => {
         if (debouncedSearch !== searchInput) return;
@@ -182,9 +197,20 @@ const ProductList = () => {
         setQuery({ search: value?.trim() || null, page: 1 });
     };
 
+    const handlePriceSearch = () => {
+        setQuery({ 
+            minPrice: minPriceInput ?? null, 
+            maxPrice: maxPriceInput ?? null, 
+            page: 1 
+        });
+        setPopoverOpen(false);
+    };
+
     const handleResetFilters = () => {
-        setQuery({ page: null, sort: null, status: null, search: null, categoryId: null });
+        setQuery({ page: null, sort: null, status: null, search: null, categoryId: null, minPrice: null, maxPrice: null });
         setSearchInput('');
+        setMinPriceInput(undefined);
+        setMaxPriceInput(undefined);
         refetchProducts();
     };
 
@@ -351,10 +377,10 @@ const ProductList = () => {
             >
                 <div className="admin-filter-bar">
                     <div className="admin-filter-left">
-                        <Search
+                        <Input
                             placeholder={t('admin_search_products')}
                             allowClear
-                            className="admin-toolbar-search"
+                            className="admin-toolbar-search admin-unified-input"
                             value={searchInput}
                             onChange={(e) => {
                                 const val = e.target.value;
@@ -363,45 +389,119 @@ const ProductList = () => {
                                     setQuery({ search: null, page: 1 });
                                 }
                             }}
-                            onSearch={handleSearch}
+                            onPressEnter={() => handleSearch(searchInput)}
+                            suffix={<SearchOutlined style={{ color: 'var(--admin-primary)', fontSize: '18px', cursor: 'pointer' }} onClick={() => handleSearch(searchInput)} />}
                         />
-                        <div className="admin-filter-group">
-                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <div className="admin-select-wrapper">
                             <Select
                                 showSearch
                                 allowClear
                                 placeholder={t('categories')}
                                 options={categoryOptions}
                                 onChange={handleCategorySelect}
-                                className="admin-toolbar-select"
+                                className="admin-toolbar-select admin-custom-select"
                                 filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                                 value={selectedCategoryId}
-                                style={{ minWidth: 160 }}
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
                             />
                         </div>
                     </div>
                     <div className="admin-toolbar-right">
-                        <div className="admin-filter-group">
-                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <div className="admin-select-wrapper">
                             <Select
                                 allowClear
                                 placeholder={t('status')}
                                 options={statusOptions}
                                 onChange={handleStatusChange}
-                                className="admin-toolbar-select"
+                                className="admin-toolbar-select admin-custom-select"
                                 value={statusFilter}
-                                style={{ minWidth: 160 }}
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
                             />
                         </div>
-                        <div className="admin-filter-group">
-                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <Popover
+                            content={
+                                <div className="admin-price-popover-content">
+                                    <div style={{ marginBottom: 20 }}>
+                                        <Text strong style={{ fontSize: '13px', display: 'block', marginBottom: 12 }}>{t('price_range')}</Text>
+                                        <Slider
+                                            range
+                                            min={0}
+                                            max={10000000}
+                                            step={50000}
+                                            value={[minPriceInput || 0, maxPriceInput || 10000000]}
+                                            onChange={(val) => {
+                                                setMinPriceInput(val[0]);
+                                                setMaxPriceInput(val[1]);
+                                            }}
+                                            tooltip={{ formatter: (val) => `${val.toLocaleString()}đ` }}
+                                        />
+                                        <div className="admin-price-inputs">
+                                            <InputNumber
+                                                min={0}
+                                                max={maxPriceInput}
+                                                value={minPriceInput}
+                                                placeholder={t('min_price')}
+                                                onChange={setMinPriceInput}
+                                                formatter={val => `${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                            />
+                                            <InputNumber
+                                                min={minPriceInput || 0}
+                                                max={10000000}
+                                                value={maxPriceInput}
+                                                placeholder={t('max_price')}
+                                                onChange={setMaxPriceInput}
+                                                formatter={val => `${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                            />
+                                        </div>
+                                    </div>
+                                    <CButton type="primary" block onClick={handlePriceSearch}>
+                                        {t('apply')}
+                                    </CButton>
+                                </div>
+                            }
+                            trigger="click"
+                            open={popoverOpen}
+                            onOpenChange={setPopoverOpen}
+                            placement="bottomRight"
+                        >
+                            <div className={`admin-price-filter-btn ${minPrice !== undefined || maxPrice !== undefined ? 'active' : ''}`}>
+                                <span className="admin-price-filter-text">
+                                    {minPrice !== undefined || maxPrice !== undefined 
+                                        ? `${(minPrice || 0).toLocaleString()} - ${(maxPrice || 10000000).toLocaleString()}đ` 
+                                        : t('price_range')}
+                                </span>
+                                <div className="admin-price-arrow">
+                                    <FilterOutlined style={{ fontSize: '16px' }} />
+                                    <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                </div>
+                            </div>
+                        </Popover>
+                        <div className="admin-select-wrapper">
                             <Select
                                 placeholder={t('sort_default')}
                                 options={sortOptions}
                                 onChange={handleSortChange}
-                                className="admin-toolbar-select"
+                                className="admin-toolbar-select admin-custom-select"
                                 value={sortOption}
-                                style={{ minWidth: 200 }}
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <SortAscendingOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
                             />
                         </div>
                     </div>

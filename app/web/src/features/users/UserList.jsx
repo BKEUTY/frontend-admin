@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Table, Typography, Tag, Space, Input, Select, Avatar } from 'antd';
-import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
+import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
 import { useUsers } from '@/features/users/hooks/useUsers';
 import { PageWrapper, Skeleton, Pagination, EmptyState, CButton } from '@/components/common';
@@ -136,10 +136,10 @@ const UserList = () => {
             >
                 <div className="admin-filter-bar">
                     <div className="admin-filter-left">
-                        <Search
+                        <Input
                             placeholder={t('admin_users_search')}
                             allowClear
-                            className="admin-toolbar-search"
+                            className="admin-toolbar-search admin-unified-input"
                             value={searchInput}
                             onChange={(e) => {
                                 const val = e.target.value;
@@ -148,33 +148,47 @@ const UserList = () => {
                                     setQuery({ search: null, page: 1 });
                                 }
                             }}
-                            onSearch={(v) => setQuery({ search: v?.trim() || null, page: 1 })}
+                            onPressEnter={() => setQuery({ search: searchInput?.trim() || null, page: 1 })}
+                            suffix={<SearchOutlined style={{ color: 'var(--admin-primary)', fontSize: '18px', cursor: 'pointer' }} onClick={() => setQuery({ search: searchInput?.trim() || null, page: 1 })} />}
                         />
-                        <div className="admin-filter-group">
-                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <div className="admin-select-wrapper">
                             <Select
                                 allowClear
                                 placeholder={t('admin_user_role')}
                                 options={roleOptions}
                                 onChange={(v) => setQuery({ role: v || null, page: 1 })}
-                                className="admin-toolbar-select"
+                                className="admin-toolbar-select admin-custom-select"
                                 value={roleFilter}
-                                style={{ minWidth: 160 }}
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
                             />
                         </div>
                     </div>
                     <div className="admin-toolbar-right">
-                        <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
-                        <Select
-                            placeholder={t('sort_default')}
-                            defaultValue="default"
-                            className="admin-toolbar-select"
-                            style={{ minWidth: 200 }}
-                        >
-                            <Option value="default">{t('sort_default')}</Option>
-                            <Option value="newest">{t('sort_time_newest')}</Option>
-                            <Option value="oldest">{t('sort_time_oldest')}</Option>
-                        </Select>
+                        <div className="admin-select-wrapper">
+                            <Select
+                                placeholder={t('sort_default')}
+                                defaultValue="default"
+                                className="admin-toolbar-select admin-custom-select"
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <SortAscendingOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
+                                options={[
+                                    { value: 'default', label: t('sort_default') },
+                                    { value: 'newest', label: t('sort_time_newest') },
+                                    { value: 'oldest', label: t('sort_time_oldest') }
+                                ]}
+                            />
+                        </div>
                     </div>
                 </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Input, message, Rate, Avatar, Select } from 'antd';
-import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, StarFilled } from '@ant-design/icons';
+import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, StarFilled, FilterOutlined, DownOutlined } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
 import { useReviews } from '@/features/reviews/hooks/useReviews';
 import { Pagination, CButton } from '@/components/common';
@@ -127,27 +127,36 @@ const ReviewList = ({ variantId }) => {
                     </h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{ fontWeight: 600, color: '#475569' }}>{t('product')}:</span>
-                        <Select
-                            showSearch
-                            className="admin-toolbar-select"
-                            style={{ width: '100%', maxWidth: '350px' }}
-                            placeholder={t('admin_review_product_select')}
-                            optionFilterProp="children"
-                            onChange={(val) => { 
-                                setSelectedVariantId(val); 
-                                setPage(1); 
-                                setRatingFilter(null);
-                                setHasImageFilter(null);
-                                setIsViewReviews(false);
-                            }}
-                            filterOption={(input, option) =>
-                                (option?.children ?? '').toString().toLowerCase().includes(input.toLowerCase())
-                            }
-                        >
-                            {productsData?.content?.map(prod => (
-                                <Option key={prod.id} value={prod.id}>{prod.name}</Option>
-                            ))}
-                        </Select>
+                        <div className="admin-select-wrapper" style={{ minWidth: '350px' }}>
+                            <Select
+                                showSearch
+                                className="admin-toolbar-select admin-custom-select"
+                                style={{ width: '100%' }}
+                                placeholder={t('admin_review_product_select')}
+                                optionFilterProp="children"
+                                onChange={(val) => { 
+                                    setSelectedVariantId(val); 
+                                    setPage(1); 
+                                    setRatingFilter(null);
+                                    setHasImageFilter(null);
+                                    setIsViewReviews(false);
+                                }}
+                                filterOption={(input, option) =>
+                                    (option?.children ?? '').toString().toLowerCase().includes(input.toLowerCase())
+                                }
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
+                            >
+                                {productsData?.content?.map(prod => (
+                                    <Option key={prod.id} value={prod.id}>{prod.name}</Option>
+                                ))}
+                            </Select>
+                        </div>
                     </div>
                 </div>
             )}

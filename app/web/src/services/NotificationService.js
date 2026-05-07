@@ -29,6 +29,15 @@ export const showNotification = (type, messageKey, descriptionKey, duration = 3)
 };
 
 export const notifySuccess = (messageKey, descriptionKey) => showNotification('success', messageKey, descriptionKey);
-export const notifyError = (messageKey, descriptionKey) => showNotification('error', messageKey, descriptionKey);
+export const notifyError = (messageKeyOrError, descriptionKey) => {
+    if (messageKeyOrError && messageKeyOrError.isGlobalHandled) return;
+    
+    let messageKey = messageKeyOrError;
+    if (messageKeyOrError instanceof Error) {
+        messageKey = messageKeyOrError.message || 'error';
+    }
+    
+    showNotification('error', messageKey, descriptionKey);
+};
 export const notifyInfo = (messageKey, descriptionKey) => showNotification('info', messageKey, descriptionKey);
 export const notifyWarning = (messageKey, descriptionKey) => showNotification('warning', messageKey, descriptionKey);

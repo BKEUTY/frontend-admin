@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Table, Typography, Tooltip, Space, Modal, Input, Select, DatePicker } from 'antd';
-import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, FilterOutlined, SortAscendingOutlined } from '@ant-design/icons';
+import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 import { useNavigate } from 'react-router-dom';
@@ -217,7 +217,7 @@ const PromotionList = () => {
             >
                 <div className="admin-filter-bar">
                     <div className="admin-filter-left">
-                        <Search
+                        <Input
                             placeholder={t('promo_search_placeholder')}
                             allowClear
                             value={searchInput}
@@ -228,51 +228,63 @@ const PromotionList = () => {
                                     setQuery({ title: null, page: 1 });
                                 }
                             }}
-                            onSearch={(v) => setQuery({ title: v?.trim() || null, page: 1 })}
-                            className="admin-toolbar-search"
+                            onPressEnter={() => setQuery({ title: searchInput?.trim() || null, page: 1 })}
+                            className="admin-toolbar-search admin-unified-input"
+                            suffix={<SearchOutlined style={{ color: 'var(--admin-primary)', fontSize: '18px', cursor: 'pointer' }} onClick={() => setQuery({ title: searchInput?.trim() || null, page: 1 })} />}
                         />
-                        <div className="admin-filter-group">
-                            <FilterOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <div className="admin-select-wrapper">
                             <Select
                                 placeholder={t('promo_col_status')}
                                 allowClear
                                 value={statusFilter}
                                 onChange={handleStatusChange}
-                                className="admin-toolbar-select"
-                                style={{ minWidth: 160 }}
-                            >
-                                <Select.Option value="STARTING">{t('promo_status_STARTING')}</Select.Option>
-                                <Select.Option value="INCOMING">{t('promo_status_INCOMING')}</Select.Option>
-                                <Select.Option value="ENDED">{t('promo_status_ENDED')}</Select.Option>
-                                <Select.Option value="DISABLED">{t('promo_status_DISABLED')}</Select.Option>
-                            </Select>
-
-                            <DatePicker.RangePicker
-                                showTime
-                                format="DD/MM/YYYY HH:mm"
-                                value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
-                                onChange={handleDateRangeChange}
-                                placeholder={[t('startDate'), t('endDate')]}
-                                className="admin-date-picker-range-luxury"
+                                className="admin-toolbar-select admin-custom-select"
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
+                                options={[
+                                    { value: 'STARTING', label: t('promo_status_STARTING') },
+                                    { value: 'INCOMING', label: t('promo_status_INCOMING') },
+                                    { value: 'ENDED', label: t('promo_status_ENDED') },
+                                    { value: 'DISABLED', label: t('promo_status_DISABLED') }
+                                ]}
                             />
                         </div>
+                        <DatePicker.RangePicker
+                            showTime
+                            format="DD/MM/YYYY HH:mm"
+                            value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
+                            onChange={handleDateRangeChange}
+                            placeholder={[t('startDate'), t('endDate')]}
+                            className="admin-date-picker-range-luxury"
+                        />
                     </div>
                     <div className="admin-toolbar-right">
-                        <div className="admin-filter-group">
-                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <div className="admin-select-wrapper">
                             <Select
                                 placeholder={t('sort_default')}
                                 value={query.sort || 'default'}
                                 onChange={(val) => setQuery({ sort: val === 'default' ? null : val, page: 1 })}
-                                className="admin-toolbar-select"
-                                style={{ minWidth: 200 }}
-                            >
-                                <Select.Option value="default">{t('sort_default')}</Select.Option>
-                                <Select.Option value="id_desc">{t('sort_time_newest')}</Select.Option>
-                                <Select.Option value="id_asc">{t('sort_time_oldest')}</Select.Option>
-                                <Select.Option value="discount_desc">{t('sort_price_desc')}</Select.Option>
-                                <Select.Option value="discount_asc">{t('sort_price_asc')}</Select.Option>
-                            </Select>
+                                className="admin-toolbar-select admin-custom-select"
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <SortAscendingOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
+                                options={[
+                                    { value: 'default', label: t('sort_default') },
+                                    { value: 'id_desc', label: t('sort_time_newest') },
+                                    { value: 'id_asc', label: t('sort_time_oldest') },
+                                    { value: 'discount_desc', label: t('sort_price_desc') },
+                                    { value: 'discount_asc', label: t('sort_price_asc') }
+                                ]}
+                            />
                         </div>
                     </div>
                 </div>

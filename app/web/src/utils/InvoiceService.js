@@ -30,14 +30,14 @@ const generateInvoice = (orderData, t, language) => {
     doc.setFontSize(12);
     doc.setTextColor(0);
     doc.setFont("Roboto", "bold");
-    doc.text(`${t('invoice_order')} #${orderData.id}`, 15, 50);
+    doc.text(`${t('invoice_order')} #${orderData.orderId}`, 15, 50);
 
     doc.setFont("Roboto", "normal");
     doc.setFontSize(10);
-    
+
     const formattedOrderDate = orderData.orderDate ? new Date(orderData.orderDate).toLocaleDateString(numLocale) : '---';
     doc.text(`${t('invoice_order_date')}: ${formattedOrderDate}`, 15, 57);
-    
+
     if (orderData.estShippingDate) {
         const formattedEstDate = new Date(orderData.estShippingDate).toLocaleDateString(numLocale);
         doc.text(`${t('invoice_est_delivery')}: ${formattedEstDate}`, 15, 62);
@@ -56,16 +56,16 @@ const generateInvoice = (orderData, t, language) => {
 
     doc.setFont("Roboto", "bold");
     doc.text(t('invoice_customer'), rightColX, 50);
-    
+
     doc.setFont("Roboto", "normal");
     doc.text(`${orderData.userName || t('guest')}`, rightColX, 57);
-    
+
     const addressStr = orderData.address?.split('|')[0] || t('no_address');
     const splitAddress = doc.splitTextToSize(addressStr, addressWidth);
     doc.text(splitAddress, rightColX, 62);
 
     let nextY = 67 + (splitAddress.length * 5) + 10;
-    if (nextY < 90) nextY = 90; 
+    if (nextY < 90) nextY = 90;
 
     const tableData = orderData.items.map(item => {
         const price = Number(item.price) || 0;
@@ -86,10 +86,10 @@ const generateInvoice = (orderData, t, language) => {
     autoTable(doc, {
         startY: nextY,
         head: [[
-            t('invoice_product'), 
-            t('invoice_original_price'), 
-            t('invoice_discount_col'), 
-            t('invoice_qty'), 
+            t('invoice_product'),
+            t('invoice_original_price'),
+            t('invoice_discount_col'),
+            t('invoice_qty'),
             t('invoice_total')
         ]],
         body: tableData,
@@ -157,7 +157,7 @@ const generateInvoice = (orderData, t, language) => {
     doc.setTextColor(150);
     doc.text(t('invoice_thanks'), 105, 280, { align: "center" });
 
-    const invoiceFileName = t('invoice_title').toLowerCase().replace(/\s+/g, '_') + `_${orderData.id}.pdf`;
+    const invoiceFileName = t('invoice_title').toLowerCase().replace(/\s+/g, '_') + `_${orderData.orderId}.pdf`;
     doc.save(`BKEUTY_${invoiceFileName}`);
 };
 

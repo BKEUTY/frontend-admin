@@ -5,7 +5,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import useQueryParams from '@/hooks/useQueryParams';
 import { useAuth } from '@/store/AuthContext';
 import { useLanguage } from '@/store/LanguageContext';
-import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SortAscendingOutlined, SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SortAscendingOutlined, SyncOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -162,7 +162,7 @@ const CategoryList = () => {
             >
                 <div className="admin-filter-bar">
                     <div className="admin-filter-left">
-                        <Search
+                        <Input
                             placeholder={t('admin_category_search')}
                             allowClear
                             value={searchInput}
@@ -173,24 +173,27 @@ const CategoryList = () => {
                                     setQuery({ search: null, page: 1 });
                                 }
                             }}
-                            onSearch={(v) => setQuery({ search: v || null, page: 1 })}
-                            className="admin-toolbar-search"
+                            onPressEnter={() => setQuery({ search: searchInput?.trim() || null, page: 1 })}
+                            className="admin-toolbar-search admin-unified-input"
+                            suffix={<SearchOutlined style={{ color: 'var(--admin-primary)', fontSize: '18px', cursor: 'pointer' }} onClick={() => setQuery({ search: searchInput?.trim() || null, page: 1 })} />}
                         />
                     </div>
                     <div className="admin-toolbar-right">
-                        <div className="admin-filter-group">
-                            <SortAscendingOutlined style={{ color: '#94a3b8', fontSize: '16px' }} />
+                        <div className="admin-select-wrapper">
                             <Select
                                 placeholder={t('sort_default')}
                                 onChange={(val) => setQuery({ sort: val === 'default' ? null : val, page: 1 })}
-                                className="admin-toolbar-select"
+                                className="admin-toolbar-select admin-custom-select"
                                 value={sortOption}
-                                style={{ minWidth: 200 }}
-                            >
-                                {sortOptions.map(opt => (
-                                    <Option key={opt.value} value={opt.value}>{opt.label}</Option>
-                                ))}
-                            </Select>
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <SortAscendingOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
+                                options={sortOptions}
+                            />
                         </div>
                     </div>
                 </div>

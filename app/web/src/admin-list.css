@@ -40,8 +40,8 @@
     flex-wrap: wrap;
 }
 
-.admin-filter-group > .anticon,
-.admin-toolbar-right > .anticon {
+.admin-filter-group>.anticon,
+.admin-toolbar-right>.anticon {
     background: #ffffff;
     width: 44px;
     height: 44px;
@@ -56,8 +56,8 @@
     transition: all 0.3s ease;
 }
 
-.admin-filter-group > .anticon:hover,
-.admin-toolbar-right > .anticon:hover {
+.admin-filter-group>.anticon:hover,
+.admin-toolbar-right>.anticon:hover {
     border-color: var(--admin-primary);
     transform: scale(1.05);
 }
@@ -69,7 +69,7 @@
     flex-wrap: wrap;
 }
 
-.admin-toolbar-right > .anticon {
+.admin-toolbar-right>.anticon {
     background: #ffffff;
     width: 44px;
     height: 44px;
@@ -84,9 +84,36 @@
     transition: all 0.3s ease;
 }
 
-.admin-toolbar-right > .anticon:hover {
+.admin-toolbar-right>.anticon:hover {
     border-color: var(--admin-primary);
     transform: scale(1.05);
+}
+
+.admin-toolbar-search .ant-input::placeholder,
+.admin-custom-select .ant-select-selection-placeholder,
+.admin-price-filter-btn span:not(.active),
+.admin-date-picker-range-luxury input::placeholder {
+    color: rgba(0, 0, 0, 0.25) !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    opacity: 1 !important;
+}
+
+.admin-toolbar-search .ant-input,
+.admin-custom-select .ant-select-selection-item,
+.admin-price-filter-btn.active span,
+.admin-date-picker-range-luxury input {
+    color: rgba(0, 0, 0, 0.88) !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+}
+
+.admin-toolbar-search .ant-input-suffix .anticon,
+.admin-custom-select .ant-select-arrow,
+.admin-select-suffix .anticon,
+.admin-price-arrow,
+.admin-price-arrow .anticon {
+    color: var(--admin-primary) !important;
 }
 
 .admin-toolbar-search {
@@ -94,48 +121,26 @@
     flex: 1;
 }
 
-.admin-toolbar-search.ant-input-search > .ant-input-group > .ant-input-affix-wrapper {
-    height: 44px !important;
-    border-radius: 14px 0 0 14px !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-right: none !important;
-}
-
-.admin-toolbar-search.ant-input-search > .ant-input-group > .ant-input-group-addon > .ant-input-search-button {
-    height: 44px !important;
-    width: 44px !important;
-    border-radius: 0 14px 14px 0 !important;
-    border: 1.5px solid #e2e8f0 !important;
-    background: #ffffff !important;
-    color: var(--admin-primary) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: none !important;
-}
-
-.admin-toolbar-search.ant-input-search > .ant-input-group > .ant-input-group-addon > .ant-input-search-button:hover {
-    background: #fffafa !important;
-    border-color: var(--admin-primary) !important;
-}
-
-.admin-toolbar-search.ant-input-affix-wrapper {
+.admin-toolbar-search.admin-unified-input {
     border-radius: 16px !important;
     height: 44px !important;
     border: 1.5px solid #e2e8f0 !important;
     background: #ffffff !important;
     padding: 0 18px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 
-.admin-toolbar-search.ant-input-affix-wrapper:hover,
-.admin-toolbar-search.ant-input-affix-wrapper-focused {
+.admin-toolbar-search.admin-unified-input:hover,
+.admin-toolbar-search.admin-unified-input-focused,
+.admin-toolbar-search.admin-unified-input:focus-within {
     border-color: var(--admin-primary) !important;
     background: #ffffff !important;
     box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
+}
+
+.admin-toolbar-search .ant-input-suffix {
+    margin-left: 12px;
 }
 
 .admin-toolbar-select {
@@ -154,10 +159,8 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     padding: 0 18px !important;
     font-size: 14px !important;
-    font-weight: 600 !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
-
 
 .admin-toolbar-select .ant-select-selection-item,
 .admin-toolbar-select .ant-select-selection-placeholder,
@@ -461,6 +464,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -468,13 +472,25 @@
 }
 
 @keyframes skeleton-loading {
-    0% { background-position: 100% 50%; }
-    100% { background-position: 0 50%; }
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
 }
 
 @keyframes reveal {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeUp {
@@ -482,6 +498,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -516,7 +533,6 @@
     -webkit-text-fill-color: transparent;
 }
 
-
 .admin-header-buttons {
     display: flex;
     gap: 16px;
@@ -538,64 +554,6 @@
     .admin-toolbar-search {
         max-width: 100%;
         width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .admin-filter-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 20px;
-    }
-
-    .admin-filter-left {
-        width: 100%;
-        min-width: unset;
-        gap: 12px;
-    }
-
-    .admin-toolbar-right {
-        margin-left: 0;
-        width: 100%;
-        justify-content: flex-start;
-        border-top: 1px solid #f1f5f9;
-        padding-top: 16px;
-        gap: 12px;
-    }
-
-    .admin-toolbar-select,
-    .admin-date-picker-range,
-    .admin-date-picker-range-luxury {
-        width: 100% !important;
-        min-width: unset !important;
-    }
-
-    .admin-header-buttons {
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-    }
-
-    .admin-btn-responsive {
-        width: 100%;
-        justify-content: center;
-        height: 50px !important;
-        font-size: 15px !important;
-    }
-
-    .admin-filter-group {
-        width: 100%;
-        gap: 6px;
-        margin-bottom: 4px;
-    }
-
-    .admin-filter-group > .anticon {
-        width: 32px !important;
-        height: 44px !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        font-size: 16px !important;
     }
 }
 
@@ -643,7 +601,7 @@
     padding: 16px 20px !important;
     border-radius: 20px !important;
     border: 1px solid #f1f5f9 !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
     min-width: 320px !important;
 }
 
@@ -684,7 +642,6 @@
     background: #ffffff !important;
     height: 44px !important;
     font-size: 14px !important;
-    font-weight: 600 !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     padding: 0 16px !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
@@ -692,18 +649,16 @@
     align-items: center !important;
 }
 
-.admin-date-picker-range-luxury .ant-picker-input > input {
+.admin-date-picker-range-luxury .ant-picker-input>input {
     font-size: 14px !important;
-    font-weight: 600 !important;
 }
 
-.admin-date-picker-range-luxury:hover, 
+.admin-date-picker-range-luxury:hover,
 .admin-date-picker-range-luxury.ant-picker-focused {
     border-color: var(--admin-primary) !important;
     background: #ffffff !important;
     box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
 }
-
 
 .admin-notification-modern {
     background: rgba(255, 255, 255, 0.95) !important;
@@ -745,3 +700,176 @@
     color: #94a3b8 !important;
 }
 
+.admin-price-filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    padding: 0 18px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    user-select: none;
+    border: 1.5px solid #e2e8f0;
+    min-width: 280px;
+    position: relative;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.admin-price-filter-btn:hover {
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1);
+    transform: translateY(-1px);
+}
+
+.admin-price-filter-btn.active {
+    border-color: var(--admin-primary);
+    background: rgba(161, 5, 80, 0.05);
+    color: var(--admin-primary);
+}
+
+.admin-price-filter-btn span {
+    flex: 1;
+    text-align: left;
+}
+
+.admin-price-arrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-price-popover-content {
+    width: 280px;
+    padding: 12px 8px;
+}
+
+.admin-price-popover-content .ant-slider-track {
+    background-color: var(--admin-primary) !important;
+}
+
+.admin-price-popover-content .ant-slider-handle::after {
+    box-shadow: 0 0 0 2px var(--admin-primary) !important;
+}
+
+.admin-price-inputs {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+
+.admin-price-inputs .ant-input-number {
+    width: 48% !important;
+    border-radius: 12px !important;
+    height: 48px !important;
+    border: 1.5px solid #e2e8f0 !important;
+}
+
+.admin-price-inputs .ant-input-number-input {
+    height: 48px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    padding: 0 12px !important;
+}
+
+.admin-select-wrapper {
+    display: inline-flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    height: 44px;
+    min-width: 200px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-select-wrapper:hover {
+    border-color: var(--admin-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1);
+}
+
+.admin-custom-select {
+    width: 100% !important;
+}
+
+.admin-custom-select .ant-select-selector {
+    padding-left: 18px !important;
+    padding-right: 54px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.admin-select-suffix {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .admin-filter-bar {
+        padding: 16px !important;
+        gap: 12px !important;
+        border-radius: 16px !important;
+    }
+
+    .admin-filter-left {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        min-width: 100% !important;
+    }
+
+    .admin-toolbar-right {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+
+    .admin-filter-group {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+
+    .admin-toolbar-search.admin-unified-input,
+    .admin-select-wrapper,
+    .admin-price-filter-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 48px !important;
+        margin: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .admin-price-arrow {
+        position: absolute !important;
+        right: 16px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+
+    .admin-btn-responsive {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .admin-header-buttons {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+}

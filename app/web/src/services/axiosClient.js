@@ -89,6 +89,7 @@ const createAxiosClient = () => {
                 if (isAuthPath) return Promise.reject(error);
 
                 if (originalRequest.url.includes('/api/auth/refresh')) {
+                    error.isGlobalHandled = true;
                     forceLogout();
                     return Promise.reject(error);
                 }
@@ -118,6 +119,7 @@ const createAxiosClient = () => {
                     return client(originalRequest);
                 } catch (refreshError) {
                     processQueue(refreshError, null);
+                    refreshError.isGlobalHandled = true;
                     forceLogout();
                     return Promise.reject(refreshError);
                 } finally {
