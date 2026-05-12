@@ -97,6 +97,8 @@ const ProductList = () => {
 
     const sortOptions = [
         { label: t('sort_default'), value: 'default' },
+        { label: t('sort_time_newest'), value: 'id_desc' },
+        { label: t('sort_time_oldest'), value: 'id_asc' },
         { label: t('sort_price_asc'), value: 'price_asc' },
         { label: t('sort_price_desc'), value: 'price_desc' },
         { label: t('sort_stock_asc'), value: 'stock_asc' },
@@ -306,10 +308,10 @@ const ProductList = () => {
             title: t('admin_label_stock'),
             dataIndex: 'stockQuantity',
             key: 'stockQuantity',
-            width: 80,
-            align: 'right',
+            width: 110,
+            align: 'center',
             render: (stockQuantity) => (
-                <span className={`admin-status-badge ${stockQuantity > 0 ? 'success' : 'danger'}`} style={{ marginLeft: 'auto' }}>
+                <span className={`admin-status-badge ${stockQuantity > 0 ? 'success' : 'default'}`}>
                     {stockQuantity}
                 </span>
             )
@@ -318,10 +320,10 @@ const ProductList = () => {
             title: t('admin_label_sold'),
             dataIndex: 'sold',
             key: 'sold',
-            width: 80,
-            align: 'right',
+            width: 110,
+            align: 'center',
             render: (sold) => (
-                <span className="admin-sold-badge" style={{ marginLeft: 'auto' }}>
+                <span className="admin-status-badge success">
                     {sold || 0}
                 </span>
             )
@@ -405,7 +407,7 @@ const ProductList = () => {
                                 suffixIcon={
                                     <div className="admin-select-suffix">
                                         <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
-                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                        <DownOutlined style={{ color: 'var(--admin-primary)', fontSize: '12px', opacity: 0.6 }} />
                                     </div>
                                 }
                                 variant="borderless"
@@ -424,7 +426,7 @@ const ProductList = () => {
                                 suffixIcon={
                                     <div className="admin-select-suffix">
                                         <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
-                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                        <DownOutlined style={{ color: 'var(--admin-primary)', fontSize: '12px', opacity: 0.6 }} />
                                     </div>
                                 }
                                 variant="borderless"
@@ -483,8 +485,8 @@ const ProductList = () => {
                                         : t('price_range')}
                                 </span>
                                 <div className="admin-price-arrow">
-                                    <FilterOutlined style={{ fontSize: '16px' }} />
-                                    <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                    <DownOutlined style={{ color: 'var(--admin-primary)', fontSize: '12px', opacity: 0.6 }} />
                                 </div>
                             </div>
                         </Popover>
@@ -498,7 +500,7 @@ const ProductList = () => {
                                 suffixIcon={
                                     <div className="admin-select-suffix">
                                         <SortAscendingOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
-                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                        <DownOutlined style={{ color: 'var(--admin-primary)', fontSize: '12px', opacity: 0.6 }} />
                                     </div>
                                 }
                                 variant="borderless"

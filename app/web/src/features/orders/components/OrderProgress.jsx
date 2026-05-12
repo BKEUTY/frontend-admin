@@ -74,11 +74,6 @@ const OrderProgress = ({ currentStatus, shippingStatus, paymentMethod, paymentSt
                             </div>
                             <div className="step-label">
                                 {step.label}
-                                {step.date && (
-                                    <div className="step-date">
-                                        {new Date(step.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
-                                    </div>
-                                )}
                             </div>
                         </div>
                     );

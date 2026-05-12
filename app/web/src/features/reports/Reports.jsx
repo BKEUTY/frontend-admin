@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
 import { useNotification } from '@/store/NotificationContext';
-import { DownloadOutlined, PieChartOutlined, BarChartOutlined, LineChartOutlined, UserOutlined, RocketOutlined } from '@ant-design/icons';
+import { DownloadOutlined, PieChartOutlined, BarChartOutlined, LineChartOutlined, UserOutlined, RocketOutlined, FilterOutlined } from '@ant-design/icons';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Cell, Legend } from 'recharts';
 import './Reports.css';
 import { PageWrapper, CButton, StatsCard } from '@/components/common';
@@ -149,15 +149,17 @@ const Reports = () => {
                         const safeOv = ov || {};
                         const totalRevenue = Number(safeOv.totalRevenue || 0);
                         const totalOrders = Number(safeOv.totalOrders || 0);
+                        const formatGrowth = (val) => `${val > 0 ? '+' : ''}${val?.toFixed(2)}%`;
+                        
                         return [
                             { [t('admin_col_metric')]: t('admin_report_start_date'), [t('admin_col_value')]: start, [t('admin_col_unit')]: '-' },
                             { [t('admin_col_metric')]: t('admin_report_end_date'), [t('admin_col_value')]: end, [t('admin_col_unit')]: '-' },
-                            { [t('admin_col_metric')]: t('admin_total_revenue'), [t('admin_col_value')]: totalRevenue, [t('admin_col_unit')]: t('admin_unit_vnd') },
-                            { [t('admin_col_metric')]: t('admin_total_shipping_fee'), [t('admin_col_value')]: Number(safeOv.totalShippingFee || 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
-                            { [t('admin_col_metric')]: t('admin_total_orders'), [t('admin_col_value')]: totalOrders, [t('admin_col_unit')]: t('admin_unit_order') },
-                            { [t('admin_col_metric')]: t('admin_avg_order_value'), [t('admin_col_value')]: Math.round(totalRevenue / (totalOrders || 1)), [t('admin_col_unit')]: t('admin_unit_vnd') },
-                            { [t('admin_col_metric')]: t('admin_total_products_sold'), [t('admin_col_value')]: Number(safeOv.totalProductsSold || 0), [t('admin_col_unit')]: t('admin_unit_product') },
-                            { [t('admin_col_metric')]: t('admin_total_new_customers'), [t('admin_col_value')]: Number(safeOv.totalRegisteredCustomers || 0), [t('admin_col_unit')]: t('admin_unit_person') }
+                            { [t('admin_col_metric')]: t('admin_total_revenue'), [t('admin_col_value')]: totalRevenue, [t('admin_col_unit')]: t('admin_unit_vnd'), [t('admin_col_growth')]: formatGrowth(safeOv.revenueGrowth ?? 0) },
+                            { [t('admin_col_metric')]: t('admin_total_shipping_fee'), [t('admin_col_value')]: Number(safeOv.totalShippingFee || 0), [t('admin_col_unit')]: t('admin_unit_vnd'), [t('admin_col_growth')]: '-' },
+                            { [t('admin_col_metric')]: t('admin_total_orders'), [t('admin_col_value')]: totalOrders, [t('admin_col_unit')]: t('admin_unit_order'), [t('admin_col_growth')]: formatGrowth(safeOv.ordersGrowth ?? 0) },
+                            { [t('admin_col_metric')]: t('admin_avg_order_value'), [t('admin_col_value')]: Math.round(totalRevenue / (totalOrders || 1)), [t('admin_col_unit')]: t('admin_unit_vnd'), [t('admin_col_growth')]: '-' },
+                            { [t('admin_col_metric')]: t('admin_total_products_sold'), [t('admin_col_value')]: Number(safeOv.totalProductsSold || 0), [t('admin_col_unit')]: t('admin_unit_product'), [t('admin_col_growth')]: formatGrowth(safeOv.productsSoldGrowth ?? 0) },
+                            { [t('admin_col_metric')]: t('admin_total_new_customers'), [t('admin_col_value')]: Number(safeOv.totalRegisteredCustomers || 0), [t('admin_col_unit')]: t('admin_unit_person'), [t('admin_col_growth')]: formatGrowth(safeOv.customersGrowth ?? 0) }
                         ];
                     },
                     product: (p) => {
@@ -187,58 +189,88 @@ const Reports = () => {
                     },
                     invoiceDetail: (o) => {
                         if (!o) return {};
-                        const totalVal = Number(o.total || 0);
+                        const origTotal = Number(o.originalPriceTotal || 0);
+                        const subtotalVal = Number(o.subtotal || 0);
+                        const voucherVal = Number(o.voucherDiscount || 0);
                         const shipVal = Number(o.shippingFee || 0);
+                        const finalTotal = Number(o.total || 0) + shipVal;
+                        
                         return {
                             [`${t('admin_order_id')}`]: o.id || '-',
                             [`${t('admin_col_time')}`]: o.date ? dayjs(o.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_customer')}`]: o.customerName || '-',
-                            [`${t('report_subtotal')} (${t('admin_unit_vnd')})`]: totalVal,
+                            [`${t('original_price')} (${t('admin_unit_vnd')})`]: origTotal,
+                            [`${t('promo_price')} (${t('admin_unit_vnd')})`]: subtotalVal,
+                            [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherVal > 0 ? `-${voucherVal}` : 0,
                             [`${t('admin_col_shipping_fee')} (${t('admin_unit_vnd')})`]: shipVal,
-                            [`${t('grand_total')} (${t('admin_unit_vnd')})`]: totalVal + shipVal
+                            [`${t('grand_total')} (${t('admin_unit_vnd')})`]: finalTotal
                         };
                     },
                     productTransaction: (d) => {
                         if (!d) return {};
+                        const qty = d.quantity || 1;
+                        const orig = d.originalPrice;
+                        const promo = d.promotionalPrice ? d.promotionalPrice : orig;
+                        const effective = promo < orig ? promo : orig;
+                        const voucherPerUnit = d.voucherDiscount ? Math.round(d.voucherDiscount / qty) : 0;
+                        const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_col_product_id')}`]: d.variantId || '-',
                             [`${t('admin_product_name')}`]: d.name || '-',
-                            [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(d.quantity || 0),
-                            [`${t('admin_col_original_price')} (${t('admin_unit_vnd')})`]: Number(d.originalPrice || 0),
-                            [`${t('admin_col_promotional_price')} (${t('admin_unit_vnd')})`]: Number(d.promotionalPrice || 0),
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: Number(d.revenue || 0),
-                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: Number(d.profit || 0)
+                            [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
+                            [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
+                            [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
+                            [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
+                            [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
+                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: d.revenue,
+                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: d.profit
                         };
                     },
                     brandTransaction: (d) => {
                         if (!d) return {};
+                        const qty = d.quantity || 1;
+                        const orig = d.originalPrice;
+                        const promo = d.promotionalPrice ? d.promotionalPrice : orig;
+                        const effective = promo < orig ? promo : orig;
+                        const voucherPerUnit = d.voucherDiscount ? Math.round(d.voucherDiscount / qty) : 0;
+                        const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_col_brand_id')}`]: d.entityId || '-',
                             [`${t('admin_col_brand_name')}`]: d.entityName || '-',
                             [`${t('admin_col_product_id')}`]: d.productId || '-',
                             [`${t('admin_product_name')}`]: d.productVariantName || '-',
-                            [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(d.quantity || 0),
-                            [`${t('admin_col_original_price')} (${t('admin_unit_vnd')})`]: Number(d.originalPrice || 0),
-                            [`${t('admin_col_promotional_price')} (${t('admin_unit_vnd')})`]: Number(d.promotionalPrice || 0),
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: Number(d.revenue || 0),
-                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: Number(d.profit || 0)
+                            [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
+                            [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
+                            [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
+                            [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
+                            [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
+                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: d.revenue,
+                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: d.profit
                         };
                     },
                     categoryTransaction: (d) => {
                         if (!d) return {};
+                        const qty = d.quantity || 1;
+                        const orig = d.originalPrice;
+                        const promo = d.promotionalPrice ? d.promotionalPrice : orig;
+                        const effective = promo < orig ? promo : orig;
+                        const voucherPerUnit = d.voucherDiscount ? Math.round(d.voucherDiscount / qty) : 0;
+                        const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_col_category_id')}`]: d.entityId || '-',
                             [`${t('admin_col_category_name')}`]: d.entityName || '-',
                             [`${t('admin_col_product_id')}`]: d.productId || '-',
                             [`${t('admin_product_name')}`]: d.productVariantName || '-',
-                            [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(d.quantity || 0),
-                            [`${t('admin_col_original_price')} (${t('admin_unit_vnd')})`]: Number(d.originalPrice || 0),
-                            [`${t('admin_col_promotional_price')} (${t('admin_unit_vnd')})`]: Number(d.promotionalPrice || 0),
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: Number(d.revenue || 0),
-                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: Number(d.profit || 0)
+                            [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
+                            [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
+                            [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
+                            [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
+                            [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
+                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: d.revenue,
+                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: d.profit
                         };
                     }
                 };
@@ -262,6 +294,9 @@ const Reports = () => {
                 const colProfit = `${t('admin_col_profit_vnd')} (${vnd})`;
                 const colOrd = `${t('admin_total_orders')} (${t('admin_unit_order')})`;
                 const colAvg = `${t('admin_col_avg_order_value')} (${vnd})`;
+                const colOriginal = `${t('original_price')} (${vnd})`;
+                const colPromo = `${t('promo_price')} (${vnd})`;
+                const colVoucher = `${t('voucher')} (${vnd})`;
                 const colSubtotal = `${t('report_subtotal')} (${vnd})`;
                 const colGrandTotal = `${t('grand_total')} (${vnd})`;
 
@@ -279,7 +314,7 @@ const Reports = () => {
                     XLSX.utils.book_append_sheet(wb, buildSheet(catsData, [colQty, colRev]), sanitizeSheetName(t('admin_sheet_categories')));
 
                     const invoiceData = (reportData.recentOrders ?? []).map(mappers.invoiceDetail);
-                    XLSX.utils.book_append_sheet(wb, buildSheet(invoiceData, [colSubtotal, colShip, colGrandTotal]), sanitizeSheetName(t('admin_sheet_daily_summary')));
+                    XLSX.utils.book_append_sheet(wb, buildSheet(invoiceData, [colOriginal, colPromo, colVoucher, colShip, colGrandTotal]), sanitizeSheetName(t('admin_sheet_daily_summary')));
 
                     if (reportData.productDetail?.length) {
                         const d = reportData.productDetail.map(mappers.productTransaction);
@@ -327,13 +362,41 @@ const Reports = () => {
 
     const stats = useMemo(() => {
         const overview = reportData?.overview ?? {};
+        const getTrendType = (val) => (val >= 0 ? 'up' : 'down');
+
         return [
-            { label: t('admin_total_revenue'), value: overview.totalRevenue ?? 0, suffix: t('admin_unit_vnd'), icon: <LineChartOutlined /> },
-            { label: t('admin_total_orders'), value: overview.totalOrders ?? 0, icon: <BarChartOutlined /> },
-            { label: t('admin_total_products_sold'), value: overview.totalProductsSold ?? 0, icon: <PieChartOutlined /> },
-            { label: t('admin_total_new_customers'), value: overview.totalRegisteredCustomers ?? 0, icon: <UserOutlined /> },
+            { 
+                label: t('admin_total_revenue'), 
+                value: overview.totalRevenue ?? 0, 
+                suffix: t('admin_unit_vnd'), 
+                icon: <LineChartOutlined />,
+                trend: overview.revenueGrowth ?? 0,
+                trendType: getTrendType(overview.revenueGrowth ?? 0)
+            },
+            { 
+                label: t('admin_total_orders'), 
+                value: overview.totalOrders ?? 0, 
+                icon: <BarChartOutlined />,
+                trend: overview.ordersGrowth ?? 0,
+                trendType: getTrendType(overview.ordersGrowth ?? 0)
+            },
+            { 
+                label: t('admin_total_products_sold'), 
+                value: overview.totalProductsSold ?? 0, 
+                icon: <PieChartOutlined />,
+                trend: overview.productsSoldGrowth ?? 0,
+                trendType: getTrendType(overview.productsSoldGrowth ?? 0)
+            },
+            { 
+                label: t('admin_total_new_customers'), 
+                value: overview.totalRegisteredCustomers ?? 0, 
+                icon: <UserOutlined />,
+                trend: overview.customersGrowth ?? 0,
+                trendType: getTrendType(overview.customersGrowth ?? 0)
+            },
         ];
     }, [reportData, t]);
+
 
     return (
         <div className="admin-reports-page">
@@ -398,6 +461,7 @@ const Reports = () => {
                                 className="range-picker-modern-v2"
                                 placeholder={[t('startDate'), t('endDate')]}
                                 allowClear
+                                suffixIcon={<FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />}
                             />
                         </div>
                     </div>
@@ -447,7 +511,10 @@ const Reports = () => {
                                         title={stat.label}
                                         value={typeof stat.value === 'number' ? `${stat.value.toLocaleString(locale)}${stat.suffix || ''}` : stat.value}
                                         icon={stat.icon}
+                                        trend={stat.trend}
+                                        trendType={stat.trendType}
                                     />
+
                                 </Col>
                             ))}
                         </Row>

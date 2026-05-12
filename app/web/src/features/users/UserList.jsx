@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Table, Typography, Tag, Space, Input, Select, Avatar } from 'antd';
 import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
+import MembershipTag from '@/components/admin/MembershipTag';
 import { useLanguage } from '@/store/LanguageContext';
 import { useUsers } from '@/features/users/hooks/useUsers';
 import { PageWrapper, Skeleton, Pagination, EmptyState, CButton } from '@/components/common';
@@ -100,6 +101,16 @@ const UserList = () => {
                     </Tag>
                 );
             }
+        },
+        {
+            title: t('promo_label_membership'),
+            dataIndex: 'membershipLevel',
+            key: 'membershipLevel',
+            width: 150,
+            align: 'center',
+            render: (level) => (
+                <MembershipTag level={level} className="admin-table-tag" />
+            )
         },
         {
             title: t('phone'),

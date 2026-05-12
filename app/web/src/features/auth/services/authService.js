@@ -2,7 +2,7 @@ import axiosClient from "@/services/axiosClient";
 
 const authService = {
     login: (data) => {
-        return axiosClient.post('/api/auth/login', { ...data, clientType: 'ADMIN' });
+        return axiosClient.post('/api/auth/login', { ...data, clientType: 'ADMIN' }, { skipGlobalErrorHandler: true });
     },
     refresh: () => {
         return axiosClient.post('/api/auth/refresh', {}, { skipGlobalErrorHandler: true });

@@ -115,9 +115,30 @@ const OrderList = () => {
             title: t('payment_method'),
             dataIndex: 'paymentMethod',
             key: 'paymentMethod',
-            width: 120,
+            width: 200,
             align: 'center',
-            render: (method) => <span className="admin-table-tag">{method}</span>,
+            render: (method) => {
+                const methodKey = `payment_method_${method?.toUpperCase()}`;
+                const colorMap = {
+                    'BANK': '#3b82f6',
+                    'COD': '#f59e0b',
+                    'CASH': '#10b981'
+                };
+                const color = colorMap[method?.toUpperCase()] || '#64748b';
+                return (
+                    <span 
+                        className="admin-table-tag" 
+                        style={{ 
+                            color: color, 
+                            borderColor: `${color}33`, 
+                            backgroundColor: `${color}11`,
+                            fontWeight: 600
+                        }}
+                    >
+                        {t(methodKey)}
+                    </span>
+                );
+            },
         },
         {
             title: t('grand_total'),
@@ -127,13 +148,12 @@ const OrderList = () => {
             render: (_, record) => {
                 const grandTotal = (Number(record.total) || 0) + (Number(record.shippingFee) || 0);
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                         <span className="admin-current-price" style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '15px' }}>
                             {grandTotal.toLocaleString(locale)}{t('admin_unit_vnd')}
                         </span>
-                        <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '10px', color: '#94a3b8', lineHeight: '1.4' }}>
                             <span>{t('subtotal')}: {(record.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
-                            <span style={{ margin: '0 4px' }}>•</span>
                             <span>{t('shipping_fee')}: {(record.shippingFee || 0).toLocaleString(locale)}{t('admin_unit_vnd')}</span>
                         </div>
                     </div>
@@ -258,6 +278,7 @@ const OrderList = () => {
                             className="admin-date-picker-range-luxury"
                             placeholder={[t('startDate'), t('endDate')]}
                             allowClear
+                            suffixIcon={<FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />}
                         />
                     </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Input, message, Rate, Avatar, Select } from 'antd';
 import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, StarFilled, FilterOutlined, DownOutlined } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
+import { useNotification } from '@/store/NotificationContext';
 import { useReviews } from '@/features/reviews/hooks/useReviews';
 import { Pagination, CButton } from '@/components/common';
 import '@/admin-list.css';
@@ -12,6 +13,7 @@ const { Option } = Select;
 
 const ReviewList = ({ variantId }) => {
     const { t, language } = useLanguage();
+    const showNotification = useNotification();
     const [page, setPage] = useState(1);
     const [pageSize] = useState(10);
     const [selectedVariantId, setSelectedVariantId] = useState(variantId || null);
@@ -56,17 +58,17 @@ const ReviewList = ({ variantId }) => {
 
     const handleSubmitReply = async () => {
         if (!replyComment.trim()) {
-            message.warning(t('admin_review_reply_placeholder'));
+            showNotification(t('warning'), 'warning', t('admin_review_reply_placeholder'));
             return;
         }
 
         try {
             if (selectedReview.reply) {
                 await updateReply({ replyId: selectedReview.reply.id, comment: replyComment });
-                message.success(t('admin_review_reply_update_success'));
+                showNotification(t('success'), 'success', t('admin_review_reply_update_success'));
             } else {
                 await replyToReview({ reviewId: selectedReview.id, comment: replyComment });
-                message.success(t('admin_review_reply_success'));
+                showNotification(t('success'), 'success', t('admin_review_reply_success'));
             }
             setIsReplyModalVisible(false);
             setReplyComment('');
@@ -76,7 +78,7 @@ const ReviewList = ({ variantId }) => {
     const handleDeleteReply = async (replyId) => {
         try {
             await deleteReply(replyId);
-            message.success(t('admin_review_reply_delete_success'));
+            showNotification(t('success'), 'success', t('admin_review_reply_delete_success'));
         } catch (error) {}
     };
 
@@ -90,7 +92,7 @@ const ReviewList = ({ variantId }) => {
             onOk: async () => {
                 try {
                     await deleteReview(reviewId);
-                    message.success(t('admin_review_delete_success'));
+                    showNotification(t('success'), 'success', t('admin_review_delete_success'));
                 } catch (error) {}
             }
         });

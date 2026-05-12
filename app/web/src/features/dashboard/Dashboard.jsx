@@ -118,13 +118,16 @@ const Dashboard = () => {
                 };
 
                 const overview = dashboardData.overview || {};
+                const formatGrowth = (val) => `${val > 0 ? '+' : ''}${val?.toFixed(2)}%`;
                 const overviewData = [
-                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: Number(overview.totalRevenue ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_total_shipping_fee'), [t('admin_col_value')]: Number(overview.totalShippingFee ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: Number(overview.totalOrders ?? 0), [t('admin_col_unit')]: t('admin_unit_order') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: Number(overview.totalProfit ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd') },
-                    { [t('admin_col_metric')]: t('admin_dashboard_products'), [t('admin_col_value')]: Number(overview.totalProductsSold ?? 0), [t('admin_col_unit')]: t('admin_unit_product') },
+                    { [t('admin_col_metric')]: t('admin_dashboard_sales'), [t('admin_col_value')]: Number(overview.totalRevenue ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd'), [t('admin_col_growth')]: formatGrowth(overview.revenueGrowth ?? 0) },
+                    { [t('admin_col_metric')]: t('admin_total_shipping_fee'), [t('admin_col_value')]: Number(overview.totalShippingFee ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd'), [t('admin_col_growth')]: '-' },
+                    { [t('admin_col_metric')]: t('admin_dashboard_orders'), [t('admin_col_value')]: Number(overview.totalOrders ?? 0), [t('admin_col_unit')]: t('admin_unit_order'), [t('admin_col_growth')]: formatGrowth(overview.ordersGrowth ?? 0) },
+                    { [t('admin_col_metric')]: t('admin_dashboard_profit'), [t('admin_col_value')]: Number(overview.totalProfit ?? 0), [t('admin_col_unit')]: t('admin_unit_vnd'), [t('admin_col_growth')]: '-' },
+                    { [t('admin_col_metric')]: t('admin_dashboard_products'), [t('admin_col_value')]: Number(overview.totalProductsSold ?? 0), [t('admin_col_unit')]: t('admin_unit_product'), [t('admin_col_growth')]: formatGrowth(overview.productsSoldGrowth ?? 0) },
+                    { [t('admin_col_metric')]: t('admin_total_new_customers'), [t('admin_col_value')]: Number(overview.totalRegisteredCustomers ?? 0), [t('admin_col_unit')]: t('admin_unit_person'), [t('admin_col_growth')]: formatGrowth(overview.customersGrowth ?? 0) }
                 ];
+
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(overviewData), sanitizeSheetName(t('admin_sheet_overview')));
 
                 if (listData?.length > 0) {
@@ -203,41 +206,44 @@ const Dashboard = () => {
 
     const stats = useMemo(() => {
         const overview = dashboardData?.overview;
+        const getTrendType = (val) => (val >= 0 ? 'up' : 'down');
+        
         return [
             {
                 title: t('admin_dashboard_sales'),
                 value: (overview?.totalRevenue ?? 0).toLocaleString(locale) + t('admin_unit_vnd'),
                 icon: <TransactionOutlined />,
-                trend: 12.5,
-                trendType: 'up',
+                trend: overview?.revenueGrowth ?? 0,
+                trendType: getTrendType(overview?.revenueGrowth ?? 0),
                 onClick: () => fetchDetails('orders')
             },
             {
                 title: t('admin_dashboard_users'),
                 value: (overview?.totalRegisteredCustomers ?? 0).toLocaleString(locale),
                 icon: <UserAddOutlined />,
-                trend: 15.2,
-                trendType: 'up',
+                trend: overview?.customersGrowth ?? 0,
+                trendType: getTrendType(overview?.customersGrowth ?? 0),
                 onClick: () => fetchDetails('new-customers')
             },
             {
                 title: t('admin_dashboard_orders'),
                 value: (overview?.totalOrders ?? 0).toLocaleString(locale),
                 icon: <ShoppingOutlined />,
-                trend: 8.2,
-                trendType: 'up',
+                trend: overview?.ordersGrowth ?? 0,
+                trendType: getTrendType(overview?.ordersGrowth ?? 0),
                 onClick: () => fetchDetails('orders')
             },
             {
                 title: t('admin_dashboard_products'),
                 value: (overview?.totalProductsSold ?? 0).toLocaleString(locale),
                 icon: <AppstoreOutlined />,
-                trend: 2.1,
-                trendType: 'up',
+                trend: overview?.productsSoldGrowth ?? 0,
+                trendType: getTrendType(overview?.productsSoldGrowth ?? 0),
                 onClick: () => fetchDetails('products')
             }
         ];
     }, [t, dashboardData, language, locale]);
+
 
     const revenueData = useMemo(() => {
         return dashboardData?.revenueChart?.map(c => ({
@@ -301,7 +307,6 @@ const Dashboard = () => {
             align: 'right', 
             render: (sold) => (
                 <div className="sold-badge" style={{ display: 'inline-flex', marginLeft: 'auto' }}>
-                    <ArrowUpOutlined style={{ marginRight: 4, fontSize: 10 }} />
                     {sold ?? 0}
                 </div>
             )
@@ -391,7 +396,7 @@ const Dashboard = () => {
                     class: 'default',
                     text: status ? String(status) : '---'
                 };
-                return <span className={`admin-status-badge ${formatted.class}`} style={{ whiteSpace: 'nowrap', minWidth: '80px' }}>{formatted.text}</span>;
+                return <span className={`admin-status-badge ${formatted.class}`} style={{ whiteSpace: 'nowrap', minWidth: '65px' }}>{formatted.text}</span>;
             } 
         },
     ];
@@ -557,6 +562,7 @@ const Dashboard = () => {
                                         pagination={false}
                                         className="dashboard-compact-table"
                                         size="small"
+                                        scroll={{ x: 'max-content' }}
                                         onRow={(record) => ({
                                             onClick: () => navigate(`/admin/orders/${record.id}`),
                                             className: "admin-table-row-pointer"
@@ -577,6 +583,7 @@ const Dashboard = () => {
                                         pagination={false}
                                         className="dashboard-compact-table"
                                         size="small"
+                                        scroll={{ x: 'max-content' }}
                                         onRow={(record) => ({
                                             onClick: () => {
                                                 const slug = generateSlug(record.name, record.key);
@@ -704,7 +711,7 @@ const Dashboard = () => {
                             ]
                         }
                         pagination={false}
-                        scroll={{ y: 450 }}
+                        scroll={{ x: 'max-content', y: 450 }}
                         locale={{ emptyText: <EmptyState /> }}
                     />
                     

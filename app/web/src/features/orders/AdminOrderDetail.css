@@ -297,3 +297,164 @@
         gap: 2px;
     }
 }
+
+.admin-info-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.admin-banner-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-banner-item:last-child {
+    text-align: right;
+}
+
+.admin-banner-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.admin-banner-value {
+    font-size: 15px;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.admin-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.admin-info-card {
+    background: #fff;
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.admin-info-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-info-title svg {
+    color: var(--admin-primary);
+}
+
+.admin-delivery-details p, .admin-payment-info-box p {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.admin-font-bold {
+    font-weight: 700;
+    color: #1e293b !important;
+}
+
+@media (max-width: 768px) {
+    .admin-info-banner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    .admin-banner-item:last-child {
+        text-align: left;
+        border-top: 1px dashed #f1f5f9;
+        padding-top: 10px;
+    }
+    .admin-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.admin-order-summary-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
+}
+
+.admin-order-summary-box {
+    width: 100%;
+    max-width: 320px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+}
+
+.admin-summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.voucher-discount-text {
+    color: #C2185B !important;
+}
+
+.admin-summary-total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1.5px solid #e2e8f0;
+    align-items: center;
+}
+
+.total-label {
+    font-size: 16px !important;
+}
+
+.total-value {
+    font-size: 24px !important;
+    color: var(--admin-primary) !important;
+}
+
+@media (max-width: 768px) {
+    .admin-order-summary-container {
+        justify-content: stretch;
+    }
+    
+    .admin-order-summary-box {
+        max-width: none;
+    }
+    
+    .total-value {
+        font-size: 20px !important;
+    }
+}
+@media (max-width: 480px) {
+    .customer-text-info div {
+        gap: 6px !important;
+    }
+    
+    .customer-text-info span.ant-typography {
+        font-size: 14px !important;
+    }
+    
+    .customer-text-info .ant-tag {
+        font-size: 9px !important;
+        padding: 0 6px !important;
+        height: 18px !important;
+    }
+}

@@ -1,7 +1,7 @@
 import orderService from '@/features/orders/services/orderService';
 import { useLanguage } from '@/store/LanguageContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { notification } from 'antd';
+import { useNotification } from '@/store/NotificationContext';
 import { useMemo } from 'react';
 
 export const useOrders = (params = {}, options = {}) => {
@@ -62,26 +62,19 @@ export const useOrderDetail = (id, options = {}) => {
 
 export const useUpdateOrderStatus = () => {
     const { t } = useLanguage();
+    const showNotification = useNotification();
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: ({ id, status }) => orderService.updateOrderStatus(id, status),
         onSuccess: () => {
-            notification.success({
-                key: 'update_order_status',
-                message: t('success'),
-                description: t('update_info_success')
-            });
+            showNotification(t('success'), 'success', t('update_info_success'));
             queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
             queryClient.invalidateQueries({ queryKey: ['adminOrderDetail'] });
         },
         onError: (error) => {
             if (!error?.isGlobalHandled) {
-                notification.error({
-                    key: 'update_order_status',
-                    message: t('error'),
-                    description: t('api_error_general')
-                });
+                showNotification(t('error'), 'error', t('api_error_general'));
             }
         }
     });

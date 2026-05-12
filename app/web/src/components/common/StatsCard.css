@@ -40,6 +40,13 @@
     justify-content: center !important;
     font-size: 24px !important;
     flex-shrink: 0 !important;
+    transition: all 0.3s ease;
+}
+
+.admin-stat-card-modern:hover .stat-icon-wrapper {
+    background: var(--admin-primary) !important;
+    color: #ffffff !important;
+    transform: rotate(-8deg) scale(1.1);
 }
 
 .stat-content {
@@ -51,7 +58,7 @@
 }
 
 .stat-label {
-    color: #94a3b8 !important;
+    color: #64748b !important;
     font-size: 14px !important;
     font-weight: 600 !important;
     margin: 0 0 6px 0 !important;
@@ -63,18 +70,19 @@
     display: flex !important;
     align-items: baseline !important;
     gap: 4px !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     margin-bottom: 4px !important;
 }
 
 .stat-value {
     color: #0f172a !important;
-    font-size: 24px !important;
+    font-size: 26px !important;
     font-weight: 850 !important;
     margin: 0 !important;
     letter-spacing: -1px !important;
     line-height: 1 !important;
-    word-break: break-all !important;
+    word-break: normal !important;
+    white-space: nowrap !important;
 }
 
 .stat-currency {
@@ -84,27 +92,13 @@
     line-height: 1 !important;
 }
 
-
-.stat-value.has-currency {
-    font-size: clamp(18px, 1.5vw, 24px) !important;
-}
-
-@media (max-width: 1400px) {
-    .stat-value {
-        font-size: 20px !important;
-    }
-    .admin-stat-card-modern {
-        padding: 16px !important;
-        gap: 12px !important;
-    }
-}
-
 .stat-trend {
     display: flex !important;
     align-items: center !important;
     gap: 4px !important;
     font-size: 13px !important;
     font-weight: 700 !important;
+    margin-top: 8px !important;
 }
 
 .stat-trend.up { color: #10b981 !important; }
@@ -114,6 +108,54 @@
     color: #94a3b8 !important;
     font-weight: 400 !important;
     margin-left: 4px !important;
+}
+
+
+
+@media (max-width: 1400px) {
+    .admin-stat-card-modern {
+        padding: 20px !important;
+        gap: 16px !important;
+    }
+    .stat-value {
+        font-size: 22px !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    .stat-icon-wrapper {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 20px !important;
+    }
+    .stat-value {
+        font-size: 20px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-stat-card-modern {
+        padding: 16px !important;
+        border-radius: 20px !important;
+        gap: 12px !important;
+    }
+    .stat-icon-wrapper {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 18px !important;
+    }
+    .stat-value {
+        font-size: 18px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-stat-card-modern {
+        gap: 14px !important;
+    }
+    .stat-trend {
+        font-size: 11px !important;
+    }
 }
 
 

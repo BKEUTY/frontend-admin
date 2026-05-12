@@ -24,6 +24,7 @@ const PromotionList = () => {
 
     const titleTerm = query.title ?? '';
     const statusFilter = query.status ?? null;
+    const typeFilter = query.promotionType ?? null;
     const startAtParam = query.startAt ?? null;
     const endAtParam = query.endAt ?? null;
     const sortParam = query.sort ?? null;
@@ -38,10 +39,11 @@ const PromotionList = () => {
         size: pageSize,
         title: titleTerm,
         status: statusFilter,
+        promotionType: typeFilter,
         startAt: startAtParam,
         endAt: endAtParam,
         sort: sortParam
-    }), [currentPage, pageSize, titleTerm, statusFilter, startAtParam, endAtParam, sortParam]);
+    }), [currentPage, pageSize, titleTerm, statusFilter, typeFilter, startAtParam, endAtParam, sortParam]);
 
     const { data: promotions, totalPages, totalItems, isLoading: loading, refetchPromotions } = usePromotions(
         queryParams,
@@ -63,13 +65,17 @@ const PromotionList = () => {
     }, [debouncedSearch, searchInput, titleTerm, setQuery]);
 
     const handleRefresh = () => {
-        setQuery({ title: null, status: null, startAt: null, endAt: null, sort: null, page: null });
+        setQuery({ title: null, status: null, promotionType: null, startAt: null, endAt: null, sort: null, page: null });
         setSearchInput('');
         refetchPromotions();
     };
 
     const handleStatusChange = (val) => {
         setQuery({ status: val || null, page: 1 });
+    };
+
+    const handleTypeChange = (val) => {
+        setQuery({ promotionType: val || null, page: 1 });
     };
 
     const handleDateRangeChange = (dates) => {
@@ -142,7 +148,7 @@ const PromotionList = () => {
             key: 'startAt',
             width: 160,
             render: (date) => (
-                <span style={{ color: '#64748b' }}>
+                <span style={{ color: '#64748b', whiteSpace: 'nowrap' }}>
                     {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
             )
@@ -153,10 +159,36 @@ const PromotionList = () => {
             key: 'endAt',
             width: 160,
             render: (date) => (
-                <span style={{ color: '#64748b' }}>
+                <span style={{ color: '#64748b', whiteSpace: 'nowrap' }}>
                     {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
             )
+        },
+        {
+            title: t('promo_col_code'),
+            dataIndex: 'code',
+            key: 'code',
+            width: 130,
+            render: (text, record) => record.promotionType === 'VoucherPromotion' ? <span className="admin-table-tag" style={{background: '#fef08a', color: '#854d0e', border: '1px solid #fde047'}}>{text || '-'}</span> : <span style={{color: '#cbd5e1'}}>-</span>
+        },
+        {
+            title: t('promo_col_usage'),
+            key: 'usage',
+            width: 120,
+            align: 'center',
+            render: (_, record) => {
+                if (record.promotionType === 'VoucherPromotion') {
+                    const remaining = record.remainingQuantity || 0;
+                    const total = record.totalQuantity || 0;
+                    const isLow = remaining < total * 0.2;
+                    return (
+                        <span style={{color: isLow ? '#ef4444' : '#64748b', fontWeight: isLow ? 600 : 400}}>
+                            {remaining} / {total}
+                        </span>
+                    );
+                }
+                return <span style={{color: '#cbd5e1'}}>-</span>;
+            }
         },
         {
             title: t('promo_col_status'),
@@ -254,6 +286,27 @@ const PromotionList = () => {
                                 ]}
                             />
                         </div>
+                        <div className="admin-select-wrapper">
+                            <Select
+                                placeholder={t('promo_col_type')}
+                                allowClear
+                                value={typeFilter}
+                                onChange={handleTypeChange}
+                                className="admin-toolbar-select admin-custom-select"
+                                suffixIcon={
+                                    <div className="admin-select-suffix">
+                                        <FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
+                                        <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
+                                    </div>
+                                }
+                                variant="borderless"
+                                options={[
+                                    { value: 'ProductPromotion', label: t('promo_type_productpromotion') },
+                                    { value: 'VoucherPromotion', label: t('promo_type_voucherpromotion') },
+                                    { value: 'UserPromotion', label: t('promo_type_userpromotion') }
+                                ]}
+                            />
+                        </div>
                         <DatePicker.RangePicker
                             showTime
                             format="DD/MM/YYYY HH:mm"
@@ -261,6 +314,7 @@ const PromotionList = () => {
                             onChange={handleDateRangeChange}
                             placeholder={[t('startDate'), t('endDate')]}
                             className="admin-date-picker-range-luxury"
+                            suffixIcon={<FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />}
                         />
                     </div>
                     <div className="admin-toolbar-right">
@@ -279,10 +333,10 @@ const PromotionList = () => {
                                 variant="borderless"
                                 options={[
                                     { value: 'default', label: t('sort_default') },
-                                    { value: 'id_desc', label: t('sort_time_newest') },
-                                    { value: 'id_asc', label: t('sort_time_oldest') },
-                                    { value: 'discount_desc', label: t('sort_price_desc') },
-                                    { value: 'discount_asc', label: t('sort_price_asc') }
+                                    { value: 'id,desc', label: t('sort_time_newest') },
+                                    { value: 'id,asc', label: t('sort_time_oldest') },
+                                    { value: 'discountValue,desc', label: t('sort_price_desc') },
+                                    { value: 'discountValue,asc', label: t('sort_price_asc') }
                                 ]}
                             />
                         </div>
