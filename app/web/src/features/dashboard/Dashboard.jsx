@@ -269,7 +269,7 @@ const Dashboard = () => {
             title: t('admin_product_name'), 
             dataIndex: 'name', 
             key: 'name', 
-            width: '35%',
+            minWidth: 200,
             ellipsis: true,
             render: (text, record) => {
                 const slug = generateSlug(text, record.key);
@@ -303,7 +303,7 @@ const Dashboard = () => {
             title: t('admin_product_sold'), 
             dataIndex: 'value', 
             key: 'value', 
-            width: 100,
+            width: 110,
             align: 'right', 
             render: (sold) => (
                 <div className="sold-badge" style={{ display: 'inline-flex', marginLeft: 'auto' }}>
@@ -353,7 +353,7 @@ const Dashboard = () => {
             title: t('admin_customer'), 
             dataIndex: 'customerName', 
             key: 'customerName', 
-            width: '25%',
+            minWidth: 150,
             ellipsis: true,
             render: (text) => <span style={{ whiteSpace: 'nowrap' }}>{text}</span> 
         },

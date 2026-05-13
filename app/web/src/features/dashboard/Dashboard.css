@@ -104,14 +104,16 @@
 
 .dashboard-compact-table .ant-table-tbody>tr>td {
     padding: 10px 12px !important;
-    white-space: nowrap !important;
 }
 
 .dashboard-compact-table .ant-table-body,
 .dashboard-compact-table .ant-table-content,
-.dashboard-compact-table .ant-table-container,
+.dashboard-compact-table .ant-table-container {
+    overflow: auto !important;
+}
+
 .dashboard-compact-table .ant-table-wrapper {
-    overflow: hidden !important;
+    overflow: visible !important;
 }
 
 .price-cell {
