@@ -5,7 +5,7 @@ import { getTranslation } from '@/utils/translate';
 import { notifyError } from '@/services/NotificationService';
 import { getAccessToken, setAccessToken, clearAccessToken, clearUserSession } from './tokenStorage';
 
-const SERVER_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const SERVER_URL = import.meta.env.VITE_API_URL || 'https://backend.bkeuty.xyz';
 
 const authClient = axios.create({
     baseURL: SERVER_URL,
