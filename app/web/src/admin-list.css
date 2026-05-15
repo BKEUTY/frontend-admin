@@ -587,6 +587,27 @@
         padding: 10px 6px !important;
         font-size: 11px !important;
     }
+
+    .admin-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    .admin-filter-left, .admin-toolbar-right {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        min-width: 0 !important;
+        gap: 12px;
+    }
+
+    .admin-date-picker-range-luxury,
+    .admin-toolbar-select,
+    .admin-toolbar-search {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
 }
 
 .admin-table-wrapper ::-webkit-scrollbar {
