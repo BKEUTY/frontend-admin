@@ -378,7 +378,7 @@ const Dashboard = () => {
             title: t('status'), 
             dataIndex: 'status', 
             key: 'status', 
-            width: 100,
+            width: 120,
             align: 'center',
             render: (status) => {
                 const map = {

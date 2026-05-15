@@ -73,15 +73,15 @@ export const adminRoutes = [
     },
     {
         path: "services",
-        element: <DevelopingState title="Services Management" />
+        element: <DevelopingState titleKey="services_management" />
     },
     {
         path: "appointments",
-        element: <DevelopingState title="Appointments Management" />
+        element: <DevelopingState titleKey="appointments_management" />
     },
     {
         path: "staff",
-        element: <DevelopingState title="Staff Management" />
+        element: <DevelopingState titleKey="staff_management" />
     },
     {
         path: "reports",

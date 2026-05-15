@@ -203,7 +203,7 @@ const Reports = () => {
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: subtotalVal,
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherVal > 0 ? `-${voucherVal}` : 0,
                             [`${t('admin_col_shipping_fee')} (${t('admin_unit_vnd')})`]: shipVal,
-                            [`${t('grand_total')} (${t('admin_unit_vnd')})`]: finalTotal
+                            [`${t('report_grand_total')} (${t('admin_unit_vnd')})`]: finalTotal
                         };
                     },
                     productTransaction: (d) => {
@@ -298,7 +298,7 @@ const Reports = () => {
                 const colPromo = `${t('promo_price')} (${vnd})`;
                 const colVoucher = `${t('voucher')} (${vnd})`;
                 const colSubtotal = `${t('report_subtotal')} (${vnd})`;
-                const colGrandTotal = `${t('grand_total')} (${vnd})`;
+                const colGrandTotal = `${t('report_grand_total')} (${vnd})`;
 
                 if (reportType === 'combined') {
                     const wsOverview = XLSX.utils.json_to_sheet(mappers.overview(reportData.overview));
