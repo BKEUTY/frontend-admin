@@ -131,6 +131,9 @@ const createAxiosClient = () => {
                 const errorData = error.response?.data;
                 const apiMessage = typeof errorData === 'string' ? errorData : (errorData?.message || errorData?.error || '');
                 
+                // Log technical error to console for debugging, don't show to user
+                console.error('[API Error Detail]:', apiMessage);
+
                 let fallbackKey = 'error_unknown';
                 let notificationKey = `error_${status || 'network'}`;
 
@@ -155,11 +158,10 @@ const createAxiosClient = () => {
                 if (error.message === 'Network Error' || !error.response) {
                     title = getTranslation('error') || 'Error';
                     description = getTranslation('api_error_network') || 'Network Error';
-                    notificationKey = 'error_network';
                 }
 
                 notification.error({
-                    key: notificationKey,
+                    key: 'global_api_error',
                     message: title,
                     description: description,
                     duration: 3
