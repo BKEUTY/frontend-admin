@@ -354,12 +354,15 @@ export default {
     // --- Users ---
     admin_user_id: "User ID",
     admin_user_name: "Full Name",
+    admin_user_first_name: "First Name",
+    admin_user_last_name: "Last Name",
     admin_user_email: "Email Address",
     admin_user_role: "Permissions",
     admin_user_role_admin: "Administrator",
     admin_user_role_user: "Customer",
     admin_user_items: "Accounts",
     admin_user_refresh: "Update list",
+    admin_user_total_spending: "Total Spending",
 
     // --- Reviews ---
     verified_purchase: "Verified purchase",

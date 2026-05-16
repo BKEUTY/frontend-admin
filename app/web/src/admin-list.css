@@ -323,13 +323,90 @@
 .admin-table-id {
     font-weight: 700;
     color: var(--color_main_title);
-    font-family: inherit;
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    font-size: 13px;
+    letter-spacing: -0.02em;
+}
+
+.admin-id-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-copy-icon {
+    font-size: 12px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 4px;
+    border-radius: 6px;
+    background: #f8fafc;
+}
+
+.admin-copy-icon:hover {
+    color: var(--admin-primary);
+    background: #fff1f6;
+    transform: scale(1.1);
+}
+
+.admin-copy-icon:active {
+    transform: scale(0.9);
 }
 
 .admin-table-product-name {
     font-weight: 600;
     color: #0f172a;
     font-size: 14px;
+}
+
+.membership-tag-luxury {
+    border: none !important;
+    font-weight: 800 !important;
+    font-size: 10px !important;
+    padding: 0 12px !important;
+    height: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    border-radius: 8px !important;
+    letter-spacing: 0.05em !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.membership-tag-luxury:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.membership-level-0 {
+    background-color: #f1f5f9 !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.membership-level-1 {
+    background-color: #eff6ff !important;
+    color: #2563eb !important;
+    border: 1px solid #dbeafe !important;
+}
+
+.membership-level-2 {
+    background-color: #fffbeb !important;
+    color: #d97706 !important;
+    border: 1px solid #fef3c7 !important;
+}
+
+.membership-level-3 {
+    background-color: #f5f3ff !important;
+    color: #7c3aed !important;
+    border: 1px solid #ddd6fe !important;
+}
+
+.membership-level-4 {
+    background-color: #ecfeff !important;
+    color: #0891b2 !important;
+    border: 1px solid #cffafe !important;
 }
 
 .admin-toolbar-search .ant-input-search-button {

@@ -356,12 +356,15 @@ export default {
     // --- Users ---
     admin_user_id: "Mã KH",
     admin_user_name: "Họ và tên",
+    admin_user_first_name: "Tên",
+    admin_user_last_name: "Họ",
     admin_user_email: "Địa chỉ Email",
     admin_user_role: "Vai trò",
     admin_user_role_admin: "Quản trị viên",
     admin_user_role_user: "Khách hàng",
     admin_user_items: "Tài khoản",
     admin_user_refresh: "Cập nhật danh sách",
+    admin_user_total_spending: "Tổng chi tiêu",
 
     // --- Reviews ---
     verified_purchase: "Đã mua hàng",

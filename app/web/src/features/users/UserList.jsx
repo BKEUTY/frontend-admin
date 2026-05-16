@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Table, Typography, Tag, Space, Input, Select, Avatar } from 'antd';
-import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
+import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined, CopyOutlined } from '@ant-design/icons';
 import MembershipTag from '@/components/admin/MembershipTag';
 import { useLanguage } from '@/store/LanguageContext';
 import { useUsers } from '@/features/users/hooks/useUsers';
@@ -66,20 +66,33 @@ const UserList = () => {
             title: t('admin_user_id'),
             dataIndex: 'userId',
             key: 'userId',
-            width: 100,
-            align: 'center',
-            render: (id) => <span className="admin-table-id">#{id.substring(0, 8)}...</span>
-        },
-        {
-            title: t('admin_user_name'),
-            key: 'fullName',
-            width: 200,
-            render: (_, record) => (
-                <Space>
-                    <Avatar icon={<UserOutlined />} />
-                    <Text strong>{`${record.firstname || ''} ${record.lastname || ''}`}</Text>
+            width: 140,
+            render: (id) => (
+                <Space className="admin-id-cell">
+                    <Text className="admin-table-id" title={id}>#{id.substring(0, 8)}...</Text>
+                    <CopyOutlined 
+                        className="admin-copy-icon" 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(id);
+                        }} 
+                    />
                 </Space>
             )
+        },
+        {
+            title: t('admin_user_last_name'),
+            dataIndex: 'lastname',
+            key: 'lastname',
+            width: 150,
+            render: (text) => <Text strong>{text || '-'}</Text>
+        },
+        {
+            title: t('admin_user_first_name'),
+            dataIndex: 'firstname',
+            key: 'firstname',
+            width: 120,
+            render: (text) => <Text strong>{text || '-'}</Text>
         },
         {
             title: t('admin_user_email'),
@@ -123,6 +136,18 @@ const UserList = () => {
             dataIndex: 'dob',
             key: 'dob',
             width: 120,
+        },
+        {
+            title: t('admin_user_total_spending'),
+            dataIndex: 'totalSpending',
+            key: 'totalSpending',
+            width: 150,
+            align: 'right',
+            render: (amount) => (
+                <Text strong style={{ color: 'var(--admin-primary)' }}>
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0)}
+                </Text>
+            )
         }
     ];
 
