@@ -75,7 +75,8 @@ class ErrorBoundaryInternal extends Component {
 
 
 const ErrorBoundary = (props) => {
-    const { t } = useLanguage();
+    const context = useLanguage();
+    const t = context?.t || ((key) => key);
     return <ErrorBoundaryInternal {...props} t={t} />;
 };
 
