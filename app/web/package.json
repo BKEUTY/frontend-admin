@@ -1,6 +1,7 @@
 {
   "name": "admin-fe",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

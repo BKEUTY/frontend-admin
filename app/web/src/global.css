@@ -133,7 +133,7 @@ a {
     }
 }
 
-@keyframes shimmer {
+@keyframes global-shimmer-bg {
     0% {
         background-position: -200% 0;
     }
