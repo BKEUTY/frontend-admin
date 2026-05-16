@@ -1,34 +1,36 @@
 import React, { Component } from 'react';
-import { notifyError } from '@/services/NotificationService';
-import { getTranslation } from '@/utils/translate';
-
 import { Result, Button, Typography } from 'antd';
+import { useLanguage } from '@/store/LanguageContext';
 const { Paragraph, Text } = Typography;
 
-class ErrorBoundary extends Component {
+class ErrorBoundaryInternal extends Component {
     constructor(props) {
         super(props);
-        this.state = { hasError: false, error: null };
+        this.state = { hasError: false, error: null, isChunkError: false };
     }
 
     static getDerivedStateFromError(error) {
-        return { hasError: true, error };
+        const isChunkError = /Failed to fetch dynamically imported module|Loading chunk|Loading CSS chunk/.test(error.message);
+        return { hasError: true, error, isChunkError };
     }
 
     componentDidCatch(error, errorInfo) {
         console.error("ErrorBoundary caught an error:", error, errorInfo);
-        // notifyError is available if needed, but let's focus on UI
     }
 
     render() {
         if (this.state.hasError) {
+            const { isChunkError } = this.state;
             return (
                 <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6">
                     <div className="admin-glass-card max-w-2xl w-full p-8 text-center">
                         <Result
-                            status="error"
-                            title={<span className="text-2xl font-bold">Oops! Something went wrong</span>}
-                            subTitle={getTranslation('api_error_general')}
+                            status={isChunkError ? "info" : "error"}
+                            title={<span className="text-2xl font-bold">{isChunkError ? this.props.t('error_chunk_title') : this.props.t('error_500_title')}</span>}
+                            subTitle={isChunkError 
+                                ? this.props.t('error_chunk_desc') 
+                                : this.props.t('error_500_desc')
+                            }
                             extra={[
                                 <Button 
                                     type="primary" 
@@ -37,19 +39,21 @@ class ErrorBoundary extends Component {
                                     onClick={() => window.location.reload()}
                                     className="bg-primary hover:bg-primary-hover border-none h-12 px-8 rounded-xl font-semibold"
                                 >
-                                    {getTranslation('refresh')}
+                                    {isChunkError ? this.props.t('error_chunk_btn') : this.props.t('error_reload_btn')}
                                 </Button>,
-                                <Button 
-                                    key="home" 
-                                    size="large"
-                                    onClick={() => window.location.href = '/admin'}
-                                    className="h-12 px-8 rounded-xl font-semibold"
-                                >
-                                    Go to Dashboard
-                                </Button>
-                            ]}
+                                !isChunkError && (
+                                    <Button 
+                                        key="home" 
+                                        size="large"
+                                        onClick={() => window.location.href = '/admin'}
+                                        className="h-12 px-8 rounded-xl font-semibold"
+                                    >
+                                        Go to Dashboard
+                                    </Button>
+                                )
+                            ].filter(Boolean)}
                         >
-                            {import.meta.env.DEV && (
+                            {import.meta.env.DEV && !isChunkError && (
                                 <div className="mt-6 text-left">
                                     <Paragraph>
                                         <Text strong className="text-red-500">Error Details:</Text>
@@ -69,6 +73,11 @@ class ErrorBoundary extends Component {
     }
 }
 
+
+const ErrorBoundary = (props) => {
+    const { t } = useLanguage();
+    return <ErrorBoundaryInternal {...props} t={t} />;
+};
 
 export default ErrorBoundary;
 

@@ -52,7 +52,7 @@ export default function AdminOrderDetail() {
 
     const columns = [
         {
-            title: t('invoice_product'),
+            title: t('admin_product_name'),
             dataIndex: 'productVariantName',
             key: 'productVariantName',
             render: (text, record) => (

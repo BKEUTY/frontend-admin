@@ -202,8 +202,8 @@ const Reports = () => {
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: origTotal,
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: subtotalVal,
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherVal > 0 ? `-${voucherVal}` : 0,
-                            [`${t('admin_col_shipping_fee')} (${t('admin_unit_vnd')})`]: shipVal,
-                            [`${t('report_grand_total')} (${t('admin_unit_vnd')})`]: finalTotal
+                            [`${t('shipping_fee')} (${t('admin_unit_vnd')})`]: shipVal,
+                            [`${t('grand_total')} (${t('admin_unit_vnd')})`]: finalTotal
                         };
                     },
                     productTransaction: (d) => {
@@ -288,17 +288,17 @@ const Reports = () => {
                 };
 
                 const vnd = t('admin_unit_vnd');
-                const colQty = `${t('admin_col_quantity')} (${t('admin_unit_product')})`;
+                const colQty = `${t('quantity')} (${t('admin_unit_product')})`;
                 const colRev = `${t('admin_col_revenue_vnd')} (${vnd})`;
-                const colShip = `${t('admin_col_shipping_fee')} (${vnd})`;
+                const colShip = `${t('shipping_fee')} (${vnd})`;
                 const colProfit = `${t('admin_col_profit_vnd')} (${vnd})`;
                 const colOrd = `${t('admin_total_orders')} (${t('admin_unit_order')})`;
                 const colAvg = `${t('admin_col_avg_order_value')} (${vnd})`;
                 const colOriginal = `${t('original_price')} (${vnd})`;
                 const colPromo = `${t('promo_price')} (${vnd})`;
                 const colVoucher = `${t('voucher')} (${vnd})`;
-                const colSubtotal = `${t('report_subtotal')} (${vnd})`;
-                const colGrandTotal = `${t('report_grand_total')} (${vnd})`;
+                const colSubtotal = `${t('subtotal')} (${vnd})`;
+                const colGrandTotal = `${t('grand_total')} (${vnd})`;
 
                 if (reportType === 'combined') {
                     const wsOverview = XLSX.utils.json_to_sheet(mappers.overview(reportData.overview));

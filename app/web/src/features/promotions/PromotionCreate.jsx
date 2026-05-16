@@ -286,11 +286,11 @@ const PromotionCreate = () => {
                                             <Col span={12}>
                                                 <Form.Item label={t('promo_label_membership')} name="membershipLevels">
                                                     <Select mode="multiple" size="large">
-                                                        <Option value={0}>{t('membership_member')}</Option>
-                                                        <Option value={1}>{t('membership_silver')}</Option>
-                                                        <Option value={2}>{t('membership_gold')}</Option>
-                                                        <Option value={3}>{t('membership_platinum')}</Option>
-                                                        <Option value={4}>{t('membership_diamond')}</Option>
+                                                        <Option value={0}>{t('membership_level_0')}</Option>
+                                                        <Option value={1}>{t('membership_level_1')}</Option>
+                                                        <Option value={2}>{t('membership_level_2')}</Option>
+                                                        <Option value={3}>{t('membership_level_3')}</Option>
+                                                        <Option value={4}>{t('membership_level_4')}</Option>
                                                     </Select>
                                                 </Form.Item>
                                             </Col>

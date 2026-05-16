@@ -86,11 +86,11 @@ const generateInvoice = (orderData, t, language) => {
     autoTable(doc, {
         startY: nextY,
         head: [[
-            t('invoice_product'),
-            t('invoice_original_price'),
-            t('invoice_discount_col'),
-            t('invoice_qty'),
-            t('invoice_total')
+            t('admin_product_name'),
+            t('original_price'),
+            t('discount'),
+            t('quantity'),
+            t('total')
         ]],
         body: tableData,
         theme: 'grid',
@@ -149,7 +149,7 @@ const generateInvoice = (orderData, t, language) => {
     doc.setFont("Roboto", "normal");
     doc.setTextColor(0);
 
-    doc.text(`${t('invoice_subtotal')}:`, labelX, currentY, { align: "right" });
+    doc.text(`${t('subtotal')}:`, labelX, currentY, { align: "right" });
     doc.text(`${subtotal.toLocaleString(numLocale)}${t('admin_unit_vnd')}`, valueX, currentY, { align: "right" });
 
     if (voucherDiscount > 0) {
