@@ -88,7 +88,7 @@ const ProductList = () => {
 
     const tableData = useMemo(() => products.map(p => ({
         ...p,
-        hasDiscount: p.discountPrice < p.originPrice,
+        hasDiscount: (p.discountPrice !== undefined && p.discountPrice !== null) && p.discountPrice < p.originPrice,
     })), [products]);
 
     const categoryOptions = useMemo(() =>

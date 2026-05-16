@@ -75,7 +75,7 @@ export default function AdminProductDetail() {
                 setCurrentPrice({
                     originPrice: responseData.originPrice,
                     promotionPrice: responseData.promotionPrice,
-                    hasDiscount: responseData.promotionPrice < responseData.originPrice,
+                    hasDiscount: (responseData.promotionPrice !== undefined && responseData.promotionPrice !== null) && responseData.promotionPrice < responseData.originPrice,
                 });
 
                 const targetVariant = responseData.variants?.find(v => v.id === responseData.id) || responseData.variants?.[0];
