@@ -276,7 +276,6 @@ const OrderList = () => {
                                 });
                             }}
                             className="admin-date-picker-range-luxury"
-                            placeholder={[t('startDate'), t('endDate')]}
                             allowClear
                             suffixIcon={<FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />}
                         />

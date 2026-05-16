@@ -162,7 +162,7 @@ const Dashboard = () => {
                     } else if (type === 'new-customers') {
                         formattedData = listData.map(item => ({
                             [t('admin_user_id')]: item.userId || '-',
-                            [t('full_name')]: `${item.firstname || ''} ${item.lastname || ''}`.trim(),
+                            [t('admin_user_name')]: `${item.firstname || ''} ${item.lastname || ''}`.trim(),
                             [t('admin_user_email')]: item.email || '-',
                             [t('admin_user_role')]: item.userRole || '-',
                             [t('admin_date')]: item.createdAt ? new Date(item.createdAt).toLocaleDateString(locale) : '-'
@@ -658,7 +658,7 @@ const Dashboard = () => {
                                     }
                                 },
                                 { 
-                                    title: t('full_name'), 
+                                    title: t('admin_user_name'), 
                                     key: 'fullName', 
                                     width: 220,
                                     render: (_, record) => (

@@ -71,7 +71,7 @@ const UserList = () => {
             render: (id) => <span className="admin-table-id">#{id.substring(0, 8)}...</span>
         },
         {
-            title: t('full_name'),
+            title: t('admin_user_name'),
             key: 'fullName',
             width: 200,
             render: (_, record) => (

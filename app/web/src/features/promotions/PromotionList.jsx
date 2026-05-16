@@ -17,10 +17,12 @@ const { Search } = Input;
 const { confirm } = Modal;
 
 const PromotionList = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const [query, setQuery] = useQueryParams();
+
+    const dateLocale = language === 'vi' ? 'vi-VN' : 'en-US';
 
     const titleTerm = query.title ?? '';
     const statusFilter = query.status ?? null;
@@ -149,7 +151,7 @@ const PromotionList = () => {
             width: 160,
             render: (date) => (
                 <span style={{ color: '#64748b', whiteSpace: 'nowrap' }}>
-                    {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    {new Date(date).toLocaleString(dateLocale, { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
             )
         },
@@ -160,7 +162,7 @@ const PromotionList = () => {
             width: 160,
             render: (date) => (
                 <span style={{ color: '#64748b', whiteSpace: 'nowrap' }}>
-                    {new Date(date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    {new Date(date).toLocaleString(dateLocale, { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </span>
             )
         },
@@ -312,7 +314,6 @@ const PromotionList = () => {
                             format="DD/MM/YYYY HH:mm"
                             value={startAtParam && endAtParam ? [dayjs(startAtParam), dayjs(endAtParam)] : null}
                             onChange={handleDateRangeChange}
-                            placeholder={[t('startDate'), t('endDate')]}
                             className="admin-date-picker-range-luxury"
                             suffixIcon={<FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />}
                         />

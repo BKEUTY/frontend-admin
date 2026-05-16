@@ -120,7 +120,7 @@ const PromotionCreate = () => {
 
     return (
         <PageWrapper
-            title={isEdit ? t('edit') : t('admin_promotion_create')}
+            title={isEdit ? t('admin_promotion_edit') : t('admin_promotion_create')}
             extra={
                 <CButton type="secondary" icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/promotions')}>
                     {t('back')}
@@ -248,7 +248,7 @@ const PromotionCreate = () => {
                                 {(promotionType === 'VOUCHER' || promotionType === 'VoucherPromotion') && (
                                     <div className="voucher-fields">
                                         <Form.Item label={t('promo_col_code')} name="code" rules={[{ required: true, message: t('code_required') }]}>
-                                            <CInput placeholder="e.g. SUMMER2024" />
+                                            <CInput placeholder={t('promo_placeholder_code')} />
                                         </Form.Item>
                                         
                                         <Row gutter={16}>

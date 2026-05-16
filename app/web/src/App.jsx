@@ -19,36 +19,55 @@ const queryClient = new QueryClient({
 });
 
 import { ConfigProvider } from 'antd';
+import viVN from 'antd/es/locale/vi_VN';
+import enUS from 'antd/es/locale/en_US';
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
+import { useLanguage } from '@/store/LanguageContext';
+
+const LocalizedApp = () => {
+    const { language } = useLanguage();
+    
+    const locale = language === 'vi' ? viVN : enUS;
+    
+    React.useEffect(() => {
+        dayjs.locale(language);
+    }, [language]);
+
+    return (
+        <ConfigProvider
+            locale={locale}
+            theme={{
+                token: {
+                    fontFamily: "'Be Vietnam Pro', sans-serif",
+                    colorPrimary: '#A10550',
+                    borderRadius: 16,
+                },
+            }}
+        >
+            <NotificationProvider>
+                <AuthProvider>
+                    <ErrorBoundary>
+                        <Suspense fallback={<div style={{ padding: '20px' }}><Skeleton width="100%" height="400px" /></div>}>
+                            <div className="App">
+                                <RouterProvider router={router} />
+                            </div>
+                        </Suspense>
+                    </ErrorBoundary>
+                </AuthProvider>
+            </NotificationProvider>
+        </ConfigProvider>
+    );
+};
 
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <ConfigProvider
-                theme={{
-                    token: {
-                        fontFamily: "'Be Vietnam Pro', sans-serif",
-                        colorPrimary: '#A10550',
-                        borderRadius: 16,
-                    },
-                }}
-            >
-                <LanguageProvider>
-                    <NotificationProvider>
-                        <AuthProvider>
-                        <ErrorBoundary>
-                            <Suspense fallback={<div style={{ padding: '20px' }}><Skeleton width="100%" height="400px" /></div>}>
-                                <div className="App">
-                                    <RouterProvider router={router} />
-                                </div>
-                            </Suspense>
-                        </ErrorBoundary>
-                    </AuthProvider>
-                </NotificationProvider>
+            <LanguageProvider>
+                <LocalizedApp />
             </LanguageProvider>
-        </ConfigProvider>
-    </QueryClientProvider>
+        </QueryClientProvider>
     );
 }
-
 
 export default App;

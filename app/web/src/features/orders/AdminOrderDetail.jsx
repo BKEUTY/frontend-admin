@@ -197,7 +197,7 @@ export default function AdminOrderDetail() {
                 </div>
                 {orderDetail.estShippingDate && (
                     <div className="admin-banner-item">
-                        <span className="admin-banner-label">{t('est_delivery_label')}</span>
+                        <span className="admin-banner-label">{t('est_shipping_date')}</span>
                         <strong className="admin-banner-value">
                             {new Date(orderDetail.estShippingDate).toLocaleDateString('vi-VN')}
                         </strong>

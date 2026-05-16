@@ -168,7 +168,7 @@ const Reports = () => {
                             [t('admin_col_product_id')]: p.id || '-',
                             [`${t('admin_product_name')}`]: p.name || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(p.quantity || 0),
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: Number(p.revenue || 0)
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: Number(p.revenue || 0)
                         };
                     },
                     brand: (b) => {
@@ -176,7 +176,7 @@ const Reports = () => {
                         return {
                             [`${t('admin_product_brand')}`]: b.name || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(b.quantity || 0),
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: Number(b.revenue || 0)
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: Number(b.revenue || 0)
                         };
                     },
                     category: (c) => {
@@ -184,7 +184,7 @@ const Reports = () => {
                         return {
                             [`${t('admin_product_category')}`]: c.name || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(c.quantity || 0),
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: Number(c.revenue || 0)
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: Number(c.revenue || 0)
                         };
                     },
                     invoiceDetail: (o) => {
@@ -223,8 +223,8 @@ const Reports = () => {
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
                             [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: d.revenue,
-                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: d.profit
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue,
+                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit
                         };
                     },
                     brandTransaction: (d) => {
@@ -246,8 +246,8 @@ const Reports = () => {
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
                             [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: d.revenue,
-                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: d.profit
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue,
+                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit
                         };
                     },
                     categoryTransaction: (d) => {
@@ -269,8 +269,8 @@ const Reports = () => {
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
                             [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
-                            [`${t('admin_col_revenue_vnd')} (${t('admin_unit_vnd')})`]: d.revenue,
-                            [`${t('admin_col_profit_vnd')} (${t('admin_unit_vnd')})`]: d.profit
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue,
+                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit
                         };
                     }
                 };
@@ -289,9 +289,9 @@ const Reports = () => {
 
                 const vnd = t('admin_unit_vnd');
                 const colQty = `${t('quantity')} (${t('admin_unit_product')})`;
-                const colRev = `${t('admin_col_revenue_vnd')} (${vnd})`;
+                const colRev = `${t('admin_col_revenue')} (${vnd})`;
                 const colShip = `${t('shipping_fee')} (${vnd})`;
-                const colProfit = `${t('admin_col_profit_vnd')} (${vnd})`;
+                const colProfit = `${t('admin_col_profit')} (${vnd})`;
                 const colOrd = `${t('admin_total_orders')} (${t('admin_unit_order')})`;
                 const colAvg = `${t('admin_col_avg_order_value')} (${vnd})`;
                 const colOriginal = `${t('original_price')} (${vnd})`;
@@ -459,7 +459,6 @@ const Reports = () => {
                                 value={dates}
                                 onChange={(val) => setDates(val)}
                                 className="range-picker-modern-v2"
-                                placeholder={[t('startDate'), t('endDate')]}
                                 allowClear
                                 suffixIcon={<FilterOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />}
                             />
