@@ -9,9 +9,8 @@ import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, 
 import { Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
-const { Search } = Input;
+
 const { confirm } = Modal;
-const { Option } = Select;
 
 const CategoryList = () => {
     const { t } = useLanguage();
@@ -29,6 +28,7 @@ const CategoryList = () => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+    const [isFormDirty, setIsFormDirty] = useState(false);
 
     const queryParams = useMemo(() => ({
         page: currentPage,
@@ -72,12 +72,18 @@ const CategoryList = () => {
 
     const openModal = (category = null) => {
         setEditingCategory(category);
+        setIsFormDirty(false);
         if (category) {
             form.setFieldsValue({ name: category.categoryName });
         } else {
             form.resetFields();
         }
         setIsModalVisible(true);
+    };
+
+    const handleValuesChange = (_, allValues) => {
+        if (!editingCategory) { setIsFormDirty(true); return; }
+        setIsFormDirty(allValues.name !== editingCategory.categoryName);
     };
 
     const handleSubmit = async (values) => {
@@ -236,12 +242,13 @@ const CategoryList = () => {
                 title={editingCategory ? `${t('admin_category_edit')} ${editingCategory.categoryName}` : t('admin_category_add')}
                 onOk={() => form.submit()}
                 confirmLoading={isSubmitting}
+                okButtonProps={{ disabled: editingCategory && !isFormDirty }}
                 centered
                 destroyOnHidden
                 okText={t('save')}
                 cancelText={t('cancel')}
             >
-                <Form form={form} layout="vertical" onFinish={handleSubmit} className="admin-edit-modal-form">
+                <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange} className="admin-edit-modal-form">
                     <Form.Item name="name" label={t('admin_category_name')} rules={[{ required: true, message: t('admin_error_name_required') }]}>
                         <Input placeholder={t('admin_category_name_placeholder')} />
                     </Form.Item>

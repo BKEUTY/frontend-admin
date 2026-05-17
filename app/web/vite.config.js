@@ -18,5 +18,24 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor';
+            }
+            if (id.includes('antd') || id.includes('@ant-design/icons')) {
+              return 'antd';
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'query';
+            }
+            return 'vendor-libs';
+          }
+        },
+      },
+    },
   },
 });

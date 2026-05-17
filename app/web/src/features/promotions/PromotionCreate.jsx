@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Form, Select, InputNumber, Row, Col, DatePicker } from 'antd';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -92,6 +92,42 @@ const PromotionCreate = () => {
     const { brands } = useBrands({ size: 100 });
 
     const initialData = useMemo(() => state?.promotion, [state]);
+    const [isFormDirty, setIsFormDirty] = useState(false);
+
+    const checkDirty = useCallback((changedValues, allValues) => {
+        if (!isEdit || !initialData) {
+            setIsFormDirty(true);
+            return;
+        }
+        const fieldsToCompare = ['title', 'description', 'promotionType', 'discountType', 'discountValue', 'maxDiscount', 'status', 'promotionScope', 'code', 'totalQuantity', 'minOrderValue', 'usageLimitPerUser', 'userIds'];
+        const arrayFields = ['categoryIds', 'brandIds', 'birthdayMonth', 'membershipLevels'];
+        const dateFields = ['startAt', 'endAt'];
+
+        let dirty = false;
+        for (const key of fieldsToCompare) {
+            const initial = key === 'maxDiscount' ? (initialData.maxDiscountValue ?? initialData.maxDiscount) : 
+                           key === 'promotionScope' ? inferScope(initialData) :
+                           key === 'userIds' ? (initialData.userIds?.join(', ') || '') :
+                           (initialData[key] ?? '');
+            const current = allValues[key] ?? '';
+            if (String(current) !== String(initial)) { dirty = true; break; }
+        }
+        if (!dirty) {
+            for (const key of arrayFields) {
+                const initial = JSON.stringify((initialData[key] || []).slice().sort());
+                const current = JSON.stringify((allValues[key] || []).slice().sort());
+                if (current !== initial) { dirty = true; break; }
+            }
+        }
+        if (!dirty) {
+            for (const key of dateFields) {
+                const initial = dayjs(initialData[key]).format('YYYY-MM-DD HH:mm');
+                const current = allValues[key] ? allValues[key].format('YYYY-MM-DD HH:mm') : '';
+                if (current !== initial) { dirty = true; break; }
+            }
+        }
+        setIsFormDirty(dirty);
+    }, [isEdit, initialData]);
 
     useEffect(() => {
         if (isEdit && initialData) {
@@ -132,6 +168,7 @@ const PromotionCreate = () => {
                     form={form}
                     layout="vertical"
                     onFinish={handleSubmit}
+                    onValuesChange={checkDirty}
                     requiredMark={false}
                     initialValues={{
                         promotionType: 'ProductPromotion',
@@ -335,6 +372,7 @@ const PromotionCreate = () => {
                                         block
                                         size="large"
                                         loading={isCreating || isUpdating}
+                                        disabled={isEdit && !isFormDirty}
                                     >
                                         {isEdit ? t('update') : t('save')}
                                     </CButton>

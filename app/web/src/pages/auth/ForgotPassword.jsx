@@ -4,7 +4,7 @@ import { MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
 import { ScrollToTop } from '@/components/common';
-import auth_bg from '@/assets/images/banners/auth_background.png';
+import auth_bg from '@/assets/images/banners/auth_background.jpg';
 import './Auth.css';
 
 const { Title, Text } = Typography;

@@ -184,7 +184,7 @@ export default {
     error_reload_btn: "Tải lại trang",
 
     // --- Orders ---
-    admin_order_id: "Mã ĐH",
+    admin_order_id: "Mã đơn hàng",
     admin_customer: "Khách hàng",
     admin_date: "Ngày tạo",
     order_detail: "Thông tin đơn hàng",
@@ -427,7 +427,6 @@ export default {
     admin_col_brand_name: "Thương hiệu",
     admin_col_category_id: "Mã danh mục",
     admin_col_category_name: "Danh mục",
-    admin_col_product_id: "Mã SP",
     admin_col_quantity: "Số lượng",
     admin_col_revenue: "Doanh thu",
     admin_col_profit: "Lợi ròng",
@@ -491,6 +490,10 @@ export default {
     sort_rating_desc: "Đánh giá: cao đến thấp",
     sort_reviews_asc: "Số lượng đánh giá: ít đến nhiều",
     sort_reviews_desc: "Số lượng đánh giá: nhiều đến ít",
+    sort_spending_desc: "Chi tiêu: cao đến thấp",
+    sort_spending_asc: "Chi tiêu: thấp đến cao",
+    sort_membership_desc: "Hạng: cao đến thấp",
+    sort_membership_asc: "Hạng: thấp đến cao",
 
     // --- Invoices ---
     invoice: "Hóa đơn",

@@ -173,12 +173,20 @@ export default function AdminProductDetail() {
                                 onClick={() => setMainImage(img)}
                                 type="button"
                             >
-                                <img src={img} alt={`Thumb ${idx}`} />
+                                <img src={img} alt={`Thumb ${idx}`} width="80" height="80" loading="lazy" />
                             </button>
                         ))}
                     </div>
                     <div className="admin-pd-main-image">
-                        <img src={mainImage} alt={displayName} onError={(e) => { e.target.src = fallbackImg }} />
+                        <img 
+                            src={mainImage} 
+                            alt={displayName} 
+                            onError={(e) => { e.target.src = fallbackImg }} 
+                            width="450"
+                            height="450"
+                            loading="eager"
+                            fetchpriority="high"
+                        />
                         {currentPrice.hasDiscount && <div className="admin-pd-discount-badge-main">{t('promotions')}</div>}
                     </div>
                 </div>

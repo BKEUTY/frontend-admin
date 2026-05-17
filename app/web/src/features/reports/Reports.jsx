@@ -165,7 +165,7 @@ const Reports = () => {
                     product: (p) => {
                         if (!p) return {};
                         return {
-                            [t('admin_col_product_id')]: p.id || '-',
+                            [t('admin_variant_id')]: p.id || '-',
                             [`${t('admin_product_name')}`]: p.name || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: Number(p.quantity || 0),
                             [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: Number(p.revenue || 0)
@@ -216,7 +216,7 @@ const Reports = () => {
                         const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
-                            [`${t('admin_col_product_id')}`]: d.variantId || '-',
+                            [`${t('admin_variant_id')}`]: d.variantId || '-',
                             [`${t('admin_product_name')}`]: d.name || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
@@ -239,7 +239,7 @@ const Reports = () => {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_col_brand_id')}`]: d.entityId || '-',
                             [`${t('admin_col_brand_name')}`]: d.entityName || '-',
-                            [`${t('admin_col_product_id')}`]: d.productId || '-',
+                            [`${t('admin_variant_id')}`]: d.productId || '-',
                             [`${t('admin_product_name')}`]: d.productVariantName || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
@@ -262,7 +262,7 @@ const Reports = () => {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
                             [`${t('admin_col_category_id')}`]: d.entityId || '-',
                             [`${t('admin_col_category_name')}`]: d.entityName || '-',
-                            [`${t('admin_col_product_id')}`]: d.productId || '-',
+                            [`${t('admin_variant_id')}`]: d.productId || '-',
                             [`${t('admin_product_name')}`]: d.productVariantName || '-',
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,

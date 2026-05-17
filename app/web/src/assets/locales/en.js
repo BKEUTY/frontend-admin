@@ -183,7 +183,7 @@ export default {
     error_reload_btn: "Reload Page",
 
     // --- Orders ---
-    admin_order_id: "ID",
+    admin_order_id: "Order ID",
     admin_customer: "Customer",
     admin_date: "Created Date",
     order_detail: "Order Information",
@@ -218,7 +218,7 @@ export default {
     status_order_received: "Order Received",
 
     // --- Products ---
-    admin_variant_id: "Product Code",
+    admin_variant_id: "Product ID",
     admin_product_create: "Add New Product",
     admin_create_desc: "Add a new product to the catalog",
     admin_product_id: "ID",
@@ -420,11 +420,10 @@ export default {
     admin_col_value: "Value",
     admin_col_unit: "Unit",
     admin_col_time: "Time",
-    admin_col_brand_id: "BID",
+    admin_col_brand_id: "Brand ID",
     admin_col_brand_name: "Brand",
-    admin_col_category_id: "CID",
+    admin_col_category_id: "Category ID",
     admin_col_category_name: "Category",
-    admin_col_product_id: "PID",
     admin_col_quantity: "Quantity",
     admin_col_revenue: "Revenue",
     admin_col_profit: "Net Profit",
@@ -488,6 +487,10 @@ export default {
     sort_rating_desc: "Rating: High to Low",
     sort_reviews_asc: "Reviews: Low to High",
     sort_reviews_desc: "Reviews: High to Low",
+    sort_spending_desc: "Spending: High to Low",
+    sort_spending_asc: "Spending: Low to High",
+    sort_membership_desc: "Tier: High to Low",
+    sort_membership_asc: "Tier: Low to High",
 
     // --- Invoices ---
     invoice: "Invoice",

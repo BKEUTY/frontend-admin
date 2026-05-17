@@ -235,7 +235,7 @@ const ProductList = () => {
                 const imageSrc = src ? getImageUrl(src) : getRandomImage();
                 return (
                     <div className="admin-table-image-wrapper">
-                        <img src={imageSrc} alt="product" className="admin-table-image" onError={(e) => { e.target.src = getRandomImage(); }} />
+                        <img src={imageSrc} alt="product" className="admin-table-image" onError={(e) => { e.target.src = getRandomImage(); }} width="60" height="60" loading="lazy" />
                     </div>
                 );
             }

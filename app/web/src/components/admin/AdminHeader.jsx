@@ -31,7 +31,7 @@ const AdminHeader = ({ onSearchOpen }) => {
         <div className='admin-header'>
             <div className='admin-header-left'>
                 <button type="button" className='admin-logo-wrapper' onClick={() => navigate('/admin')}>
-                    <img src={logo_image} alt='BKEUTY' className='admin-sider-logo' />
+                    <img src={logo_image} alt='BKEUTY' className='admin-sider-logo' width="168" height="40" loading="eager" fetchpriority="high" />
                 </button>
             </div>
 

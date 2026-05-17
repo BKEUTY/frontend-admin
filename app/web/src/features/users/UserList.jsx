@@ -1,16 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Table, Typography, Tag, Space, Input, Select, Avatar } from 'antd';
-import { SyncOutlined, UserOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined, CopyOutlined } from '@ant-design/icons';
+import { Table, Typography, Tag, Space, Input, Select } from 'antd';
+import { SyncOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined, CopyOutlined } from '@ant-design/icons';
 import MembershipTag from '@/components/admin/MembershipTag';
 import { useLanguage } from '@/store/LanguageContext';
 import { useUsers } from '@/features/users/hooks/useUsers';
 import { PageWrapper, Skeleton, Pagination, EmptyState, CButton } from '@/components/common';
 import useQueryParams from '@/hooks/useQueryParams';
 import { useDebounce } from '@/hooks/useDebounce';
-// moved to bottom
 
 const { Text } = Typography;
-const { Search } = Input;
+
 import '@/admin-list.css';
 
 const UserList = () => {
@@ -19,6 +18,7 @@ const UserList = () => {
     
     const roleFilter = query.role || undefined;
     const searchText = query.search || '';
+    const sortOption = query.sort || 'default';
     const [searchInput, setSearchInput] = useState(searchText);
     const debouncedSearch = useDebounce(searchInput, 500);
 
@@ -42,13 +42,25 @@ const UserList = () => {
 
     const filteredUsers = useMemo(() => {
         const lowerSearch = searchText.toLowerCase();
-        return users.filter(user => 
+        let result = users.filter(user => 
             !searchText || 
             (user.firstname && user.firstname.toLowerCase().includes(lowerSearch)) ||
             (user.lastname && user.lastname.toLowerCase().includes(lowerSearch)) ||
             (user.email && user.email.toLowerCase().includes(lowerSearch))
         );
-    }, [users, searchText]);
+
+        if (sortOption === 'spending_desc') {
+            result = [...result].sort((a, b) => (b.totalSpending || 0) - (a.totalSpending || 0));
+        } else if (sortOption === 'spending_asc') {
+            result = [...result].sort((a, b) => (a.totalSpending || 0) - (b.totalSpending || 0));
+        } else if (sortOption === 'membership_desc') {
+            result = [...result].sort((a, b) => (b.membershipLevel || 0) - (a.membershipLevel || 0));
+        } else if (sortOption === 'membership_asc') {
+            result = [...result].sort((a, b) => (a.membershipLevel || 0) - (b.membershipLevel || 0));
+        }
+
+        return result;
+    }, [users, searchText, sortOption]);
 
     const paginatedUsers = useMemo(() => {
         const start = (currentPage - 1) * pageSize;
@@ -59,6 +71,14 @@ const UserList = () => {
         { label: t('all'), value: null },
         { label: t('admin_user_role_admin'), value: 'admin' },
         { label: t('admin_user_role_user'), value: 'user' },
+    ];
+
+    const sortOptions = [
+        { value: 'default', label: t('sort_default') },
+        { value: 'spending_desc', label: t('sort_spending_desc') },
+        { value: 'spending_asc', label: t('sort_spending_asc') },
+        { value: 'membership_desc', label: t('sort_membership_desc') },
+        { value: 'membership_asc', label: t('sort_membership_asc') },
     ];
 
     const columns = [
@@ -152,7 +172,7 @@ const UserList = () => {
     ];
 
     const handleResetFilters = () => {
-        setQuery({ page: null, search: null, role: null });
+        setQuery({ page: null, search: null, role: null, sort: null });
         setSearchInput('');
         refetch();
     };
@@ -209,8 +229,9 @@ const UserList = () => {
                         <div className="admin-select-wrapper">
                             <Select
                                 placeholder={t('sort_default')}
-                                defaultValue="default"
                                 className="admin-toolbar-select admin-custom-select"
+                                value={sortOption}
+                                onChange={(val) => setQuery({ sort: val === 'default' ? null : val, page: 1 })}
                                 suffixIcon={
                                     <div className="admin-select-suffix">
                                         <SortAscendingOutlined style={{ color: 'var(--admin-primary)', fontSize: '16px' }} />
@@ -218,11 +239,7 @@ const UserList = () => {
                                     </div>
                                 }
                                 variant="borderless"
-                                options={[
-                                    { value: 'default', label: t('sort_default') },
-                                    { value: 'newest', label: t('sort_time_newest') },
-                                    { value: 'oldest', label: t('sort_time_oldest') }
-                                ]}
+                                options={sortOptions}
                             />
                         </div>
                     </div>

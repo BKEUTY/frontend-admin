@@ -11,7 +11,7 @@ import { Form, Input, Modal, Select, Space, Table, Tooltip, Typography } from 'a
 import { useEffect, useMemo, useState } from 'react';
 
 const { Text } = Typography;
-const { Search, TextArea } = Input;
+const { TextArea } = Input;
 const { confirm } = Modal;
 const { Option } = Select;
 
@@ -22,6 +22,7 @@ const BrandList = () => {
     const [query, setQuery] = useQueryParams();
 
     const searchTerm = query.search || '';
+    const sortOption = query.sort || 'default';
     const currentPage = query.page ? Number(query.page) : 1;
     const pageSize = 10;
 
@@ -30,12 +31,14 @@ const BrandList = () => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingBrand, setEditingBrand] = useState(null);
+    const [isFormDirty, setIsFormDirty] = useState(false);
 
     const queryParams = useMemo(() => ({
         page: currentPage,
         size: pageSize,
-        search: searchTerm
-    }), [currentPage, pageSize, searchTerm]);
+        search: searchTerm,
+        sort: sortOption === 'default' ? null : sortOption
+    }), [currentPage, pageSize, searchTerm, sortOption]);
 
     const { brands, totalPages, totalItems, isLoading, refetchBrands } = useBrands(
         queryParams,
@@ -66,6 +69,7 @@ const BrandList = () => {
 
     const openModal = (brand = null) => {
         setEditingBrand(brand);
+        setIsFormDirty(false);
         if (brand) {
             form.setFieldsValue({
                 brandName: brand.name,
@@ -78,6 +82,15 @@ const BrandList = () => {
             form.setFieldsValue({ brandStatus: 'ACTIVE' });
         }
         setIsModalVisible(true);
+    };
+
+    const handleValuesChange = (_, allValues) => {
+        if (!editingBrand) { setIsFormDirty(true); return; }
+        const dirty = allValues.brandName !== editingBrand.name ||
+            (allValues.description || '') !== (editingBrand.description || '') ||
+            (allValues.image || '') !== (editingBrand.image || '') ||
+            allValues.brandStatus !== editingBrand.brandStatus;
+        setIsFormDirty(dirty);
     };
 
     const handleSubmit = async (values) => {
@@ -136,7 +149,7 @@ const BrandList = () => {
             align: 'center',
             render: (src) => (
                 <div className="admin-table-image-wrapper">
-                    {src ? <img src={getImageUrl(src)} alt="brand" className="admin-table-image" />
+                    {src ? <img src={getImageUrl(src)} alt="brand" className="admin-table-image" width="60" height="60" loading="lazy" />
                         : <div style={{ background: '#f1f5f9', width: '100%', height: '100%' }}></div>}
                 </div>
             )
@@ -188,7 +201,6 @@ const BrandList = () => {
         { label: t('sort_default'), value: 'default' },
         { label: t('sort_name_asc'), value: 'name_asc' },
         { label: t('sort_name_desc'), value: 'name_desc' },
-        { label: t('status'), value: 'status_asc' },
     ];
 
     return (
@@ -283,12 +295,13 @@ const BrandList = () => {
                 title={editingBrand ? `${t('admin_brand_edit')} ${editingBrand.name}` : t('admin_brand_add')}
                 onOk={() => form.submit()}
                 confirmLoading={isSubmitting}
+                okButtonProps={{ disabled: editingBrand && !isFormDirty }}
                 centered
                 destroyOnHidden
                 okText={t('save')}
                 cancelText={t('cancel')}
             >
-                <Form form={form} layout="vertical" onFinish={handleSubmit} className="admin-edit-modal-form">
+                <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange} className="admin-edit-modal-form">
                     <Form.Item name="brandName" label={t('admin_brand_name')} rules={[{ required: true, message: t('admin_error_name_required') }]}>
                         <Input placeholder={t('admin_brand_name_placeholder')} />
                     </Form.Item>

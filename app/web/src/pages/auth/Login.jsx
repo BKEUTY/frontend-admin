@@ -6,7 +6,7 @@ import { useLanguage } from '@/store/LanguageContext';
 import { useAuth } from '@/store/AuthContext';
 import { notifyError, notifySuccess } from '@/services/NotificationService';
 import { ScrollToTop } from '@/components/common';
-import auth_bg from '@/assets/images/banners/auth_background.png';
+import auth_bg from '@/assets/images/banners/auth_background.jpg';
 import './Auth.css';
 
 const { Title, Text } = Typography;
