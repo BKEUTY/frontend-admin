@@ -212,12 +212,7 @@ export default {
     order_status_CANCELLED: "Cancelled",
     payment_status_UNPAID: "Unpaid",
     payment_status_PAID: "Paid",
-    shipping_status_NOT_CREATED: "Preparing Goods",
-    shipping_status_CREATED: "Ready to Ship",
-    shipping_status_PICKED: "Handed over to carrier",
-    shipping_status_DELIVERING: "In Transit",
-    shipping_status_DELIVERED: "Delivered",
-    shipping_status_CANCELLED: "Shipment Cancelled",
+
     status_awaiting_payment: "Awaiting Payment",
     status_shipping: "Shipping",
     status_order_received: "Order Received",
@@ -479,8 +474,8 @@ export default {
 
     // --- Sorting ---
     sort_default: "Default",
-    sort_time_newest: "Newest",
-    sort_time_oldest: "Oldest",
+    sort_time_newest: "Time: Newest",
+    sort_time_oldest: "Time: Oldest",
     sort_name_asc: "Name: A to Z",
     sort_name_desc: "Name: Z to A",
     sort_price_asc: "Price: Low to High",

@@ -5,6 +5,7 @@ import NotFound from '@/pages/error/NotFound';
 import { getImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug, getIdFromSlug } from '@/utils/helpers';
+import { StarFilled } from '@ant-design/icons';
 import { Tag } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -204,6 +205,11 @@ export default function AdminProductDetail() {
                         </div>
                     )}
 
+                    <div className="admin-pd-rating-container">
+                        <StarFilled className="admin-pd-star" />
+                        {Number(productData.averageRating || 0).toFixed(1)}/5 ({productData.reviewCount || 0} {t('reviews')})
+                    </div>
+
                     <div className="admin-pd-price-box">
                         <div className="admin-pd-current-price-wrapper">
                             <div className="admin-pd-current-price">
@@ -222,7 +228,7 @@ export default function AdminProductDetail() {
                     <div className="admin-pd-options-section">
                         {productData.options?.map((opt, idx) => (
                             <div key={idx} className="admin-pd-option-group">
-                                <span className="admin-pd-option-label">{opt.name.toUpperCase()}:</span>
+                                <span className="admin-pd-option-label">{opt.name}:</span>
                                 <div className="admin-pd-size-options">
                                     {opt.values.map(val => {
                                         const isActive = selectedOptions[opt.name]?.toString().toLowerCase().trim() === val?.toString().toLowerCase().trim();

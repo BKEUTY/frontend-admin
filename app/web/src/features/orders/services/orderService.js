@@ -6,8 +6,11 @@ class OrderService extends BaseApi {
         super('/api/admin/order', axiosClient);
     }
 
-    updateOrderStatus(orderId, status, config = {}) {
-        return this.client.put(`${this.resource}/${orderId}/status`, { status }, config);
+    updateOrderStatus(orderId, status, paymentStatus, config = {}) {
+        const payload = {};
+        if (status) payload.status = status;
+        if (paymentStatus) payload.paymentStatus = paymentStatus;
+        return this.client.put(`${this.resource}/${orderId}/status`, payload, config);
     }
 }
 

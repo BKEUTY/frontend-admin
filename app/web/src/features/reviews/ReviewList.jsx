@@ -111,7 +111,8 @@ const ReviewList = ({ variantId }) => {
     const formatDateTime = (dateString) => {
         if (!dateString) return '';
         const locale = language === 'vi' ? 'vi-VN' : 'en-US';
-        return new Date(dateString).toLocaleString(locale, {
+        const date = dateString.endsWith('Z') ? new Date(dateString) : new Date(dateString + 'Z');
+        return date.toLocaleString(locale, {
             hour: '2-digit',
             minute: '2-digit',
             day: '2-digit',

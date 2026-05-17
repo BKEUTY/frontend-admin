@@ -24,8 +24,47 @@ export default function AdminOrderDetail() {
 
     const handleStatusChange = async (value) => {
         try {
-            await updateOrderStatus({ id: id, status: value });
+            let paymentStatus = null;
+            let orderStatus = value;
+
+            if (orderDetail?.paymentMethod?.toUpperCase() === 'BANK') {
+                if (value === 'NOT_CONFIRMED') {
+                    paymentStatus = 'UNPAID';
+                    orderStatus = 'NOT_CONFIRMED';
+                } else if (value === 'CONFIRMED_UNPAID') {
+                    orderStatus = 'CONFIRMED';
+                    paymentStatus = 'UNPAID';
+                } else if (value === 'CONFIRMED_PAID') {
+                    orderStatus = 'CONFIRMED';
+                    paymentStatus = 'PAID';
+                } else if (value === 'SUCCEEDED') {
+                    paymentStatus = 'PAID';
+                    orderStatus = 'SUCCEEDED';
+                }
+            } else { // COD
+                if (value === 'NOT_CONFIRMED') {
+                    paymentStatus = 'UNPAID';
+                    orderStatus = 'NOT_CONFIRMED';
+                } else if(value === 'CONFIRMED') {
+                    paymentStatus = 'UNPAID';
+                    orderStatus = 'CONFIRMED';
+                } else if (value === 'SUCCEEDED') {
+                    paymentStatus = 'PAID';
+                }
+            }
+            await updateOrderStatus({ id: id, status: orderStatus, paymentStatus });
         } catch (error) {}
+    };
+
+    const getCurrentDropdownValue = () => {
+        const os = orderDetail?.status?.toUpperCase();
+        const ps = orderDetail?.paymentStatus?.toUpperCase();
+        const isBank = orderDetail?.paymentMethod?.toUpperCase() === 'BANK';
+        
+        if (isBank && os === 'CONFIRMED') {
+            return ps === 'PAID' ? 'CONFIRMED_PAID' : 'CONFIRMED_UNPAID';
+        }
+        return os;
     };
 
     const getStatusColor = (order) => {
@@ -223,7 +262,7 @@ export default function AdminOrderDetail() {
                                 </div>
                                 {voucherDiscount > 0 && (
                                     <div className="admin-summary-row">
-                                        <Text type="secondary">{t('voucher_discount') || 'Giảm giá voucher'}</Text>
+                                        <Text type="secondary">{t('voucher_discount')}</Text>
                                         <Text strong className="voucher-discount-text">-{voucherDiscount.toLocaleString(locale)}{t('admin_unit_vnd')}</Text>
                                     </div>
                                 )}
@@ -246,23 +285,23 @@ export default function AdminOrderDetail() {
                     <Card title={t('order_management')} variant="outlined" className="bkeuty-admin-card shadow-card status-select-card">
                         <label className="status-control-label">{t('update_order_status')}</label>
                         <Select
-                            value={orderDetail.status}
+                            value={getCurrentDropdownValue()}
                             className={`admin-order-status-selector ${getStatusColor(orderDetail)}`}
                             onChange={handleStatusChange}
-                            options={[
-                                { 
-                                    value: 'NOT_CONFIRMED', 
-                                    label: t('status_order_received')
-                                },
-                                { 
-                                    value: 'CONFIRMED', 
-                                    label: (orderDetail.paymentMethod?.toUpperCase() === 'BANK' && orderDetail.paymentStatus?.toUpperCase() === 'UNPAID')
-                                        ? `${t('status_shipping')} (${t('status_awaiting_payment')})`
-                                        : t('status_shipping')
-                                },
-                                { value: 'SUCCEEDED', label: t('order_status_SUCCEEDED') },
-                                { value: 'CANCELLED', label: t('order_status_CANCELLED') }
-                            ]}
+                            options={
+                                orderDetail?.paymentMethod?.toUpperCase() === 'BANK' ? [
+                                    { value: 'NOT_CONFIRMED', label: t('status_order_received') },
+                                    { value: 'CONFIRMED_UNPAID', label: `${t('status_awaiting_payment')}` },
+                                    { value: 'CONFIRMED_PAID', label: `${t('status_shipping')} - ${t('payment_status_PAID')}` },
+                                    { value: 'SUCCEEDED', label: t('order_status_SUCCEEDED') },
+                                    { value: 'CANCELLED', label: t('order_status_CANCELLED') }
+                                ] : [
+                                    { value: 'NOT_CONFIRMED', label: t('status_order_received') },
+                                    { value: 'CONFIRMED', label: t('status_shipping') },
+                                    { value: 'SUCCEEDED', label: t('order_status_SUCCEEDED') },
+                                    { value: 'CANCELLED', label: t('order_status_CANCELLED') }
+                                ]
+                            }
                         />
                     </Card>
 

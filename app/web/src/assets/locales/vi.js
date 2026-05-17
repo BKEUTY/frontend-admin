@@ -212,12 +212,7 @@ export default {
     order_status_CANCELLED: "Đã hủy",
     payment_status_UNPAID: "Chưa thanh toán",
     payment_status_PAID: "Đã thanh toán",
-    shipping_status_NOT_CREATED: "Đang chuẩn bị hàng",
-    shipping_status_CREATED: "Sẵn sàng giao",
-    shipping_status_PICKED: "Đã bàn giao đơn vị vận chuyển",
-    shipping_status_DELIVERING: "Đang vận chuyển",
-    shipping_status_DELIVERED: "Đã giao hàng",
-    shipping_status_CANCELLED: "Đã hủy giao",
+
     status_awaiting_payment: "Chờ thanh toán",
     status_shipping: "Đang vận chuyển",
     status_order_received: "Tiếp nhận đơn",
@@ -481,8 +476,8 @@ export default {
 
     // --- Sorting ---
     sort_default: "Mặc định hệ thống",
-    sort_time_newest: "Mới nhất",
-    sort_time_oldest: "Cũ nhất",
+    sort_time_newest: "Thời gian: Mới nhất",
+    sort_time_oldest: "Thời gian: Cũ nhất",
     sort_name_asc: "Tên: A đến Z",
     sort_name_desc: "Tên: Z đến A",
     sort_price_asc: "Giá thấp đến cao",

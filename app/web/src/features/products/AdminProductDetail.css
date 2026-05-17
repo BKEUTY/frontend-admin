@@ -1,6 +1,6 @@
 .admin-pd-page {
     padding: 40px var(--general_padding_left_right);
-    background-color: var(--general_background_color);
+    background-color: #f8fafc;
     color: #1e293b;
     min-height: 80vh;
     max-width: 1400px;
@@ -143,8 +143,8 @@
     bottom: -10px;
     left: 0;
     width: 60px;
-    height: 4px;
-    background: var(--color_main_title);
+    height: 6px;
+    background: linear-gradient(90deg, #0f172a, #475569);
     border-radius: 10px;
 }
 
@@ -173,6 +173,21 @@
 .admin-pd-category-tag:hover {
     background: #e2e8f0;
     color: #0f172a;
+}
+
+.admin-pd-rating-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    color: #475569;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.admin-pd-star {
+    color: #f59e0b;
+    font-size: 1.2rem;
 }
 
 .admin-pd-price-box {

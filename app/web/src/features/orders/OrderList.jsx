@@ -64,9 +64,39 @@ const OrderList = () => {
         }
     }, [debouncedSearch, searchInput, searchText, setQuery]);
 
-    const handleStatusChange = async (orderId, value) => {
+    const handleStatusChange = async (orderId, value, paymentMethod) => {
         try {
-            await updateOrderStatus({ id: orderId, status: value });
+            let paymentStatus = null;
+            let orderStatus = value;
+
+            if (paymentMethod?.toUpperCase() === 'BANK') {
+                if (value === 'NOT_CONFIRMED') {
+                    paymentStatus = 'UNPAID';
+                    orderStatus = 'NOT_CONFIRMED';
+                } else if (value === 'CONFIRMED_UNPAID') {
+                    orderStatus = 'CONFIRMED';
+                    paymentStatus = 'UNPAID';
+                } else if (value === 'CONFIRMED_PAID') {
+                    orderStatus = 'CONFIRMED';
+                    paymentStatus = 'PAID';
+                } else if (value === 'SUCCEEDED') {
+                    paymentStatus = 'PAID';
+                    orderStatus = 'SUCCEEDED';
+                }
+            } else { // COD
+                if (value === 'NOT_CONFIRMED') {
+                    paymentStatus = 'UNPAID';
+                    orderStatus = 'NOT_CONFIRMED';
+                } else if (value === 'CONFIRMED') {
+                    paymentStatus = 'UNPAID';
+                    orderStatus = 'CONFIRMED';
+                } else if (value === 'SUCCEEDED') {
+                    paymentStatus = 'PAID';
+                    orderStatus = 'SUCCEEDED';
+                }
+            }
+
+            await updateOrderStatus({ id: orderId, status: orderStatus, paymentStatus });
         } catch (error) {}
     };
 
@@ -77,7 +107,7 @@ const OrderList = () => {
 
         if (orderS === 'SUCCEEDED') return 'success';
         if (orderS === 'CANCELLED') return 'danger';
-        if (payM === 'BANK' && payS === 'UNPAID') return 'warning';
+        if (payM === 'BANK' && payS === 'UNPAID' && orderS === 'CONFIRMED') return 'warning';
         if (orderS === 'CONFIRMED') return 'info';
         return 'default';
     };
@@ -169,23 +199,18 @@ const OrderList = () => {
             render: (status, record) => (
                 <div className={`admin-status-badge ${getStatusClass(record)}`} style={{ padding: '0', display: 'inline-block' }}>
                     <Select
-                        value={status}
+                        value={record.paymentMethod?.toUpperCase() === 'BANK' && record.status === 'CONFIRMED' ? (record.paymentStatus === 'PAID' ? 'CONFIRMED_PAID' : 'CONFIRMED_UNPAID') : record.status}
                         variant="borderless"
                         style={{ width: 140, fontWeight: 600 }}
-                        onChange={(val) => handleStatusChange(record.orderId, val)}
+                        onChange={(val) => handleStatusChange(record.orderId, val, record.paymentMethod)}
                         options={[
-                            { 
-                                value: 'NOT_CONFIRMED', 
-                                label: (record.paymentMethod?.toUpperCase() === 'BANK' && record.paymentStatus?.toUpperCase() === 'UNPAID')
-                                    ? t('status_awaiting_payment')
-                                    : t('status_order_received')
-                            },
-                            { 
-                                value: 'CONFIRMED', 
-                                label: (record.paymentMethod?.toUpperCase() === 'BANK' && record.paymentStatus?.toUpperCase() === 'UNPAID')
-                                    ? t('status_awaiting_payment')
-                                    : t('status_shipping')
-                            },
+                            { value: 'NOT_CONFIRMED', label: t('status_order_received') },
+                            ...(record.paymentMethod?.toUpperCase() === 'BANK' 
+                                ? [{ value: 'CONFIRMED_UNPAID', label: t('status_awaiting_payment') },
+                                    { value: 'CONFIRMED_PAID', label: t('status_shipping') }]
+                                : [
+                                    { value: 'CONFIRMED', label: t('status_shipping') }
+                                ]),
                             { value: 'SUCCEEDED', label: t('order_status_SUCCEEDED') },
                             { value: 'CANCELLED', label: t('order_status_CANCELLED') }
                         ]}

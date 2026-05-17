@@ -16,30 +16,28 @@ const OrderProgress = ({ currentStatus, shippingStatus, paymentMethod, paymentSt
     const isBank = paymentMethod?.toUpperCase() === 'BANK';
     const isPaid = paymentStatus?.toUpperCase() === 'PAID';
 
+    const orderS = currentStatus?.toUpperCase();
+    const shipS = shippingStatus?.toUpperCase();
+
     const steps = [
-        { key: 'RECEIVED', label: t('status_order_received'), date: orderDate },
+        { key: 'NOT_CONFIRMED', label: t('status_order_received'), date: orderDate },
         { key: 'CONFIRMED', label: t('order_status_CONFIRMED') },
         ...(isBank ? [{ key: 'AWAITING_PAY', label: t('status_awaiting_payment') }] : []),
-        { key: 'PACKING', label: t('shipping_status_NOT_CREATED') },
         { key: 'SHIPPING', label: t('status_shipping') },
-        { key: 'SUCCEEDED', label: t('order_status_SUCCEEDED'), date: (currentStatus === 'SUCCEEDED' ? estShippingDate : null) }
+        { key: 'SUCCEEDED', label: t('order_status_SUCCEEDED'), date: (orderS === 'SUCCEEDED' ? estShippingDate : null) }
     ];
 
     const getStepIndex = () => {
-        const orderS = currentStatus?.toUpperCase();
-        const shipS = shippingStatus?.toUpperCase();
-
-        if (orderS === 'SUCCEEDED' || shipS === 'DELIVERED') return isBank ? 5 : 4;
-        if (shipS === 'DELIVERING' || shipS === 'PICKED') return isBank ? 4 : 3;
+        if (orderS === 'SUCCEEDED' || shipS === 'DELIVERED') return isBank ? 4 : 3;
+        if (orderS === 'NOT_CONFIRMED') return 0;
 
         if (isBank) {
-            if (shipS === 'CREATED' || (orderS === 'CONFIRMED' && isPaid)) return 3;
+            if (orderS === 'CONFIRMED' && isPaid) return 3;
             if (orderS === 'CONFIRMED' && !isPaid) return 2;
-            return orderS === 'CONFIRMED' ? 1 : 0;
+        } else {
+            if (orderS === 'CONFIRMED') return 2;
         }
-
-        if (shipS === 'CREATED' || orderS === 'CONFIRMED') return 2;
-        return (orderS !== 'CANCELLED') ? 1 : 0;
+        return 1;
     };
 
     const currentStepIndex = getStepIndex();

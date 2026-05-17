@@ -66,7 +66,7 @@ export const useUpdateOrderStatus = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, status }) => orderService.updateOrderStatus(id, status),
+        mutationFn: ({ id, status, paymentStatus }) => orderService.updateOrderStatus(id, status, paymentStatus),
         onSuccess: () => {
             showNotification(t('success'), 'success', t('update_info_success'));
             queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
