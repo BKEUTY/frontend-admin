@@ -397,7 +397,6 @@ const Reports = () => {
         ];
     }, [reportData, t]);
 
-
     return (
         <div className="admin-reports-page">
             <PageWrapper title={t('admin_home_reports_title')}>

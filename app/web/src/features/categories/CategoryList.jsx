@@ -9,7 +9,6 @@ import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, 
 import { Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
-
 const { confirm } = Modal;
 
 const CategoryList = () => {

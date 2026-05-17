@@ -125,7 +125,6 @@ const ReviewList = ({ variantId }) => {
     return (
         <div className="admin-list-container">
 
-
             {selectedVariantId && (
                 <div className="review-dashboard-admin">
                     <div className="rating-overview-admin">

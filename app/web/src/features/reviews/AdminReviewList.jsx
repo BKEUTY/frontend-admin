@@ -38,7 +38,6 @@ const AdminReviewList = () => {
         refetchReviews,
     } = useReviews(page, pageSize, null, ratingFilter, hasImageFilter, isRepliedFilter, isHiddenFilter, true);
 
-
     const handleReply = (record) => {
         setSelectedReview(record);
         setReplyComment(record.reply?.comment || '');

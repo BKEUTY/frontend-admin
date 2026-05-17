@@ -244,7 +244,6 @@ const Dashboard = () => {
         ];
     }, [t, dashboardData, language, locale]);
 
-
     const revenueData = useMemo(() => {
         return dashboardData?.revenueChart?.map(c => ({
             name: c.date ? c.date.substring(5).replace('-', '/') : '',

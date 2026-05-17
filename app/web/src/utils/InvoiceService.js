@@ -1,9 +1,9 @@
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import './Roboto-normal.js';
-import './Roboto-bold.js';
+const generateInvoice = async (orderData, t, language) => {
+    const { jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+    await import('./Roboto-normal.js');
+    await import('./Roboto-bold.js');
 
-const generateInvoice = (orderData, t, language) => {
     const numLocale = language === 'vi' ? 'vi-VN' : 'en-US';
     const doc = new jsPDF({
         orientation: 'p',
