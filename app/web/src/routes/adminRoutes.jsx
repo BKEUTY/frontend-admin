@@ -1,23 +1,24 @@
-import React, { lazy } from 'react';
+import React from 'react';
+import { safeLazy } from '@/utils/safeLazy';
 
-const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'));
-const DevelopingState = lazy(() => import('@/components/common/DevelopingState'));
+const Dashboard = safeLazy(() => import('@/features/dashboard/Dashboard'));
+const DevelopingState = safeLazy(() => import('@/components/common/DevelopingState'));
 
-const OrderList = lazy(() => import('@/features/orders/OrderList'));
-const AdminOrderDetail = lazy(() => import('@/features/orders/AdminOrderDetail'));
+const OrderList = safeLazy(() => import('@/features/orders/OrderList'));
+const AdminOrderDetail = safeLazy(() => import('@/features/orders/AdminOrderDetail'));
 
-const ProductList = lazy(() => import('@/features/products/ProductList'));
-const ProductCreate = lazy(() => import('@/features/products/ProductCreate'));
-const AdminProductDetail = lazy(() => import('@/features/products/AdminProductDetail'));
+const ProductList = safeLazy(() => import('@/features/products/ProductList'));
+const ProductCreate = safeLazy(() => import('@/features/products/ProductCreate'));
+const AdminProductDetail = safeLazy(() => import('@/features/products/AdminProductDetail'));
 
-const AdminHome = lazy(() => import('@/features/home/Home'));
-const PromotionList = lazy(() => import('@/features/promotions/PromotionList'));
-const PromotionCreate = lazy(() => import('@/features/promotions/PromotionCreate'));
-const BrandList = lazy(() => import('@/features/brands/BrandList'));
-const CategoryList = lazy(() => import('@/features/categories/CategoryList'));
-const UserList = lazy(() => import('@/features/users/UserList'));
-const Reports = lazy(() => import('@/features/reports/Reports'));
-const AdminReviewList = lazy(() => import('@/features/reviews/AdminReviewList'));
+const AdminHome = safeLazy(() => import('@/features/home/Home'));
+const PromotionList = safeLazy(() => import('@/features/promotions/PromotionList'));
+const PromotionCreate = safeLazy(() => import('@/features/promotions/PromotionCreate'));
+const BrandList = safeLazy(() => import('@/features/brands/BrandList'));
+const CategoryList = safeLazy(() => import('@/features/categories/CategoryList'));
+const UserList = safeLazy(() => import('@/features/users/UserList'));
+const Reports = safeLazy(() => import('@/features/reports/Reports'));
+const AdminReviewList = safeLazy(() => import('@/features/reviews/AdminReviewList'));
 
 export const adminRoutes = [
     {

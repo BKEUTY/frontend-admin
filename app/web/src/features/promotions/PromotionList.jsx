@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Typography, Tooltip, Space, Modal, Input, Select, DatePicker } from 'antd';
+import { Table, Tooltip, Space, Modal, Input, Select, DatePicker } from 'antd';
 import { PlusOutlined, SyncOutlined, FormOutlined, DeleteOutlined, ExclamationCircleOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -12,8 +12,6 @@ import useQueryParams from '@/hooks/useQueryParams';
 import { useDebounce } from '@/hooks/useDebounce';
 import '@/admin-list.css';
 
-const { Text } = Typography;
-const { Search } = Input;
 const { confirm } = Modal;
 
 const PromotionList = () => {
@@ -203,8 +201,8 @@ const PromotionList = () => {
                 switch(status) {
                     case 'STARTING': badgeClass = 'success'; break;
                     case 'INCOMING': badgeClass = 'info'; break;
-                    case 'ENDED': badgeClass = 'danger'; break;
-                    case 'DISABLED': badgeClass = 'default'; break;
+                    case 'ENDED': badgeClass = 'default'; break;
+                    case 'DISABLED': badgeClass = 'warning'; break;
                     default: badgeClass = 'default';
                 }
                 return (

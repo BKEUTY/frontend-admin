@@ -296,7 +296,7 @@ export default {
     admin_promotion_id: "Mã KM",
     promotion_items: "Khuyến mãi",
     promo_search_placeholder: "Tìm tên chương trình...",
-    promo_status_STARTING: "Đang chạy",
+    promo_status_STARTING: "Đang diễn ra",
     promo_status_INCOMING: "Sắp diễn ra",
     promo_status_ENDED: "Đã kết thúc",
     promo_status_DISABLED: "Đã tạm dừng",
