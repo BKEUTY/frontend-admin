@@ -17,6 +17,7 @@ const BrandList = lazy(() => import('@/features/brands/BrandList'));
 const CategoryList = lazy(() => import('@/features/categories/CategoryList'));
 const UserList = lazy(() => import('@/features/users/UserList'));
 const Reports = lazy(() => import('@/features/reports/Reports'));
+const AdminReviewList = lazy(() => import('@/features/reviews/AdminReviewList'));
 
 export const adminRoutes = [
     {
@@ -70,6 +71,10 @@ export const adminRoutes = [
     {
         path: "promotions/edit/:id",
         element: <PromotionCreate />
+    },
+    {
+        path: "reviews",
+        element: <AdminReviewList />
     },
     {
         path: "services",

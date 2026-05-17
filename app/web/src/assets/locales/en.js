@@ -218,7 +218,7 @@ export default {
     status_order_received: "Order Received",
 
     // --- Products ---
-    admin_variant_id: "SKU Code",
+    admin_variant_id: "Product Code",
     admin_product_create: "Add New Product",
     admin_create_desc: "Add a new product to the catalog",
     admin_product_id: "ID",
@@ -510,4 +510,14 @@ export default {
     services_management: "Services Management",
     appointments_management: "Appointments Management",
     staff_management: "Staff Management",
+    admin_col_shipping_fee: "Shipping Fee",
+    promo_label_birthday: "Birthday Month",
+    promo_label_membership: "Membership Level",
+    admin_home_reviews_desc: "Manage product reviews",
+    is_replied: "Replied",
+    not_replied: "Unreplied",
+    is_hidden: "Hidden",
+    not_hidden: "Not hidden",
+    error_go_to_dashboard: "Go to Dashboard",
+    users: "Users"
 };

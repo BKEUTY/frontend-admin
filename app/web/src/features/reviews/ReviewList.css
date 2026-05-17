@@ -106,7 +106,22 @@
     padding: 8px;
     background: #f8fafc;
     border-radius: 16px;
-    width: fit-content;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.review-filters-admin::-webkit-scrollbar {
+    height: 6px;
+}
+
+.review-filters-admin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.review-filters-admin::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
 }
 
 .filter-chip-admin {
@@ -119,6 +134,8 @@
     color: #64748b;
     transition: all 0.3s ease;
     font-size: 0.9rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .filter-chip-admin:hover {
@@ -172,10 +189,64 @@
     margin-bottom: 8px;
 }
 
+.admin-pr-header-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
 .admin-pr-user-name {
     font-size: 1.1rem;
     font-weight: 800;
     color: #0f172a;
+    word-break: break-all;
+}
+
+.admin-pr-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-pr-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.admin-pr-badge.user-id {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.admin-pr-badge.is-replied {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.admin-pr-badge.is-hidden {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.admin-pr-badge.not-replied {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.admin-pr-badge.variant-link {
+    background: #f1f5f9;
+    color: #0369a1;
+    cursor: pointer;
+    text-decoration: underline;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .admin-pr-post-date {

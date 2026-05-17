@@ -1,37 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Input, Rate, Avatar } from 'antd';
-import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, StarFilled } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Modal, Input, Rate, Avatar, Typography } from 'antd';
+import { MessageOutlined, DeleteOutlined, CheckCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import { useLanguage } from '@/store/LanguageContext';
 import { useNotification } from '@/store/NotificationContext';
 import { useReviews } from '@/features/reviews/hooks/useReviews';
-import { Pagination, CButton } from '@/components/common';
+import { Pagination, CButton, PageWrapper } from '@/components/common';
 import '@/admin-list.css';
 import './ReviewList.css';
 
 const { TextArea } = Input;
+const { Text } = Typography;
 
-const ReviewList = ({ variantId }) => {
+const AdminReviewList = () => {
     const { t, language } = useLanguage();
     const showNotification = useNotification();
     const [page, setPage] = useState(1);
     const [pageSize] = useState(10);
-    const [selectedVariantId, setSelectedVariantId] = useState(variantId || null);
     const [ratingFilter, setRatingFilter] = useState(null);
     const [hasImageFilter, setHasImageFilter] = useState(null);
     const [isRepliedFilter, setIsRepliedFilter] = useState(null);
     const [isHiddenFilter, setIsHiddenFilter] = useState(null);
-
     const [isReplyModalVisible, setIsReplyModalVisible] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
     const [replyComment, setReplyComment] = useState('');
-    const [isViewReviews, setIsViewReviews] = useState(!variantId);
-
-    useEffect(() => {
-        if (variantId) {
-            setSelectedVariantId(variantId);
-            setIsViewReviews(false);
-        }
-    }, [variantId]);
 
     const {
         reviewsData,
@@ -44,12 +35,9 @@ const ReviewList = ({ variantId }) => {
         isUpdatingReply,
         deleteReply,
         deleteReview,
-    } = useReviews(page, pageSize, selectedVariantId, ratingFilter, hasImageFilter, isRepliedFilter, isHiddenFilter, isViewReviews);
+        refetchReviews,
+    } = useReviews(page, pageSize, null, ratingFilter, hasImageFilter, isRepliedFilter, isHiddenFilter, true);
 
-    const reviewCount = Object.values(ratingCounts).reduce((a, b) => a + b, 0);
-    const averageRating = reviewCount > 0 
-        ? (Object.entries(ratingCounts).reduce((acc, [star, count]) => acc + (parseInt(star) * count), 0) / reviewCount).toFixed(1)
-        : 0;
 
     const handleReply = (record) => {
         setSelectedReview(record);
@@ -124,103 +112,64 @@ const ReviewList = ({ variantId }) => {
 
     return (
         <div className="admin-list-container">
-
-
-            {selectedVariantId && (
-                <div className="review-dashboard-admin">
-                    <div className="rating-overview-admin">
-                        <span className="big-score-admin">{isStatsLoading ? '...' : averageRating}</span>
-                        <div className="star-stack-admin">
-                            <div className="star-row-admin">
-                                {[...Array(5)].map((_, i) => (
-                                    <StarFilled 
-                                        key={i} 
-                                        style={{ color: i < Math.round(Number(averageRating)) ? '#f59e0b' : '#e2e8f0' }} 
-                                    />
+            <PageWrapper
+                title={t('admin_review_management_title')}
+                subtitle={<Text type="secondary">{t('total')} • <Text strong className="admin-subtitle-count">{reviewsData?.totalElements || 0}</Text> {t('reviews').toLowerCase()}</Text>}
+                extra={
+                    <div className="admin-header-buttons">
+                        <CButton type="secondary" icon={<SyncOutlined />} onClick={() => { setPage(1); refetchReviews(); }} loading={isReviewsLoading}>
+                            {t('admin_user_refresh')}
+                        </CButton>
+                    </div>
+                }
+            >
+            <div className="review-filters-admin" style={{ marginTop: '0px' }}>
+                                <button 
+                                    className={`filter-chip-admin ${!ratingFilter && !hasImageFilter && isRepliedFilter === null && isHiddenFilter === null ? 'active' : ''}`}
+                                    onClick={() => { setRatingFilter(null); setHasImageFilter(null); setIsRepliedFilter(null); setIsHiddenFilter(null); setPage(1); }}
+                                >
+                                    {t('admin_review_all')}
+                                </button>
+                                <button 
+                                    className={`filter-chip-admin ${hasImageFilter ? 'active' : ''}`}
+                                    onClick={handleFilterMedia}
+                                >
+                                    {t('admin_review_with_images')}
+                                </button>
+                                <button 
+                                    className={`filter-chip-admin ${isRepliedFilter === true ? 'active' : ''}`}
+                                    onClick={() => { setIsRepliedFilter(prev => prev === true ? null : true); setPage(1); }}
+                                >
+                                    {t('is_replied')}
+                                </button>
+                                <button 
+                                    className={`filter-chip-admin ${isRepliedFilter === false ? 'active' : ''}`}
+                                    onClick={() => { setIsRepliedFilter(prev => prev === false ? null : false); setPage(1); }}
+                                >
+                                    {t('not_replied')}
+                                </button>
+                                <button 
+                                    className={`filter-chip-admin ${isHiddenFilter === true ? 'active' : ''}`}
+                                    onClick={() => { setIsHiddenFilter(prev => prev === true ? null : true); setPage(1); }}
+                                >
+                                    {t('is_hidden')}
+                                </button>
+                                <button 
+                                    className={`filter-chip-admin ${isHiddenFilter === false ? 'active' : ''}`}
+                                    onClick={() => { setIsHiddenFilter(prev => prev === false ? null : false); setPage(1); }}
+                                >
+                                    {t('not_hidden')}
+                                </button>
+                                {[5, 4, 3, 2, 1].map(star => (
+                                    <button 
+                                        key={star}
+                                        className={`filter-chip-admin ${ratingFilter === star ? 'active' : ''}`}
+                                        onClick={() => handleFilterRating(star)}
+                                    >
+                                        {t('admin_review_star').replace('{star}', star)}
+                                    </button>
                                 ))}
                             </div>
-                            <span className="total-reviews-admin">
-                                {isStatsLoading ? '...' : reviewCount} {t('reviews').toLowerCase()}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="rating-bars-admin">
-                        {[5, 4, 3, 2, 1].map((star) => {
-                            const count = ratingCounts[star] || 0;
-                            const percentage = reviewCount > 0 ? (count / reviewCount) * 100 : 0;
-                            return (
-                                <div 
-                                    key={star} 
-                                    className={`bar-row-admin ${ratingFilter === star ? 'active' : ''}`} 
-                                    onClick={() => {
-                                        if (!isViewReviews) setIsViewReviews(true);
-                                        handleFilterRating(star);
-                                    }}
-                                >
-                                    <span className="star-label-admin">
-                                        {star} <StarFilled style={{ fontSize: '12px', color: '#f59e0b' }} />
-                                    </span>
-                                    <div className="progress-bg-admin">
-                                        <div className="progress-fi-admin" style={{ width: `${percentage}%` }} /> 
-                                    </div>
-                                    <span style={{ minWidth: '30px', textAlign: 'right' }}>{count}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-
-                    {isViewReviews ? (
-                        <>
-                            <div className="review-filters-admin">
-                                        <button 
-                                            className={`filter-chip-admin ${!ratingFilter && !hasImageFilter && isRepliedFilter === null && isHiddenFilter === null ? 'active' : ''}`}
-                                            onClick={() => { setRatingFilter(null); setHasImageFilter(null); setIsRepliedFilter(null); setIsHiddenFilter(null); setPage(1); }}
-                                        >
-                                            {t('admin_review_all')}
-                                        </button>
-                                        <button 
-                                            className={`filter-chip-admin ${hasImageFilter ? 'active' : ''}`}
-                                            onClick={handleFilterMedia}
-                                        >
-                                            {t('admin_review_with_images')}
-                                        </button>
-                                        <button 
-                                            className={`filter-chip-admin ${isRepliedFilter === true ? 'active' : ''}`}
-                                            onClick={() => { setIsRepliedFilter(prev => prev === true ? null : true); setPage(1); }}
-                                        >
-                                            {t('is_replied')}
-                                        </button>
-                                        <button 
-                                            className={`filter-chip-admin ${isRepliedFilter === false ? 'active' : ''}`}
-                                            onClick={() => { setIsRepliedFilter(prev => prev === false ? null : false); setPage(1); }}
-                                        >
-                                            {t('not_replied')}
-                                        </button>
-                                        <button 
-                                            className={`filter-chip-admin ${isHiddenFilter === true ? 'active' : ''}`}
-                                            onClick={() => { setIsHiddenFilter(prev => prev === true ? null : true); setPage(1); }}
-                                        >
-                                            {t('is_hidden')}
-                                        </button>
-                                        <button 
-                                            className={`filter-chip-admin ${isHiddenFilter === false ? 'active' : ''}`}
-                                            onClick={() => { setIsHiddenFilter(prev => prev === false ? null : false); setPage(1); }}
-                                        >
-                                            {t('not_hidden')}
-                                        </button>
-                                        {[5, 4, 3, 2, 1].map(star => (
-                                            <button 
-                                                key={star}
-                                                className={`filter-chip-admin ${ratingFilter === star ? 'active' : ''}`}
-                                                onClick={() => handleFilterRating(star)}
-                                            >
-                                                {t('admin_review_star').replace('{star}', star)}
-                                            </button>
-                                        ))}
-                                    </div>
 
                             <div className="admin-table-wrapper">
                                 <div className="admin-pr-list">
@@ -252,6 +201,9 @@ const ReviewList = ({ variantId }) => {
                                                                 {rev.isHidden && (
                                                                     <span className="admin-pr-badge is-hidden">{t('is_hidden')}</span>
                                                                 )}
+                                                                <span className="admin-pr-badge variant-id">
+                                                                    {t('admin_variant_id')}: {rev.variantId}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                         <span className="admin-pr-post-date">
@@ -313,20 +265,6 @@ const ReviewList = ({ variantId }) => {
                                     </div>
                                 )}
                             </div>
-                        </>
-                    ) : selectedVariantId ? (
-                        <div className="load-reviews-prompt-container" style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '24px', border: '1px dashed #cbd5e1' }}>
-                            <CButton 
-                                type="primary" 
-                                size="large" 
-                                icon={<MessageOutlined />}
-                                onClick={() => setIsViewReviews(true)}
-                                style={{ margin: '0 auto' }}
-                            >
-                                {t('admin_review_view_btn')}
-                            </CButton>
-                        </div>
-                    ) : null}
 
             <Modal
                 title={selectedReview?.reply ? t('admin_review_reply_modal_title_edit') : t('admin_review_reply_modal_title_add')}
@@ -365,8 +303,9 @@ const ReviewList = ({ variantId }) => {
                     style={{ borderRadius: '16px' }}
                 />
             </Modal>
+            </PageWrapper>
         </div>
     );
 };
 
-export default ReviewList;
+export default AdminReviewList;

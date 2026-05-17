@@ -48,7 +48,7 @@ class ErrorBoundaryInternal extends Component {
                                         onClick={() => window.location.href = '/admin'}
                                         className="h-12 px-8 rounded-xl font-semibold"
                                     >
-                                        Go to Dashboard
+                                        {this.props.t('error_go_to_dashboard')}
                                     </Button>
                                 )
                             ].filter(Boolean)}

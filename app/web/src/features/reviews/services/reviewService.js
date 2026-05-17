@@ -5,6 +5,10 @@ class ReviewService extends BaseApi {
         super('/api/admin/reviews');
     }
 
+    getAllAdmin(params, config = {}) {
+        return this.client.get(`${this.resource}`, { params, ...config });
+    }
+
     replyToReview(reviewId, comment, config = {}) {
         return this.client.post(`${this.resource}/${reviewId}/reply`, { comment }, config);
     }

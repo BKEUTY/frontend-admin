@@ -85,6 +85,7 @@ export default {
     promotions: "Khuyến mãi",
     services: "Dịch vụ",
     appointments: "Lịch hẹn",
+    users: "Người dùng",
     reports: "Báo cáo",
     reviews: "Đánh giá",
 
@@ -218,7 +219,7 @@ export default {
     status_order_received: "Tiếp nhận đơn",
 
     // --- Products ---
-    admin_variant_id: "Mã SKU",
+    admin_variant_id: "Mã sản phẩm",
     admin_product_create: "Đăng bán sản phẩm",
     admin_create_desc: "Thêm sản phẩm mới vào danh mục bán hàng",
     admin_product_id: "ID",
@@ -511,4 +512,11 @@ export default {
     services_management: "Quản lý dịch vụ",
     appointments_management: "Quản lý lịch hẹn",
     staff_management: "Quản lý nhân viên",
+    admin_col_shipping_fee: "Phí vận chuyển",
+    admin_home_reviews_desc: "Quản lý đánh giá sản phẩm",
+    is_replied: "Đã phản hồi",
+    not_replied: "Chưa phản hồi",
+    is_hidden: "Đã ẩn",
+    not_hidden: "Chưa ẩn",
+    error_go_to_dashboard: "Về Dashboard"
 };

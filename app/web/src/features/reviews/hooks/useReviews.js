@@ -3,9 +3,8 @@ import { notification } from 'antd';
 import { useLanguage } from '@/store/LanguageContext';
 import reviewService from '@/features/reviews/services/reviewService';
 import publicReviewService from '@/features/reviews/services/publicReviewService';
-import productService from '@/features/products/services/productService';
 
-export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasImageFilter, loadReviews = false) => {
+export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasImageFilter, isRepliedFilter, isHiddenFilter, loadReviews = false) => {
     const queryClient = useQueryClient();
     const { t } = useLanguage();
 
@@ -23,16 +22,7 @@ export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasI
     const invalidateReviews = () => {
         queryClient.invalidateQueries({ queryKey: ['adminReviews'] });
         queryClient.invalidateQueries({ queryKey: ['adminReviewStats'] });
-        queryClient.invalidateQueries({ queryKey: ['adminProductsList'] });
     };
-
-    const productsQuery = useQuery({
-        queryKey: ['adminProductsList'],
-        queryFn: async () => {
-            const response = await productService.getAll({ size: 1000 });
-            return response.data;
-        }
-    });
 
     const statsQuery = useQuery({
         queryKey: ['adminReviewStats', selectedVariantId],
@@ -45,18 +35,23 @@ export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasI
     });
 
     const reviewsQuery = useQuery({
-        queryKey: ['adminReviews', page, pageSize, selectedVariantId, ratingFilter, hasImageFilter],
+        queryKey: ['adminReviews', page, pageSize, selectedVariantId, ratingFilter, hasImageFilter, isRepliedFilter, isHiddenFilter],
         queryFn: async () => {
-            if (!selectedVariantId || !loadReviews) return { reviews: { content: [], totalElements: 0, totalPages: 0 } };
-            const response = await publicReviewService.getReviewsByVariantId(selectedVariantId, { 
-                page, 
+            if (selectedVariantId && !loadReviews) {
+                return { reviews: { content: [], totalElements: 0, totalPages: 0 } };
+            }
+            const response = await reviewService.getAllAdmin({
+                page,
                 size: pageSize,
+                variantId: selectedVariantId || undefined,
                 rating: ratingFilter,
-                hasImage: hasImageFilter
+                hasImage: hasImageFilter,
+                isReplied: isRepliedFilter,
+                isHidden: isHiddenFilter
             });
-            return response.data;
+            return { reviews: response.data };
         },
-        enabled: !!selectedVariantId && !!loadReviews
+        enabled: !selectedVariantId || !!loadReviews
     });
 
     const replyMutation = useMutation({
@@ -96,8 +91,6 @@ export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasI
     });
 
     return {
-        productsData: productsQuery.data,
-        isProductsLoading: productsQuery.isLoading,
         reviewsData: reviewsQuery.data?.reviews,
         ratingCounts: statsQuery.data || {},
         isReviewsLoading: reviewsQuery.isLoading,
@@ -110,5 +103,6 @@ export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasI
         isDeletingReply: deleteReplyMutation.isPending,
         deleteReview: deleteReviewMutation.mutateAsync,
         isDeletingReview: deleteReviewMutation.isPending,
+        refetchReviews: reviewsQuery.refetch,
     };
 };

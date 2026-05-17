@@ -13,7 +13,8 @@ import {
     ArrowRightOutlined,
     TagsOutlined,
     AppstoreOutlined,
-    TagOutlined
+    TagOutlined,
+    MessageOutlined
 } from '@ant-design/icons';
 import './Home.css';
 
@@ -46,6 +47,7 @@ const AdminHome = () => {
             items: [
                 { key: 'orders', title: t('admin_home_orders_title'), desc: t('admin_home_orders_desc'), icon: <FileTextOutlined />, color: '#10b981' },
                 { key: 'users', title: t('admin_home_users_title'), desc: t('admin_home_users_desc'), icon: <UsergroupAddOutlined />, color: '#3b82f6' },
+                { key: 'reviews', title: t('admin_review_management_title'), desc: t('admin_home_reviews_desc'), icon: <MessageOutlined />, color: '#eab308' },
                 { key: 'appointments', title: t('admin_home_appointments_title'), desc: t('admin_home_appointments_desc'), icon: <ScheduleOutlined />, color: '#f43f5e' },
                 { key: 'services', title: t('admin_home_services_title'), desc: t('admin_home_services_desc'), icon: <HeartOutlined />, color: '#6366f1' },
             ]
