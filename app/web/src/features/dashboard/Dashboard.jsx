@@ -334,7 +334,7 @@ const Dashboard = () => {
             title: t('admin_order_id'), 
             dataIndex: 'id', 
             key: 'id', 
-            width: 70,
+            width: 120,
             render: (text) => (
                 <button 
                     type="button"
