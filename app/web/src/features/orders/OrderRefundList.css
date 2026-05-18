@@ -1,0 +1,236 @@
+.admin-refund-evidence-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.admin-refund-evidence-thumb {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-refund-evidence-thumb:hover {
+    border-color: var(--admin-primary);
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-refund-items-summary {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.admin-refund-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.admin-refund-summary-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.admin-refund-summary-item img {
+    width: 54px;
+    height: 54px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+
+.admin-refund-summary-item .item-info {
+    flex: 1;
+}
+
+.admin-refund-summary-item .item-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.admin-refund-summary-item .item-qty {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.admin-refund-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.admin-refund-detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-refund-detail-group.full-width {
+    grid-column: span 2;
+}
+
+.admin-refund-detail-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.admin-refund-detail-value {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #f1f5f9;
+}
+
+.admin-refund-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.admin-refund-badge.pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.admin-refund-badge.approved {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.admin-refund-badge.rejected {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.admin-refund-badge.completed {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.admin-refund-badge.refunded {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
+.admin-refund-detail-modal-luxury .ant-modal-content {
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+}
+
+.admin-refund-detail-modal-luxury .ant-modal-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+}
+
+.admin-refund-action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Clean solid color buttons inside modal */
+.admin-refund-action-buttons .c-button {
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.admin-refund-action-buttons .c-button:hover {
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.refund-btn-approve {
+    background: var(--admin-primary) !important;
+    border: none !important;
+    color: white !important;
+}
+
+.refund-btn-approve:hover {
+    background: var(--admin-primary) !important;
+    filter: brightness(1.08) !important;
+}
+
+.refund-btn-reject {
+    background: #ef4444 !important;
+    border: none !important;
+    color: white !important;
+}
+
+.refund-btn-reject:hover {
+    background: #dc2626 !important;
+}
+
+.refund-btn-complete {
+    background: #2563eb !important;
+    border: none !important;
+    color: white !important;
+}
+
+.refund-btn-complete:hover {
+    background: #1d4ed8 !important;
+}
+
+.refund-btn-payout {
+    background: #7c3aed !important;
+    border: none !important;
+    color: white !important;
+}
+
+.refund-btn-payout:hover {
+    background: #6d28d9 !important;
+}
+
+/* Responsive media queries for Admin Refund UI */
+@media screen and (max-width: 768px) {
+    .admin-refund-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .admin-refund-detail-group.full-width {
+        grid-column: span 1;
+    }
+    
+    .admin-refund-action-buttons {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .admin-refund-action-buttons .c-button {
+        width: 100% !important;
+        min-width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    .admin-refund-evidence-gallery {
+        justify-content: center;
+    }
+}

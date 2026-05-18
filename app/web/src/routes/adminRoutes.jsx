@@ -5,6 +5,7 @@ const Dashboard = safeLazy(() => import('@/features/dashboard/Dashboard'));
 const DevelopingState = safeLazy(() => import('@/components/common/DevelopingState'));
 
 const OrderList = safeLazy(() => import('@/features/orders/OrderList'));
+const OrderRefundList = safeLazy(() => import('@/features/orders/OrderRefundList'));
 const AdminOrderDetail = safeLazy(() => import('@/features/orders/AdminOrderDetail'));
 
 const ProductList = safeLazy(() => import('@/features/products/ProductList'));
@@ -32,6 +33,10 @@ export const adminRoutes = [
     {
         path: "orders",
         element: <OrderList />
+    },
+    {
+        path: "orders/refunds",
+        element: <OrderRefundList />
     },
     {
         path: "orders/:id",
