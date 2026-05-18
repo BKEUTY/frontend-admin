@@ -19,33 +19,48 @@ const queryClient = new QueryClient({
 });
 
 import { ConfigProvider } from 'antd';
-import viVN from 'antd/es/locale/vi_VN';
-import enUS from 'antd/es/locale/en_US';
 import dayjs from 'dayjs';
-import 'dayjs/locale/vi';
 import { useLanguage } from '@/store/LanguageContext';
+
+const localeCache = {};
 
 const LocalizedApp = () => {
     const { language } = useLanguage();
-    
-    const locale = language === 'vi' ? viVN : enUS;
+    const [antdLocale, setAntdLocale] = React.useState(null);
     
     React.useEffect(() => {
-        dayjs.locale(language);
+        const loadLocale = async () => {
+            if (localeCache[language]) {
+                setAntdLocale(localeCache[language]);
+            } else {
+                const localeModule = language === 'vi'
+                    ? await import('antd/es/locale/vi_VN')
+                    : await import('antd/es/locale/en_US');
+                localeCache[language] = localeModule.default;
+                setAntdLocale(localeModule.default);
+            }
+            if (language === 'vi') {
+                await import('dayjs/locale/vi');
+            }
+            dayjs.locale(language);
+        };
+        loadLocale();
     }, [language]);
+
+    const theme = React.useMemo(() => ({
+        cssVar: true,
+        hashed: false,
+        token: {
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            colorPrimary: '#A10550',
+            borderRadius: 16,
+        },
+    }), []);
 
     return (
         <ConfigProvider
-            locale={locale}
-            theme={{
-                cssVar: true,
-                hashed: false,
-                token: {
-                    fontFamily: "'Be Vietnam Pro', sans-serif",
-                    colorPrimary: '#A10550',
-                    borderRadius: 16,
-                },
-            }}
+            locale={antdLocale}
+            theme={theme}
         >
             <NotificationProvider>
                 <AuthProvider>
