@@ -1,9 +1,8 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
 import path from 'path';
+import { defineConfig } from 'vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -19,6 +18,13 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -33,13 +39,19 @@ export default defineConfig({
               return 'vendor-charts';
             }
             if (id.includes('framer-motion')) {
-              return 'vendor-framer';
+              return 'vendor-animation';
             }
             if (id.includes('react-icons')) {
               return 'vendor-icons';
             }
+            if (id.includes('@tanstack/react-query') || id.includes('axios')) {
+              return 'vendor-data';
+            }
           }
         },
+        chunkFileNames: 'assets/chunk-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
       },
     },
   },
