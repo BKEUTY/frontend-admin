@@ -19,6 +19,7 @@ export default defineConfig({
     outDir: 'build',
     sourcemap: false,
     cssCodeSplit: true,
+    modulePreload: false,
     chunkSizeWarningLimit: 600,
     minify: 'terser',
     terserOptions: {
@@ -57,7 +58,7 @@ export default defineConfig({
             }
           }
         },
-        chunkFileNames: 'assets/chunk-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash][extname]',
       },
