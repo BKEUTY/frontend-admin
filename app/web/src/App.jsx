@@ -38,6 +38,8 @@ const LocalizedApp = () => {
         <ConfigProvider
             locale={locale}
             theme={{
+                cssVar: true,
+                hashed: false,
                 token: {
                     fontFamily: "'Be Vietnam Pro', sans-serif",
                     colorPrimary: '#A10550',

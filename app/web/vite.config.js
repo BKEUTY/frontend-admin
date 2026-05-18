@@ -18,6 +18,8 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: false,
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 600,
     minify: 'terser',
     terserOptions: {
       compress: {

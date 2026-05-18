@@ -1,7 +1,7 @@
 import "@/admin.css";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/700.css";
-import "antd/dist/reset-only.css";
+import "antd/dist/reset.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./antd-custom.css";
