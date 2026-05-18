@@ -131,7 +131,7 @@
     font-size: 2.5rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 25px;
+    margin-bottom: 12px;
     color: #0f172a;
     position: relative;
     display: inline-block;
@@ -151,7 +151,7 @@
 .admin-pd-detail-categories {
     display: flex;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
     align-items: center;
 }
 
@@ -182,7 +182,7 @@
     font-size: 1.1rem;
     color: #475569;
     font-weight: 500;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .admin-pd-star {
@@ -191,8 +191,8 @@
 }
 
 .admin-pd-price-box {
-    margin-top: 10px;
-    margin-bottom: 35px;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 .admin-pd-current-price-wrapper {
@@ -220,15 +220,15 @@
 .admin-pd-options-section {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 12px;
     border-top: 1px solid #f1f5f9;
-    padding: 30px 0;
+    padding: 15px 0;
 }
 
 .admin-pd-option-group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 6px;
 }
 
 .admin-pd-option-label {
@@ -267,7 +267,7 @@
 }
 
 .admin-pd-selected-variant {
-    padding-top: 10px;
+    padding-top: 4px;
 }
 
 .admin-pd-variant-label {
@@ -281,25 +281,63 @@
     font-size: 1.1rem;
     margin-left: 5px;
 }
-
-.admin-pd-stock-info {
-    font-size: 0.95rem;
-    color: #64748b;
-    font-weight: 500;
+.product-meta-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 8px 14px;
+    border: 1px solid #f1f5f9;
+    width: fit-content;
+    animation: fadeIn 0.4s ease;
 }
 
-.admin-pd-stock-info strong {
-    color: #0f172a;
+.stat-badge-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.admin-pd-sold-info {
-    font-size: 0.95rem;
-    color: #64748b;
-    font-weight: 500;
+.stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
-.admin-pd-sold-info strong {
-    color: #0f172a;
+.green-dot {
+    background-color: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.gray-dot {
+    background-color: #64748b;
+    box-shadow: 0 0 8px rgba(100, 116, 139, 0.4);
+}
+
+.stat-text {
+    font-size: 0.85rem !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+}
+
+.stat-value {
+    color: #0f172a !important;
+    font-weight: 800 !important;
+    font-size: 0.9rem !important;
+    line-height: 1 !important;
+    margin: 0 4px !important;
+    display: inline-block !important;
+}
+
+.stat-badge-divider {
+    width: 1px;
+    height: 16px;
+    background-color: #e2e8f0;
 }
 
 .admin-pd-tabs-container {
@@ -503,6 +541,20 @@
     .admin-pd-skeleton-img {
         width: 100% !important;
         height: 350px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-meta-stats-row {
+        flex-wrap: wrap !important;
+        gap: 8px 12px !important;
+        padding: 6px 12px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+    }
+    
+    .stat-badge-divider {
+        display: none !important;
     }
 }
 

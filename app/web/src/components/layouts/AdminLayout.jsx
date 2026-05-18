@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
 import { useLanguage } from '@/store/LanguageContext';
 import { ErrorBoundary, ScrollToTop } from '@/components/common';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import CommandPalette from '@/components/admin/CommandPalette';
 import { ADMIN_NAV_ITEMS } from '@/constants/navigation';
+import { safeLazy } from '@/utils/safeLazy';
 import '@/components/layouts/AdminLayout.css';
+
+const CommandPalette = safeLazy(() => import('@/components/admin/CommandPalette'));
 
 const { Content } = Layout;
 
@@ -43,13 +45,17 @@ const AdminLayout = () => {
                 </Content>
             </Layout>
 
-            <CommandPalette 
-                open={isSearchOpen}
-                onCancel={() => setIsSearchOpen(false)}
-                items={navItems}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-            />
+            {isSearchOpen && (
+                <Suspense fallback={null}>
+                    <CommandPalette 
+                        open={isSearchOpen}
+                        onCancel={() => setIsSearchOpen(false)}
+                        items={navItems}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                    />
+                </Suspense>
+            )}
         </Layout>
     );
 };

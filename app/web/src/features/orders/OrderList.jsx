@@ -242,6 +242,13 @@ const OrderList = () => {
                 extra={
                     <div className="admin-header-buttons">
                         <CButton
+                            type="primary"
+                            className="refund-mgmt-btn"
+                            onClick={() => navigate('/admin/orders/refunds')}
+                        >
+                            {t('admin_home_refunds_title')}
+                        </CButton>
+                        <CButton
                             type="secondary"
                             icon={<SyncOutlined />}
                             onClick={() => refetchOrders()}

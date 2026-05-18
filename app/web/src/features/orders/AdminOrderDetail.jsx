@@ -3,7 +3,8 @@ import MembershipTag from '@/components/admin/MembershipTag';
 import OrderProgress from '@/features/orders/components/OrderProgress';
 import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
 import { useLanguage } from '@/store/LanguageContext';
-import { generateSlug } from '@/utils/helpers';
+import { generateSlug, PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
+import { getImageUrl } from '@/services/axiosClient';
 import generateInvoice from '@/utils/InvoiceService';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Card, Col, Descriptions, Row, Select, Table, Tag, Typography } from 'antd';
@@ -97,17 +98,48 @@ export default function AdminOrderDetail() {
             render: (text, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img
-                        src={record.productVariantImage}
+                        src={record.productVariantImage ? getImageUrl(record.productVariantImage) : PRODUCT_IMAGE_FALLBACK}
                         alt="product"
                         style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }}
-                        onError={(e) => { e.target.src = 'https://via.placeholder.com/50'; }}
+                        onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }}
                         width="50"
                         height="50"
                         loading="lazy"
                     />
-                    <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`} state={{ productId: record.productVariantId }}>
-                        <Text strong style={{ color: 'var(--admin-primary)', cursor: 'pointer' }}>{text}</Text>
-                    </Link>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <Link to={`/admin/products/${generateSlug(record.productVariantName, record.productVariantId)}`} state={{ productId: record.productVariantId }}>
+                            <Text strong style={{ color: 'var(--admin-primary)', cursor: 'pointer' }}>{text}</Text>
+                        </Link>
+                        {record.refundOrderId && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px', flexWrap: 'wrap' }}>
+                                <span className="admin-item-refund-label-tag" style={{
+                                    background: 'rgba(225, 29, 72, 0.1)',
+                                    color: '#e11d48',
+                                    border: '1px solid rgba(225, 29, 72, 0.2)',
+                                    fontSize: '10px',
+                                    fontWeight: 700,
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    textTransform: 'uppercase',
+                                    display: 'inline-block',
+                                    lineHeight: 'normal'
+                                }}>
+                                    {t('refund_request_label')}
+                                </span>
+                                <span className={`admin-refund-badge ${record.refundStatus?.toLowerCase() || 'pending'}`} style={{
+                                    fontSize: '10px',
+                                    fontWeight: 700,
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    textTransform: 'uppercase',
+                                    display: 'inline-block',
+                                    lineHeight: 'normal'
+                                }}>
+                                    {t(`refund_status_${record.refundStatus}`)}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )
         },

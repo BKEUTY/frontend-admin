@@ -264,12 +264,24 @@ export default function AdminProductDetail() {
                             </div>
                         )}
 
-                        <div className="admin-pd-stock-info">
-                            {t('product_stock_count').replace('{count}', stockQuantity)}
-                        </div>
-
-                        <div className="admin-pd-sold-info">
-                            {t('product_sold_count').replace('{count}', soldQuantity)}
+                        <div className="product-meta-stats-row">
+                            <div className="stat-badge-item stock-badge">
+                                <span className="stat-dot green-dot"></span>
+                                <span className="stat-text">
+                                    {t('product_stock_count').split('{count}')[0]}
+                                    <strong className="stat-value">{stockQuantity}</strong>
+                                    {t('product_stock_count').split('{count}')[1]}
+                                </span>
+                            </div>
+                            <div className="stat-badge-divider"></div>
+                            <div className="stat-badge-item sold-badge">
+                                <span className="stat-dot gray-dot"></span>
+                                <span className="stat-text">
+                                    {t('product_sold_count').split('{count}')[0]}
+                                    <strong className="stat-value">{soldQuantity}</strong>
+                                    {t('product_sold_count').split('{count}')[1]}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
