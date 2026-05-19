@@ -89,7 +89,7 @@ const UserList = () => {
             width: 140,
             render: (id) => (
                 <Space className="admin-id-cell">
-                    <Text className="admin-table-id" title={id}>#{id.substring(0, 8)}...</Text>
+                    <Text className="admin-table-id" title={id}>#{id.substring(0, 8)}</Text>
                     <CopyOutlined 
                         className="admin-copy-icon" 
                         onClick={(e) => {

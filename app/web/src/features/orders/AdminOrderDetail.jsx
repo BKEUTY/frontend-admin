@@ -219,8 +219,7 @@ export default function AdminOrderDetail() {
         return sum + (promoPrice * Number(item.quantity || 1));
     }, 0);
 
-    const voucherDiscount = Number(orderDetail.voucherDiscountAmount) || 
-                            (orderDetail.items || []).reduce((sum, item) => sum + Number(item.voucherDiscountAmount || 0), 0);
+    const voucherDiscount = (orderDetail.items || []).reduce((sum, item) => sum + Number(item.voucherDiscountAmount || 0), 0);
     const shippingFee = Number(orderDetail.shippingFee || 0);
     const grandTotal = subtotal - voucherDiscount + shippingFee;
 

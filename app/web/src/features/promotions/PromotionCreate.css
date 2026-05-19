@@ -31,6 +31,44 @@
     color: var(--text-color) !important;
 }
 
+.promo-form-wrapper .ant-input-number,
+.promo-form-wrapper .ant-select-selector,
+.promo-form-wrapper .ant-picker {
+    width: 100% !important;
+    min-width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    border-radius: 16px !important;
+    min-height: 40px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.promo-form-wrapper .ant-input-number:hover,
+.promo-form-wrapper .ant-select-selector:hover,
+.promo-form-wrapper .ant-picker:hover {
+    border-color: #cbd5e1 !important;
+}
+
+.promo-form-wrapper .ant-input-number-focused,
+.promo-form-wrapper .ant-input-number:focus-within,
+.promo-form-wrapper .ant-select-focused .ant-select-selector,
+.promo-form-wrapper .ant-picker-focused {
+    border-color: var(--color_main_title) !important;
+    box-shadow: 0 0 0 4px rgba(161, 5, 80, 0.1) !important;
+}
+
+.promo-form-wrapper .ant-input-number-input-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.promo-form-wrapper .ant-input-number-input {
+    width: 100% !important;
+    height: 20px !important;
+    font-size: 16px !important;
+}
+
 @media (max-width: 992px) {
     .promo-form-wrapper {
         padding: 20px;

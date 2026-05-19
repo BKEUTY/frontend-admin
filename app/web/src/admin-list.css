@@ -326,6 +326,8 @@
     font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
     font-size: 13px;
     letter-spacing: -0.02em;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .admin-id-cell {

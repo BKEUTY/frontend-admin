@@ -209,7 +209,7 @@ const PromotionCreate = () => {
                                 </Form.Item>
 
                                 <Row gutter={16}>
-                                    <Col span={12}>
+                                    <Col xs={24} md={12}>
                                         <Form.Item label={t('promo_label_discount_type')} name="discountType" rules={[{ required: true }]}>
                                             <Select size="large">
                                                 <Option value="PERCENTAGE">{t('promo_discount_type_percentage')}</Option>
@@ -217,18 +217,18 @@ const PromotionCreate = () => {
                                             </Select>
                                         </Form.Item>
                                     </Col>
-                                    <Col span={12}>
+                                    <Col xs={24} md={12}>
                                         <Form.Item label={t('promo_label_discount_value')} name="discountValue" rules={[{ required: true }]}>
-                                            <InputNumber className="w-full" size="large" min={1} />
+                                            <InputNumber style={{ width: '100%' }} size="large" min={1} />
                                         </Form.Item>
                                     </Col>
                                 </Row>
 
                                 <Row gutter={16}>
-                                    <Col span={12}>
+                                    <Col xs={24} md={12}>
                                         <Form.Item label={t('promo_label_max_discount')} name="maxDiscount">
                                             <InputNumber
-                                                className="w-full"
+                                                style={{ width: '100%' }}
                                                 size="large"
                                                 min={0}
                                                 formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -236,7 +236,7 @@ const PromotionCreate = () => {
                                             />
                                         </Form.Item>
                                     </Col>
-                                    <Col span={12}>
+                                    <Col xs={24} md={12}>
                                         <Form.Item label={t('status')} name="status" rules={[{ required: true }]}>
                                             <Select size="large">
                                                 <Option value="STARTING">{t('promo_status_STARTING')}</Option>
@@ -289,19 +289,19 @@ const PromotionCreate = () => {
                                         </Form.Item>
                                         
                                         <Row gutter={16}>
-                                            <Col span={8}>
+                                            <Col xs={24} md={8}>
                                                 <Form.Item label={t('promo_col_total_qty')} name="totalQuantity" rules={[{ required: true }]}>
-                                                    <InputNumber className="w-full" size="large" min={1} />
+                                                    <InputNumber style={{ width: '100%' }} size="large" min={1} />
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={8}>
+                                            <Col xs={24} md={8}>
                                                 <Form.Item label={t('promo_label_min_order')} name="minOrderValue">
-                                                    <InputNumber className="w-full" size="large" min={0} />
+                                                    <InputNumber style={{ width: '100%' }} size="large" min={0} />
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={8}>
+                                            <Col xs={24} md={8}>
                                                 <Form.Item label={t('promo_label_usage_limit')} name="usageLimitPerUser" initialValue={1}>
-                                                    <InputNumber className="w-full" size="large" min={1} />
+                                                    <InputNumber style={{ width: '100%' }} size="large" min={1} />
                                                 </Form.Item>
                                             </Col>
                                         </Row>
@@ -311,7 +311,7 @@ const PromotionCreate = () => {
                                 {promotionType === 'UserPromotion' && (
                                     <div className="user-promo-fields">
                                         <Row gutter={16}>
-                                            <Col span={12}>
+                                            <Col xs={24} md={12}>
                                                 <Form.Item label={t('promo_label_birthday')} name="birthdayMonth">
                                                     <Select mode="multiple" size="large" placeholder={t('months')}>
                                                         {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
@@ -320,7 +320,7 @@ const PromotionCreate = () => {
                                                     </Select>
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={12}>
+                                            <Col xs={24} md={12}>
                                                 <Form.Item label={t('promo_label_membership')} name="membershipLevels">
                                                     <Select mode="multiple" size="large">
                                                         <Option value={0}>{t('membership_level_0')}</Option>
