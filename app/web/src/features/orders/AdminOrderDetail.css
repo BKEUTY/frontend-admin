@@ -397,7 +397,7 @@
 
 .admin-order-summary-box {
     width: 100%;
-    max-width: 320px;
+    max-width: 380px;
     background: #f8fafc;
     padding: 20px;
     border-radius: 16px;
@@ -407,6 +407,8 @@
 .admin-summary-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 12px;
 }
 

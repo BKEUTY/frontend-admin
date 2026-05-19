@@ -158,6 +158,18 @@ const UserList = () => {
             width: 120,
         },
         {
+            title: t('admin_user_wallet_balance'),
+            dataIndex: 'wallet',
+            key: 'wallet',
+            width: 150,
+            align: 'right',
+            render: (amount) => (
+                <Text strong style={{ color: 'var(--success-color, #52c41a)' }}>
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0)}
+                </Text>
+            )
+        },
+        {
             title: t('admin_user_total_spending'),
             dataIndex: 'totalSpending',
             key: 'totalSpending',

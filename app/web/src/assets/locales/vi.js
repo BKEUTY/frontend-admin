@@ -361,6 +361,7 @@ export default {
     admin_user_items: "Tài khoản",
     admin_user_refresh: "Cập nhật danh sách",
     admin_user_total_spending: "Tổng chi tiêu",
+    admin_user_wallet_balance: "Số dư ví",
 
     // --- Reviews ---
     verified_purchase: "Đã mua hàng",
@@ -520,6 +521,8 @@ export default {
     is_replied: "Đã phản hồi",
     not_replied: "Chưa phản hồi",
     is_hidden: "Đã ẩn",
+    not_hidden: "Không ẩn",
+    users: "Người dùng",
     error_go_to_dashboard: "Về Dashboard",
     admin_home_refunds_title: "Quản lý hoàn trả",
     admin_refund_order_id: "Mã hoàn trả",

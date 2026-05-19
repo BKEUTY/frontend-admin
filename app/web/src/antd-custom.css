@@ -75,19 +75,20 @@
     height: auto;
     padding: 0 28px;
     font-size: 16px;
+    box-shadow: none !important;
 }
 
 .ant-btn-primary {
     background-color: var(--color_main_title);
     border-color: var(--color_main_title);
-    box-shadow: 0 4px 12px rgba(161, 5, 80, 0.3);
+    box-shadow: none !important;
 }
 
 .ant-btn-primary:hover {
     background-color: var(--color_main_title_hover);
     border-color: var(--color_main_title_hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(161, 5, 80, 0.4);
+    box-shadow: none !important;
 }
 
 .ant-btn-primary:active {

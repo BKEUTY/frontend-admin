@@ -356,8 +356,9 @@ export default {
     admin_user_role_admin: "Administrator",
     admin_user_role_user: "Customer",
     admin_user_items: "Accounts",
-    admin_user_refresh: "Update list",
+    admin_user_refresh: "Refresh list",
     admin_user_total_spending: "Total Spending",
+    admin_user_wallet_balance: "Wallet Balance",
 
     // --- Reviews ---
     verified_purchase: "Verified purchase",
@@ -522,6 +523,7 @@ export default {
     is_hidden: "Hidden",
     not_hidden: "Not hidden",
     users: "Users",
+    error_go_to_dashboard: "Go to Dashboard",
     admin_home_refunds_title: "Refund Requests",
     admin_refund_order_id: "Refund ID",
     admin_refund_order_total: "Amount",
