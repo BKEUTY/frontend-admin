@@ -180,6 +180,22 @@ export const axiosClient = createAxiosClient();
 
 export const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
+    
+    // Handle array case recursively by extracting the first element
+    if (Array.isArray(imagePath)) {
+        return getImageUrl(imagePath[0]);
+    }
+    
+    // Handle object case recursively by checking common url keys
+    if (typeof imagePath === 'object') {
+        return getImageUrl(imagePath.imageUrl || imagePath.url);
+    }
+    
+    // Fallback if not a string
+    if (typeof imagePath !== 'string') {
+        return null;
+    }
+
     if (imagePath.startsWith('http')) return imagePath;
     return `${SERVER_URL}${imagePath.startsWith('/') ? imagePath : `/${imagePath}`}`;
 };

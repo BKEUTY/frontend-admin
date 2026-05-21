@@ -5,21 +5,13 @@ import { useDebounce } from '@/hooks/useDebounce';
 import useQueryParams from '@/hooks/useQueryParams';
 import { getImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
-import { generateSlug } from '@/utils/helpers';
+import { generateSlug, PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
 import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
-import { Form, Input, InputNumber, Modal, Popover, Select, Slider, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import { Form, Input, InputNumber, Modal, Popover, Select, Slider, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@/admin-list.css';
-
-import dummy1 from '@/assets/images/products/product_dummy_1.jpg';
-import dummy2 from '@/assets/images/products/product_dummy_2.jpg';
-import dummy3 from '@/assets/images/products/product_dummy_3.jpg';
-import dummy4 from '@/assets/images/products/product_dummy_4.jpg';
-import dummy5 from '@/assets/images/products/product_dummy_5.svg';
-
-const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
-const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
+import './AdminProductDetail.css';
 const { Text } = Typography;
 const { Search, TextArea } = Input;
 const { confirm } = Modal;
@@ -64,6 +56,8 @@ const ProductList = () => {
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [popoverOpen, setPopoverOpen] = useState(false);
+    const [editVariantImages, setEditVariantImages] = useState([]);
+    const [editVariantNewFiles, setEditVariantNewFiles] = useState([]);
 
     useEffect(() => {
         if (!searchText) setSearchInput('');
@@ -143,24 +137,50 @@ const ProductList = () => {
     const handleEditClick = (record) => {
         setSelectedRecord(record);
         editForm.setFieldsValue({
+            productVariantName: record.variantName,
             price: record.discountPrice,
             stockQuantity: record.stockQuantity,
             status: record.status,
             description: record.description
         });
+        const existing = record.imageUrl
+            ? (Array.isArray(record.imageUrl) ? record.imageUrl : [record.imageUrl])
+            : [];
+        setEditVariantImages(existing);
+        setEditVariantNewFiles([]);
         setEditModalVisible(true);
         setActionModalVisible(false);
     };
 
+    const handleEditVariantRemoveExisting = (index) => {
+        setEditVariantImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleEditVariantRemoveNew = (index) => {
+        setEditVariantNewFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleEditVariantAddFile = (file) => {
+        const total = editVariantImages.length + editVariantNewFiles.length;
+        if (total >= 3) {
+            return false;
+        }
+        setEditVariantNewFiles(prev => [...prev, file]);
+        return false;
+    };
+
     const handleEditSubmit = async (values) => {
         await updateVariant({
-            id: selectedRecord.productId,
-            productVariantName: selectedRecord.variantName,
-            price: values.price,
-            stockQuantity: values.stockQuantity,
-            status: values.status,
-            description: values.description,
-            productImageUrl: selectedRecord.imageUrl || ''
+            data: {
+                id: selectedRecord.productId,
+                productVariantName: values.productVariantName,
+                price: values.price,
+                stockQuantity: values.stockQuantity,
+                status: values.status,
+                description: values.description,
+                productImageUrl: editVariantImages,
+            },
+            images: editVariantNewFiles
         });
         setEditModalVisible(false);
         refetchProducts();
@@ -232,10 +252,10 @@ const ProductList = () => {
             width: 80,
             align: 'center',
             render: (src) => {
-                const imageSrc = src ? getImageUrl(src) : getRandomImage();
+                const imageSrc = src ? getImageUrl(src) : PRODUCT_IMAGE_FALLBACK;
                 return (
                     <div className="admin-table-image-wrapper">
-                        <img src={imageSrc} alt="product" className="admin-table-image" onError={(e) => { e.target.src = getRandomImage(); }} width="60" height="60" loading="lazy" />
+                        <img src={imageSrc} alt="product" className="admin-table-image" onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} width="60" height="60" loading="lazy" />
                     </div>
                 );
             }
@@ -570,7 +590,7 @@ const ProductList = () => {
             <Modal
                 open={editModalVisible}
                 onCancel={() => setEditModalVisible(false)}
-                title={`${t('edit')} ${selectedRecord?.variantName}`}
+                title={`${t('admin_edit_sub_product')}: ${selectedRecord?.variantName}`}
                 onOk={() => editForm.submit()}
                 confirmLoading={isUpdatingVariant}
                 centered
@@ -579,6 +599,9 @@ const ProductList = () => {
                 cancelText={t('cancel')}
             >
                 <Form form={editForm} layout="vertical" onFinish={handleEditSubmit} className="admin-edit-modal-form">
+                    <Form.Item name="productVariantName" label={t('admin_product_name')} rules={[{ required: true }]}>
+                        <Input placeholder={t('admin_placeholder_product_name')} />
+                    </Form.Item>
                     <Form.Item name="price" label={t('admin_label_price')} rules={[{ required: true }]}>
                         <InputNumber
                             min={0}
@@ -590,13 +613,38 @@ const ProductList = () => {
                     <Form.Item name="stockQuantity" label={t('admin_label_stock')} rules={[{ required: true }]}>
                         <InputNumber min={0} style={{ width: '100%' }} />
                     </Form.Item>
-
                     <Form.Item name="description" label={t('admin_label_desc')}>
                         <TextArea rows={3} placeholder={t('admin_placeholder_desc')} />
                     </Form.Item>
-
                     <Form.Item name="status" label={t('status')} rules={[{ required: true }]}>
                         <Select options={statusOptions} />
+                    </Form.Item>
+                    <Form.Item label={t('admin_variant_images')}>
+                        <div className="admin-pd-edit-images">
+                            {editVariantImages.map((url, idx) => (
+                                <div key={`existing-${idx}`} className="admin-pd-edit-img-item">
+                                    <img src={getImageUrl(url)} alt={`img-${idx}`} onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} />
+                                    <button type="button" className="admin-pd-edit-img-remove" onClick={() => handleEditVariantRemoveExisting(idx)}>
+                                        <DeleteOutlined />
+                                    </button>
+                                </div>
+                            ))}
+                            {editVariantNewFiles.map((file, idx) => (
+                                <div key={`new-${idx}`} className="admin-pd-edit-img-item">
+                                    <img src={URL.createObjectURL(file)} alt={`new-${idx}`} />
+                                    <button type="button" className="admin-pd-edit-img-remove" onClick={() => handleEditVariantRemoveNew(idx)}>
+                                        <DeleteOutlined />
+                                    </button>
+                                </div>
+                            ))}
+                            {(editVariantImages.length + editVariantNewFiles.length) < 3 && (
+                                <Upload showUploadList={false} beforeUpload={handleEditVariantAddFile} accept="image/*">
+                                    <div className="admin-pd-edit-img-add">
+                                        <PlusOutlined />
+                                    </div>
+                                </Upload>
+                            )}
+                        </div>
                     </Form.Item>
                 </Form>
             </Modal>

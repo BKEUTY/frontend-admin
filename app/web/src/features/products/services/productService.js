@@ -16,8 +16,40 @@ class ProductService extends BaseApi {
         return this.client.get(`${this.resource}/${productId}/variants`, config);
     }
 
-    updateVariant(data, config = {}) {
-        return this.client.put(`${this.resource}/variants`, data, config);
+    createProduct(requestData, images, config = {}) {
+        const formData = new FormData();
+        formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+        if (images?.length) {
+            images.forEach(file => formData.append('images', file));
+        }
+        return this.client.post(this.resource, formData, {
+            ...config,
+            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
+        });
+    }
+
+    updateProduct(requestData, images, config = {}) {
+        const formData = new FormData();
+        formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+        if (images?.length) {
+            images.forEach(file => formData.append('images', file));
+        }
+        return this.client.put(this.resource, formData, {
+            ...config,
+            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
+        });
+    }
+
+    updateVariant(requestData, images, config = {}) {
+        const formData = new FormData();
+        formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+        if (images?.length) {
+            images.forEach(file => formData.append('images', file));
+        }
+        return this.client.put(`${this.resource}/variants`, formData, {
+            ...config,
+            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
+        });
     }
 
     deleteVariant(id, config = {}) {
@@ -30,26 +62,6 @@ class ProductService extends BaseApi {
 
     getAllOptions(config = {}) {
         return this.client.get(`${this.resource}/options`, config);
-    }
-
-    uploadProductImage(file, productId, config = {}) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('productId', productId || 'temp');
-        return this.client.post('/api/files/upload/product', formData, {
-            ...config,
-            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
-        });
-    }
-
-    uploadSkuImage(file, skuId, config = {}) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('skuId', skuId || 'temp');
-        return this.client.post('/api/files/upload/sku', formData, {
-            ...config,
-            headers: { 'Content-Type': 'multipart/form-data', ...config.headers }
-        });
     }
 }
 

@@ -7,7 +7,6 @@ import {
     FileImageOutlined,
     PlusOutlined,
     StarFilled,
-    LoadingOutlined
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Col, Form, InputNumber, Row, Select, Space, Steps, Upload, notification } from 'antd';
@@ -19,18 +18,12 @@ import { CButton, CInput } from '@/components/common';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { usePublicProducts } from '@/features/products/hooks/usePublicProducts';
 import { useLanguage } from '@/store/LanguageContext';
-import { generateSlug } from '@/utils/helpers';
+import { generateSlug, PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
 import './ProductCreate.css';
 
-import dummy1 from '@/assets/images/products/product_dummy_1.jpg';
-import dummy2 from '@/assets/images/products/product_dummy_2.jpg';
-import dummy3 from '@/assets/images/products/product_dummy_3.jpg';
-import dummy4 from '@/assets/images/products/product_dummy_4.jpg';
-import dummy5 from '@/assets/images/products/product_dummy_5.svg';
-
 const { Option } = Select;
-const dummyImages = [dummy1, dummy2, dummy3, dummy4, dummy5];
-const getRandomImage = () => dummyImages[Math.floor(Math.random() * dummyImages.length)];
+const MAX_PRODUCT_IMAGES = 5;
+const MAX_VARIANT_IMAGES = 3;
 
 const ProductCreate = () => {
     const { t, language } = useLanguage();
@@ -49,19 +42,20 @@ const ProductCreate = () => {
         description: ''
     });
 
+    const [productImageFiles, setProductImageFiles] = useState([]);
     const [optionTypes, setOptionTypes] = useState([{ optionName: '', optionValues: [], isCustomName: false }]);
     const [variants, setVariants] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
-    const [selectedImageFile, setSelectedImageFile] = useState(null);
 
-    const fallbackImg = useMemo(() => getRandomImage(), []);
-    const previewImage = selectedImageFile ? URL.createObjectURL(selectedImageFile) : fallbackImg;
+    const previewImage = productImageFiles.length > 0
+        ? URL.createObjectURL(productImageFiles[0])
+        : PRODUCT_IMAGE_FALLBACK;
 
     const { categories } = usePublicProducts();
     const {
         availableOptions = {},
-        createProduct, updateProduct, uploadProductImage,
-        createOption, uploadSkuImage, updateVariant
+        createProduct, updateProduct,
+        createOption, updateVariant
     } = useProducts();
     const optionKeys = Object.keys(availableOptions);
 
@@ -69,55 +63,44 @@ const ProductCreate = () => {
         queryKey: ['brands'],
         queryFn: async () => {
             const brandRes = await brandService.getAll({ page: 1, size: 1000 });
-            return brandRes.data?.content || [];
+            return brandRes.data?.content ?? [];
         }
     });
 
-    const handleCreateProduct = async ({ name, description, categories, brandId }) => {
+    const handleProductImageUpload = (file) => {
+        if (productImageFiles.length >= MAX_PRODUCT_IMAGES) {
+            notification.warning({ message: t('warning'), description: t('admin_max_images_reached') });
+            return false;
+        }
+        setProductImageFiles(prev => [...prev, file]);
+        return false;
+    };
+
+    const handleRemoveProductImage = (index) => {
+        setProductImageFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleCreateProduct = async ({ name, description, categories: cats, brandId }) => {
         setLoading(true);
         try {
             const res = await createProduct({
-                name,
-                description,
-                productCategories: categories.map(Number),
-                brandId,
-                image: ''
+                data: {
+                    name,
+                    description,
+                    productCategories: cats.map(Number),
+                    brandId,
+                },
+                images: productImageFiles
             });
             setCreatedProductId(res.id);
             notification.success({ message: t('success'), description: t('admin_msg_create_success') });
             setCurrentStep(1);
         } catch (error) {
             if (!error.isGlobalHandled) {
-                notification.error({ 
-                    message: t('error'), 
-                    description: error.response?.data?.message || t('api_error_general') 
+                notification.error({
+                    message: t('error'),
+                    description: error.response?.data?.message ?? t('api_error_general')
                 });
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleUploadProductImage = async () => {
-        if (!createdProductId || !selectedImageFile) { setCurrentStep(2); return; }
-        setLoading(true);
-        try {
-            const uploadRes = await uploadProductImage({ file: selectedImageFile, productId: createdProductId });
-            if (uploadRes.data?.url) {
-                await updateProduct({
-                    id: createdProductId,
-                    name: formValues.name,
-                    description: formValues.description,
-                    productCategories: formValues.categories?.map(Number) || [],
-                    brandId: formValues.brandId,
-                    image: uploadRes.data.url
-                });
-                notification.success({ message: t('success'), description: t('admin_msg_upload_success') });
-            }
-            setCurrentStep(2);
-        } catch (error) {
-            if (!error.isGlobalHandled) {
-                notification.error({ message: t('error'), description: t('admin_error_upload_img') });
             }
         } finally {
             setLoading(false);
@@ -125,7 +108,7 @@ const ProductCreate = () => {
     };
 
     const handleAddOptionType = () => setOptionTypes([...optionTypes, { optionName: '', optionValues: [], isCustomName: false }]);
-    
+
     const handleRemoveOptionType = (index) => {
         setOptionTypes(prev => {
             const newTypes = prev.filter((_, i) => i !== index);
@@ -206,10 +189,17 @@ const ProductCreate = () => {
                 productOptionValues: validOptions
             });
             if (res) {
-                setVariants(res.map(v => ({ ...v, price: 0, stockQuantity: 0, productImageUrl: '', description: '' })));
+                setVariants(res.map(v => ({
+                    ...v,
+                    price: 0,
+                    stockQuantity: 0,
+                    description: '',
+                    newImageFiles: [],
+                    existingImageUrls: v.productImageUrl ?? []
+                })));
             }
             notification.success({ message: t('success'), description: t('admin_msg_options_success') });
-            setCurrentStep(3);
+            setCurrentStep(2);
         } catch (error) {
             if (!error.isGlobalHandled) {
                 notification.error({ message: t('error'), description: t('admin_error_options_save') });
@@ -221,26 +211,45 @@ const ProductCreate = () => {
 
     const handleVariantChange = (id, field, value) => {
         setVariants(prev => prev.map(v => v.id === id ? { ...v, [field]: value } : v));
-    }
+    };
 
-    const handleVariantImageUpload = async (id, file) => {
-        try {
-            notification.open({ message: t('loading'), key: 'skuUpload', icon: <LoadingOutlined className="pc-loading-icon" />, duration: 0 });
-            const res = await uploadSkuImage({ file, skuId: id });
-            handleVariantChange(id, 'productImageUrl', res.url);
-            notification.success({ message: t('success'), key: 'skuUpload' });
-        } catch {
-            notification.destroy('skuUpload');
-        }
+    const handleVariantImageAdd = (id, file) => {
+        setVariants(prev => prev.map(v => {
+            if (v.id !== id) return v;
+            const totalImages = (v.existingImageUrls?.length ?? 0) + (v.newImageFiles?.length ?? 0);
+            if (totalImages >= MAX_VARIANT_IMAGES) {
+                notification.warning({ message: t('warning'), description: t('admin_max_images_reached') });
+                return v;
+            }
+            return { ...v, newImageFiles: [...(v.newImageFiles ?? []), file] };
+        }));
         return false;
+    };
+
+    const handleRemoveVariantNewImage = (variantId, fileIndex) => {
+        setVariants(prev => prev.map(v => {
+            if (v.id !== variantId) return v;
+            return { ...v, newImageFiles: v.newImageFiles.filter((_, i) => i !== fileIndex) };
+        }));
     };
 
     const handleSaveVariants = async () => {
         if (!createdProductId) return;
         setLoading(true);
         try {
-            await Promise.all(variants.map(({ id, productVariantName, price, stockQuantity, productImageUrl, description }) => 
-                updateVariant({ id, productVariantName, price, stockQuantity, productImageUrl, description, status: 'ACTIVE' })
+            await Promise.all(variants.map(({ id, productVariantName, price, stockQuantity, description, newImageFiles, existingImageUrls }) =>
+                updateVariant({
+                    data: {
+                        id,
+                        productVariantName,
+                        price,
+                        stockQuantity,
+                        description,
+                        productImageUrl: existingImageUrls ?? [],
+                        status: 'ACTIVE'
+                    },
+                    images: newImageFiles ?? []
+                })
             ));
             notification.success({ message: t('success'), description: t('admin_msg_variants_success') });
             const slug = generateSlug(variants[0].productVariantName, variants[0].id);
@@ -270,13 +279,21 @@ const ProductCreate = () => {
             .map(opt => selectedOptions[opt.optionName])
             .filter(Boolean);
         return variants.find(v => {
-            if (!v.optionValues || !v.optionValues.length) return false;
+            if (!v.optionValues?.length) return false;
             return selectedValues.every(val => v.optionValues.includes(val));
-        }) || null;
+        }) ?? null;
     }, [variants, selectedOptions, optionTypes]);
 
-    const shownPrice = currentVariant?.price || 0;
-    const variantImage = currentVariant?.productImageUrl ? getImageUrl(currentVariant.productImageUrl) : previewImage;
+    const shownPrice = currentVariant?.price ?? 0;
+
+    const getVariantPreviewImage = () => {
+        if (!currentVariant) return previewImage;
+        if (currentVariant.newImageFiles?.length > 0) return URL.createObjectURL(currentVariant.newImageFiles[0]);
+        if (currentVariant.existingImageUrls?.length > 0) return getImageUrl(currentVariant.existingImageUrls[0]);
+        return previewImage;
+    };
+
+    const variantImage = isPreview ? getVariantPreviewImage() : previewImage;
 
     const renderPreviewOptions = () => {
         const displayOptions = optionTypes.filter(o => o.optionName?.trim() && o.optionValues?.length);
@@ -307,6 +324,35 @@ const ProductCreate = () => {
         );
     };
 
+    const renderImageUploadArea = () => (
+        <div className="pc-multi-upload-area">
+            <div className="pc-upload-thumbnails">
+                {productImageFiles.map((file, idx) => (
+                    <div key={idx} className="pc-upload-thumb-item">
+                        <img src={URL.createObjectURL(file)} alt={`product-${idx}`} />
+                        <button type="button" className="pc-upload-thumb-remove" onClick={() => handleRemoveProductImage(idx)}>
+                            <DeleteOutlined />
+                        </button>
+                    </div>
+                ))}
+                {productImageFiles.length < MAX_PRODUCT_IMAGES && (
+                    <Upload
+                        showUploadList={false}
+                        beforeUpload={handleProductImageUpload}
+                        accept="image/*"
+                        multiple
+                    >
+                        <div className="pc-upload-thumb-add">
+                            <PlusOutlined />
+                            <span>{t('admin_btn_upload')}</span>
+                        </div>
+                    </Upload>
+                )}
+            </div>
+            <p className="pc-upload-hint">{t('admin_upload_images_hint')} ({productImageFiles.length}/{MAX_PRODUCT_IMAGES})</p>
+        </div>
+    );
+
     return (
         <div className="pc-create-container">
             <div className="pc-header-section">
@@ -324,7 +370,7 @@ const ProductCreate = () => {
                     current={currentStep}
                     className="pc-modern-steps"
                     responsive={false}
-                    items={[{ title: t('admin_step_1') }, { title: t('admin_step_2') }, { title: t('admin_step_3') }, { title: t('admin_step_4') }]}
+                    items={[{ title: t('admin_step_1') }, { title: t('admin_step_3') }, { title: t('admin_step_4') }]}
                 />
             </div>
 
@@ -332,37 +378,29 @@ const ProductCreate = () => {
                 <div className="pc-product-top-section">
                     <div className="pc-product-gallery">
                         <div className="pc-thumbnail-list">
-                            <div className="pc-thumb-item active">
-                                <img src={isPreview ? variantImage : previewImage} alt={t('admin_product_image')} />
-                            </div>
+                            {productImageFiles.length > 0 ? productImageFiles.map((file, idx) => (
+                                <div key={idx} className={`pc-thumb-item ${idx === 0 ? 'active' : ''}`}>
+                                    <img src={URL.createObjectURL(file)} alt={`thumb-${idx}`} />
+                                </div>
+                            )) : (
+                                <div className="pc-thumb-item active">
+                                    <img src={PRODUCT_IMAGE_FALLBACK} alt={t('admin_product_image')} />
+                                </div>
+                            )}
                         </div>
                         <div className="pc-main-image">
-                            {currentStep === 1 && !isPreview ? (
-                                <Upload.Dragger
-                                    maxCount={1}
-                                    beforeUpload={(file) => { setSelectedImageFile(file); return false; }}
-                                    showUploadList={false}
-                                    className="pc-upload-dragger"
-                                >
-                                    {selectedImageFile ? (
-                                        <img src={previewImage} alt={t('product')} className="pc-main-img-fit" />
-                                    ) : (
-                                        <div className="pc-upload-placeholder">
-                                            <CloudUploadOutlined className="pc-upload-icon" />
-                                            <p className="pc-upload-text">{t('admin_btn_upload')}</p>
-                                            <p className="pc-upload-subtext">JPG, PNG, WEBP</p>
-                                        </div>
-                                    )}
-                                </Upload.Dragger>
-                            ) : (
-                                <img src={isPreview ? variantImage : previewImage} alt={t('product')} className="pc-main-img-fit" onError={(e) => { e.target.src = fallbackImg }} />
-                            )}
+                            <img
+                                src={isPreview ? variantImage : previewImage}
+                                alt={t('product')}
+                                className="pc-main-img-fit"
+                                onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }}
+                            />
                         </div>
                     </div>
 
                     <div className="pc-product-info-side">
                         <div className="pc-info-header">
-                            <div className="pc-brand-label">{brands.find(b => b.id === formValues.brandId)?.name || ''}</div>
+                            <div className="pc-brand-label">{brands.find(b => b.id === formValues.brandId)?.name ?? ''}</div>
                             <CButton
                                 type={isPreview ? 'primary' : 'outline'}
                                 icon={isPreview ? <EditOutlined /> : <EyeOutlined />}
@@ -377,7 +415,7 @@ const ProductCreate = () => {
                         {isPreview ? (
                             <div className="pc-preview-content">
                                 <h1 className="pc-detail-title">
-                                    {currentVariant ? currentVariant.productVariantName : (formValues.name || t('admin_placeholder_product_name'))}
+                                    {currentVariant ? currentVariant.productVariantName : (formValues.name ? formValues.name : t('admin_placeholder_product_name'))}
                                 </h1>
                                 {formValues.categories?.length > 0 && (
                                     <div className="pc-detail-categories">
@@ -407,10 +445,10 @@ const ProductCreate = () => {
                                         {Object.keys(selectedOptions).length > 0 && (
                                             <div className="admin-pd-selected-variant">
                                                 <span className="admin-pd-variant-label">{t('variant_selected_label')}: </span>
-                                                <strong className="admin-pd-variant-value">{Object.values(selectedOptions).join(' - ') || t('not_selected')}</strong>
+                                                <strong className="admin-pd-variant-value">{Object.values(selectedOptions).join(' - ')}</strong>
                                             </div>
                                         )}
-                                        <div className="admin-pd-stock-info">{t('in_stock_label')} <strong>{currentVariant?.stockQuantity || 0}</strong> {t('items_available')}</div>
+                                        <div className="admin-pd-stock-info">{t('in_stock_label')} <strong>{currentVariant?.stockQuantity ?? 0}</strong> {t('items_available')}</div>
                                     </div>
                                 )}
                             </div>
@@ -440,39 +478,31 @@ const ProductCreate = () => {
                                             </Col>
                                         </Row>
                                         <div className="pc-input-label">{t('admin_label_desc')}</div>
-                                        <Form.Item name="description" className="pc-mb-30">
-                                            <CInput multiline rows={4} placeholder={t('admin_placeholder_desc')} />
+                                        <Form.Item name="description" className="pc-mb-16">
+                                            <CInput multiline rows={3} placeholder={t('admin_placeholder_desc')} />
                                         </Form.Item>
-                                        <CButton type="primary" htmlType="submit" loading={loading} block size="large">{t('admin_btn_create_continue')}</CButton>
+                                        <div className="pc-input-label">{t('admin_product_images')}</div>
+                                        {renderImageUploadArea()}
+                                        <CButton type="primary" htmlType="submit" loading={loading} block size="large" className="pc-mt-10">{t('admin_btn_create_continue')}</CButton>
                                     </Form>
                                 )}
                                 {currentStep === 1 && (
-                                    <div className="pc-step-content">
-                                        <h3 className="pc-step-title">{t('admin_step_2')}</h3>
-                                        <p className="pc-step-desc">{t('admin_label_image')}</p>
-                                        <div className="pc-actions-flex">
-                                            <CButton type="secondary" onClick={() => setCurrentStep(0)} className="pc-flex-1">{t('back')}</CButton>
-                                            <CButton type="primary" onClick={handleUploadProductImage} loading={loading} className="pc-flex-2">{t('admin_btn_upload_continue')}</CButton>
-                                        </div>
-                                    </div>
-                                )}
-                                {currentStep === 2 && (
                                     <div className="pc-step-content">
                                         <h3 className="pc-step-title">{t('admin_step_3')}</h3>
                                         {optionTypes.map((opt, index) => (
                                             <div key={index} className="pc-option-group">
                                                 <div className="pc-option-header">
-                                                    <Select value={opt.isCustomName ? 'OTHER_CUSTOM' : (opt.optionName || undefined)} onChange={(val) => handleOptionSelectChange(index, val)} placeholder={t('admin_placeholder_option_name')} className="pc-opt-select" style={{ flex: 1 }}>
+                                                    <Select value={opt.isCustomName ? 'OTHER_CUSTOM' : (opt.optionName ? opt.optionName : undefined)} onChange={(val) => handleOptionSelectChange(index, val)} placeholder={t('admin_placeholder_option_name')} className="pc-opt-select" style={{ flex: 1 }}>
                                                         {optionKeys.map(k => <Option key={k} value={k} disabled={optionTypes.some((o, i) => i !== index && o.optionName === k)}>{k}</Option>)}
                                                         <Option value="OTHER_CUSTOM" style={{ color: 'var(--color_main)', fontWeight: 600 }}>+ {t('other')}</Option>
                                                     </Select>
                                                     {opt.isCustomName && <CInput value={opt.optionName} onChange={(e) => handleOptionNameChange(index, e.target.value)} placeholder={t('admin_placeholder_option_name_custom')} className="pc-opt-input" style={{ flex: 1 }} />}
                                                     {index > 0 && (
-                                                        <CButton 
-                                                            type="text" 
-                                                            danger 
-                                                            icon={<DeleteOutlined />} 
-                                                            onClick={() => handleRemoveOptionType(index)} 
+                                                        <CButton
+                                                            type="text"
+                                                            danger
+                                                            icon={<DeleteOutlined />}
+                                                            onClick={() => handleRemoveOptionType(index)}
                                                             className="pc-delete-opt-btn"
                                                         />
                                                     )}
@@ -482,25 +512,46 @@ const ProductCreate = () => {
                                         ))}
                                         <CButton type="dashed" onClick={handleAddOptionType} icon={<PlusOutlined />} block className="pc-mt-10">{t('admin_btn_add_option')}</CButton>
                                         <div className="pc-actions-flex pc-mt-48">
-                                            <CButton type="secondary" onClick={() => setCurrentStep(1)} className="pc-flex-1">{t('back')}</CButton>
+                                            <CButton type="secondary" onClick={() => setCurrentStep(0)} className="pc-flex-1">{t('back')}</CButton>
                                             <CButton type="primary" onClick={handleSubmitOptions} loading={loading} className="pc-flex-2">{t('admin_btn_gen_variants')}</CButton>
                                         </div>
                                     </div>
                                 )}
-                                {currentStep === 3 && (
+                                {currentStep === 2 && (
                                     <div className="pc-step-content">
                                         <h3 className="pc-step-title">{t('admin_step_4')}</h3>
                                         <div className="pc-custom-scrollbar">
                                             {variants.map(record => (
                                                 <div key={record.id} className="pc-variant-row">
-                                                    <Upload showUploadList={false} beforeUpload={(file) => handleVariantImageUpload(record.id, file)} className="pc-variant-img-upload">
-                                                        {record.productImageUrl ? <img src={getImageUrl(record.productImageUrl)} alt="v" className="pc-variant-img" /> : <FileImageOutlined className="pc-variant-icon" />}
-                                                    </Upload>
+                                                    <div className="pc-variant-images-section">
+                                                        <div className="pc-variant-thumbs">
+                                                            {(record.existingImageUrls ?? []).map((url, idx) => (
+                                                                <div key={`existing-${idx}`} className="pc-variant-thumb-item">
+                                                                    <img src={getImageUrl(url)} alt={`v-${idx}`} />
+                                                                </div>
+                                                            ))}
+                                                            {(record.newImageFiles ?? []).map((file, idx) => (
+                                                                <div key={`new-${idx}`} className="pc-variant-thumb-item">
+                                                                    <img src={URL.createObjectURL(file)} alt={`v-new-${idx}`} />
+                                                                    <button type="button" className="pc-upload-thumb-remove" onClick={() => handleRemoveVariantNewImage(record.id, idx)}>
+                                                                        <DeleteOutlined />
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                            {((record.existingImageUrls?.length ?? 0) + (record.newImageFiles?.length ?? 0)) < MAX_VARIANT_IMAGES && (
+                                                                <Upload showUploadList={false} beforeUpload={(file) => handleVariantImageAdd(record.id, file)} accept="image/*">
+                                                                    <div className="pc-variant-thumb-add">
+                                                                        <FileImageOutlined />
+                                                                    </div>
+                                                                </Upload>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                     <div className="pc-variant-info-col">
                                                         <span className="pc-variant-name">{record.productVariantName}</span>
                                                         <div className="pc-variant-inputs-grid">
                                                             <div className="pc-variant-input-col">
-                                                                 <div className="pc-variant-input-label">{t('admin_label_price')}</div>
+                                                                <div className="pc-variant-input-label">{t('admin_label_price')}</div>
                                                                 <InputNumber value={record.price} min={0} className="pc-w-100" formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={value => value.replace(/\$\s?|(,*)/g, '')} onChange={(val) => handleVariantChange(record.id, 'price', val)} />
                                                             </div>
                                                             <div className="pc-variant-input-col">
@@ -514,7 +565,7 @@ const ProductCreate = () => {
                                             ))}
                                         </div>
                                         <div className="pc-actions-flex pc-mt-48">
-                                            <CButton type="secondary" onClick={() => setCurrentStep(2)} className="pc-flex-1">{t('back')}</CButton>
+                                            <CButton type="secondary" onClick={() => setCurrentStep(1)} className="pc-flex-1">{t('back')}</CButton>
                                             <CButton type="primary" onClick={handleSaveVariants} loading={loading} className="pc-flex-2"><CheckCircleOutlined /> {t('admin_btn_save_finish')}</CButton>
                                         </div>
                                     </div>

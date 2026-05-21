@@ -28,9 +28,50 @@ export const useProducts = () => {
         queryKey: ['adminProductOptions'],
         queryFn: async () => {
             const response = await productService.getAllOptions();
-            return response.data || {};
+            return response.data;
         },
-        staleTime: 5 * 60 * 1000, 
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const createProductMutation = useMutation({
+        mutationFn: async ({ data, images }) => {
+            const response = await productService.createProduct(data, images);
+            return response.data;
+        },
+        onSuccess: invalidateProducts,
+        onError: (error) => handleMutationError(error, 'create_product'),
+    });
+
+    const updateProductMutation = useMutation({
+        mutationFn: async ({ data, images }) => {
+            const response = await productService.updateProduct(data, images);
+            return response.data;
+        },
+        onSuccess: () => {
+            notification.success({
+                key: 'update_product',
+                message: t('success'),
+                description: t('update_success')
+            });
+            invalidateProducts();
+        },
+        onError: (error) => handleMutationError(error, 'update_product'),
+    });
+
+    const updateVariantMutation = useMutation({
+        mutationFn: async ({ data, images }) => {
+            const response = await productService.updateVariant(data, images);
+            return response.data;
+        },
+        onSuccess: () => {
+            notification.success({
+                key: 'update_variant',
+                message: t('success'),
+                description: t('update_success')
+            });
+            invalidateProducts();
+        },
+        onError: (error) => handleMutationError(error, 'update_variant'),
     });
 
     const deleteVariantMutation = useMutation({
@@ -39,41 +80,14 @@ export const useProducts = () => {
             return response.data;
         },
         onSuccess: () => {
-            notification.success({ 
-                key: 'delete_variant', 
-                message: t('success'), 
-                description: t('delete_success') 
+            notification.success({
+                key: 'delete_variant',
+                message: t('success'),
+                description: t('delete_success')
             });
             invalidateProducts();
         },
         onError: (error) => handleMutationError(error, 'delete_variant'),
-    });
-
-    const createProductMutation = useMutation({
-        mutationFn: async (data) => {
-            const response = await productService.create(data);
-            return response.data;
-        },
-        onSuccess: invalidateProducts,
-        onError: (error) => handleMutationError(error, 'create_product'),
-    });
-
-    const updateProductMutation = useMutation({
-        mutationFn: async ({ id, data }) => {
-            const response = await productService.update(id, data);
-            return response.data;
-        },
-        onSuccess: invalidateProducts,
-        onError: (error) => handleMutationError(error, 'update_product'),
-    });
-
-    const uploadProductImageMutation = useMutation({
-        mutationFn: async ({ file, productId }) => {
-            const response = await productService.uploadProductImage(file, productId);
-            return response.data;
-        },
-        onSuccess: invalidateProducts,
-        onError: (error) => handleMutationError(error, 'upload_image'),
     });
 
     const createOptionMutation = useMutation({
@@ -82,51 +96,23 @@ export const useProducts = () => {
             return response.data;
         },
         onSuccess: () => {
-             queryClient.invalidateQueries({ queryKey: ['adminProductOptions'] });
+            queryClient.invalidateQueries({ queryKey: ['adminProductOptions'] });
         },
         onError: (error) => handleMutationError(error, 'create_option'),
-    });
-
-    const uploadSkuImageMutation = useMutation({
-        mutationFn: async ({ file, skuId }) => {
-            const response = await productService.uploadSkuImage(file, skuId);
-            return response.data;
-        },
-        onError: (error) => handleMutationError(error, 'upload_sku_image'),
-    });
-
-    const updateVariantMutation = useMutation({
-        mutationFn: async (data) => {
-            const response = await productService.updateVariant(data);
-            return response.data;
-        },
-        onSuccess: () => {
-            notification.success({ 
-                key: 'update_variant', 
-                message: t('success'), 
-                description: t('update_success')
-            });
-            invalidateProducts();
-        },
-        onError: (error) => handleMutationError(error, 'update_variant'),
     });
 
     return {
         availableOptions: optionsQuery.data,
         isLoadingOptions: optionsQuery.isLoading,
-        deleteVariant: deleteVariantMutation.mutateAsync,
-        isDeleting: deleteVariantMutation.isPending,
         createProduct: createProductMutation.mutateAsync,
         isCreating: createProductMutation.isPending,
         updateProduct: updateProductMutation.mutateAsync,
         isUpdating: updateProductMutation.isPending,
-        uploadProductImage: uploadProductImageMutation.mutateAsync,
-        isUploadingImage: uploadProductImageMutation.isPending,
-        createOption: createOptionMutation.mutateAsync,
-        isCreatingOption: createOptionMutation.isPending,
-        uploadSkuImage: uploadSkuImageMutation.mutateAsync,
-        isUploadingSkuImage: uploadSkuImageMutation.isPending,
         updateVariant: updateVariantMutation.mutateAsync,
         isUpdatingVariant: updateVariantMutation.isPending,
+        deleteVariant: deleteVariantMutation.mutateAsync,
+        isDeleting: deleteVariantMutation.isPending,
+        createOption: createOptionMutation.mutateAsync,
+        isCreatingOption: createOptionMutation.isPending,
     };
 };

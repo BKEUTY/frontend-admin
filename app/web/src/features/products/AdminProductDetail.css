@@ -558,3 +558,84 @@
     }
 }
 
+.admin-pd-edit-variant-btn {
+    margin-top: 16px;
+    border-radius: 12px;
+    height: 42px;
+    font-weight: 600;
+}
+
+.admin-pd-edit-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-pd-edit-img-item {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.admin-pd-edit-img-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-pd-edit-img-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.admin-pd-edit-img-item:hover .admin-pd-edit-img-remove {
+    opacity: 1;
+}
+
+.admin-pd-edit-img-add {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 20px;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+.admin-pd-edit-img-add:hover {
+    border-color: var(--admin-primary);
+    color: var(--admin-primary);
+    background: #fff5f8;
+}
+
+.admin-pd-edit-form .ant-form-item-label > label {
+    font-weight: 600;
+    color: #334155;
+}
+
+.admin-pd-edit-form .pc-w-100 {
+    width: 100% !important;
+}

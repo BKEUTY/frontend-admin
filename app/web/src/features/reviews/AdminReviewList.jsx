@@ -40,7 +40,7 @@ const AdminReviewList = () => {
 
     const handleReply = (record) => {
         setSelectedReview(record);
-        setReplyComment(record.reply?.comment || '');
+        setReplyComment(record.reply?.comment ?? '');
         setIsReplyModalVisible(true);
     };
 
@@ -113,7 +113,7 @@ const AdminReviewList = () => {
         <div className="admin-list-container">
             <PageWrapper
                 title={t('admin_review_management_title')}
-                subtitle={<Text type="secondary">{t('total')} • <Text strong className="admin-subtitle-count">{reviewsData?.totalElements || 0}</Text> {t('reviews').toLowerCase()}</Text>}
+                subtitle={<Text type="secondary">{t('total')} • <Text strong className="admin-subtitle-count">{reviewsData?.totalElements ?? 0}</Text> {t('reviews').toLowerCase()}</Text>}
                 extra={
                     <div className="admin-header-buttons">
                         <CButton type="secondary" icon={<SyncOutlined />} onClick={() => { setPage(1); refetchReviews(); }} loading={isReviewsLoading}>
@@ -276,9 +276,9 @@ const AdminReviewList = () => {
                 centered
             >
                 <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', alignItems: 'center' }}>
-                    <Avatar size={48} style={{ backgroundColor: 'var(--color_main_title)' }}>{selectedReview?.userName?.charAt(0) || 'U'}</Avatar>
+                    <Avatar size={48} style={{ backgroundColor: 'var(--color_main_title)' }}>{selectedReview?.userName?.charAt(0) ?? 'U'}</Avatar>
                     <div>
-                        <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#0f172a' }}>{selectedReview?.userName || 'User'}</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#0f172a' }}>{selectedReview?.userName ?? 'User'}</div>
                         <Rate disabled defaultValue={selectedReview?.rating} style={{ fontSize: '14px', color: '#f59e0b' }} />
                     </div>
                 </div>
