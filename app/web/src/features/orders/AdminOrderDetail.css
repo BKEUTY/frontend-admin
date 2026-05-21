@@ -460,3 +460,50 @@
         height: 18px !important;
     }
 }
+
+.admin-refund-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.admin-refund-badge.pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.admin-refund-badge.approved {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.admin-refund-badge.rejected {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.admin-refund-badge.completed,
+.admin-refund-badge.delivered {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.admin-refund-badge.refunded {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+}
+
+.admin-refund-badge.refunding {
+    background-color: #e0e7ff;
+    color: #4338ca;
+}
+
+.admin-refund-badge.refund_failed {
+    background-color: #fca5a5;
+    color: #991b1b;
+}

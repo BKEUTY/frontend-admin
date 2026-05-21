@@ -32,7 +32,7 @@ const OrderRefundList = () => {
 
     const page = query.page ? Number(query.page) : 1;
     const pageSize = 10;
-    const status = query.status || 'ALL';
+    const status = query.status ?? 'ALL';
 
     const queryParams = useMemo(() => ({
         page,
@@ -55,23 +55,32 @@ const OrderRefundList = () => {
 
     const handleAction = async (id, action) => {
         try {
-            await updateRefundStatus({ id, action });
+            const updatedOrder = await updateRefundStatus({ id, action });
             if (selectedRefund && selectedRefund.refundOrderId === id) {
-                // Keep the detail modal state synchronized if it's open
-                refetchRefunds().then((res) => {
-                    const freshData = res.data?.content || [];
-                    const updated = freshData.find(item => item.refundOrderId === id);
-                    if (updated) setSelectedRefund(updated);
-                });
+                if (updatedOrder && updatedOrder.refundOrderId === id) {
+                    setSelectedRefund(updatedOrder);
+                } else {
+                    let nextStatus = '';
+                    if (action === 'approve') nextStatus = 'APPROVED';
+                    else if (action === 'reject') nextStatus = 'REJECTED';
+                    else if (action === 'complete') nextStatus = 'DELIVERED';
+                    else if (action === 'process-refund') nextStatus = 'REFUNDING';
+                    
+                    if (nextStatus) {
+                        setSelectedRefund(prev => prev ? { ...prev, status: nextStatus } : null);
+                    }
+                }
             }
+            refetchRefunds();
         } catch (error) {}
     };
 
     const getStatusClass = (statusStr) => {
         const s = statusStr?.toUpperCase();
-        if (s === 'COMPLETED' || s === 'REFUNDED') return 'success';
-        if (s === 'REJECTED') return 'danger';
+        if (['DELIVERED', 'REFUNDED'].includes(s)) return 'success';
+        if (['REJECTED', 'REFUND_FAILED'].includes(s)) return 'danger';
         if (s === 'APPROVED') return 'info';
+        if (s === 'REFUNDING') return 'info';
         return 'warning';
     };
 
@@ -102,7 +111,7 @@ const OrderRefundList = () => {
             width: 200,
             ellipsis: true,
             render: (_, record) => (
-                <span className="admin-table-product-name">{record.userName || ''}</span>
+                <span className="admin-table-product-name">{record.userName ?? ''}</span>
             ),
         },
         {
@@ -121,7 +130,7 @@ const OrderRefundList = () => {
             align: 'right',
             render: (total) => (
                 <span className="admin-current-price" style={{ color: '#e11d48', fontWeight: 700, fontSize: '15px' }}>
-                    {(total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}
+                    {(total ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}
                 </span>
             ),
         },
@@ -140,7 +149,7 @@ const OrderRefundList = () => {
             width: 150,
             align: 'center',
             render: (statusVal) => {
-                const badgeClass = statusVal?.toLowerCase() || 'pending';
+                const badgeClass = statusVal?.toLowerCase() ?? 'pending';
                 return (
                     <span className={`admin-refund-badge ${badgeClass}`}>
                         {t(`refund_status_${statusVal}`)}
@@ -185,7 +194,7 @@ const OrderRefundList = () => {
                             type="secondary"
                             icon={<SyncOutlined />}
                             onClick={() => refetchRefunds()}
-                            loading={isLoading || isUpdating}
+                            loading={isLoading ? true : isUpdating}
                         >
                             {t('refresh')}
                         </CButton>
@@ -212,7 +221,9 @@ const OrderRefundList = () => {
                                     { value: 'PENDING', label: t('refund_status_PENDING') },
                                     { value: 'APPROVED', label: t('refund_status_APPROVED') },
                                     { value: 'REJECTED', label: t('refund_status_REJECTED') },
-                                    { value: 'COMPLETED', label: t('refund_status_COMPLETED') },
+                                    { value: 'DELIVERED', label: t('refund_status_DELIVERED') },
+                                    { value: 'REFUNDING', label: t('refund_status_REFUNDING') },
+                                    { value: 'REFUND_FAILED', label: t('refund_status_REFUND_FAILED') },
                                     { value: 'REFUNDED', label: t('refund_status_REFUNDED') }
                                 ]}
                             />
@@ -263,7 +274,7 @@ const OrderRefundList = () => {
                         <div className="admin-refund-items-summary">
                             <label className="admin-refund-detail-label" style={{ marginBottom: '8px', display: 'block' }}>{t('refund_selected_items')}</label>
                             <div className="admin-refund-summary-list">
-                                {(selectedRefund.items || []).map((item, index) => (
+                                {(selectedRefund.items ?? []).map((item, index) => (
                                     <div key={index} className="admin-refund-summary-item">
                                          <img 
                                              src={item.productImageUrl ? getImageUrl(item.productImageUrl) : PRODUCT_IMAGE_FALLBACK} 
@@ -295,24 +306,24 @@ const OrderRefundList = () => {
                             <div className="admin-refund-detail-group">
                                 <span className="admin-refund-detail-label">{t('admin_refund_order_total')}</span>
                                 <span className="admin-refund-detail-value" style={{ color: '#e11d48', fontWeight: 700 }}>
-                                    {(selectedRefund.total || 0).toLocaleString(locale)}{t('admin_unit_vnd')}
+                                    {(selectedRefund.total ?? 0).toLocaleString(locale)}{t('admin_unit_vnd')}
                                 </span>
                             </div>
 
                             <div className="admin-refund-detail-group">
                                 <span className="admin-refund-detail-label">{t('admin_customer')}</span>
-                                <span className="admin-refund-detail-value" style={{ fontWeight: 600 }}>{selectedRefund.userName || ''}</span>
+                                <span className="admin-refund-detail-value" style={{ fontWeight: 600 }}>{selectedRefund.userName ?? ''}</span>
                             </div>
 
                             <div className="admin-refund-detail-group">
                                 <span className="admin-refund-detail-label">{t('phone')}</span>
-                                <span className="admin-refund-detail-value">{selectedRefund.phoneNumber || ''}</span>
+                                <span className="admin-refund-detail-value">{selectedRefund.phoneNumber ?? ''}</span>
                             </div>
 
                             <div className="admin-refund-detail-group">
                                 <span className="admin-refund-detail-label">{t('admin_refund_order_status')}</span>
                                 <div>
-                                    <span className={`admin-refund-badge ${selectedRefund.status?.toLowerCase() || 'pending'}`} style={{ marginTop: '4px' }}>
+                                    <span className={`admin-refund-badge ${selectedRefund.status?.toLowerCase() ?? 'pending'}`} style={{ marginTop: '4px' }}>
                                         {t(`refund_status_${selectedRefund.status}`)}
                                     </span>
                                 </div>
@@ -328,7 +339,7 @@ const OrderRefundList = () => {
                             <div className="admin-refund-detail-group full-width">
                                 <span className="admin-refund-detail-label">{t('admin_refund_note')}</span>
                                 <span className="admin-refund-detail-value" style={{ whiteSpace: 'pre-wrap', background: '#fff' }}>
-                                    {selectedRefund.note || ''}
+                                    {selectedRefund.note ?? ''}
                                 </span>
                             </div>
 
@@ -350,24 +361,27 @@ const OrderRefundList = () => {
                             )}
                         </div>
 
-                        {/* Modal Action Footer buttons inside modal for fast admin control */}
+                        {selectedRefund.status?.toUpperCase() === 'DELIVERED' && (
+                            <div style={{ backgroundColor: '#fffbeb', color: '#d97706', padding: '10px 14px', borderRadius: '8px', border: '1px solid #fef3c7', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                {t('admin_refund_warning_shipping')}
+                            </div>
+                        )}
                         <div className="admin-refund-action-buttons" style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
                             <Button className="c-button c-button-secondary" onClick={() => setSelectedRefund(null)}>
                                 {t('back')}
                             </Button>
-                            
+
                             {selectedRefund.status?.toUpperCase() === 'PENDING' && (
                                 <>
-                                    <Button 
-                                        className="c-button refund-btn-reject" 
+                                    <Button
+                                        className="c-button refund-btn-reject"
                                         disabled={isUpdating}
                                         onClick={() => handleAction(selectedRefund.refundOrderId, 'reject')}
                                     >
                                         {t('admin_refund_reject')}
                                     </Button>
-                                    
-                                    <Button 
-                                        className="c-button refund-btn-approve" 
+                                    <Button
+                                        className="c-button refund-btn-approve"
                                         disabled={isUpdating}
                                         onClick={() => handleAction(selectedRefund.refundOrderId, 'approve')}
                                     >
@@ -377,8 +391,8 @@ const OrderRefundList = () => {
                             )}
 
                             {selectedRefund.status?.toUpperCase() === 'APPROVED' && (
-                                <Button 
-                                    className="c-button refund-btn-complete" 
+                                <Button
+                                    className="c-button refund-btn-complete"
                                     disabled={isUpdating}
                                     onClick={() => handleAction(selectedRefund.refundOrderId, 'complete')}
                                 >
@@ -386,13 +400,15 @@ const OrderRefundList = () => {
                                 </Button>
                             )}
 
-                            {selectedRefund.status?.toUpperCase() === 'COMPLETED' && (
-                                <Button 
-                                    className="c-button refund-btn-payout" 
-                                    disabled={isUpdating}
+                            {['DELIVERED', 'REFUNDING', 'REFUNDED', 'REFUND_FAILED'].includes(selectedRefund.status?.toUpperCase()) && (
+                                <Button
+                                    className="c-button refund-btn-payout"
+                                    disabled={isUpdating || ['REFUNDING', 'REFUNDED', 'REFUND_FAILED'].includes(selectedRefund.status?.toUpperCase())}
                                     onClick={() => handleAction(selectedRefund.refundOrderId, 'process-refund')}
                                 >
-                                    {t('admin_refund_process_payout')}
+                                    {selectedRefund.status?.toUpperCase() === 'DELIVERED'
+                                        ? t('admin_refund_process_payout')
+                                        : t(`refund_status_${selectedRefund.status?.toUpperCase()}`)}
                                 </Button>
                             )}
                         </div>

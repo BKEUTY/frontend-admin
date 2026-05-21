@@ -127,7 +127,8 @@
     color: #dc2626;
 }
 
-.admin-refund-badge.completed {
+.admin-refund-badge.completed,
+.admin-refund-badge.delivered {
     background-color: #d1fae5;
     color: #059669;
 }
@@ -135,6 +136,16 @@
 .admin-refund-badge.refunded {
     background-color: #f3e8ff;
     color: #7c3aed;
+}
+
+.admin-refund-badge.refunding {
+    background-color: #e0e7ff;
+    color: #4338ca;
+}
+
+.admin-refund-badge.refund_failed {
+    background-color: #fca5a5;
+    color: #991b1b;
 }
 
 .admin-refund-detail-modal-luxury .ant-modal-content {
@@ -205,6 +216,20 @@
 
 .refund-btn-payout:hover {
     background: #6d28d9 !important;
+}
+
+.refund-btn-payout:disabled,
+.refund-btn-payout[disabled],
+.refund-btn-payout.ant-btn-disabled,
+.refund-btn-payout.ant-btn-disabled:hover,
+.refund-btn-payout.ant-btn-disabled:active,
+.refund-btn-payout.ant-btn-disabled:focus {
+    background: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    border: 1px solid #cbd5e1 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* Responsive media queries for Admin Refund UI */
