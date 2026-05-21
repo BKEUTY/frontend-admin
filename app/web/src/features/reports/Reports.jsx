@@ -30,7 +30,7 @@ const ReportBarChart = ({ data, t }) => {
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} dy={10} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                 <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: 16, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                <Bar dataKey="revenue" radius={[4, 4, 0, 0]} barSize={40}>
+                <Bar dataKey="revenue" name={t('revenue')} radius={[4, 4, 0, 0]} barSize={40}>
                     {(data || []).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
@@ -127,11 +127,25 @@ const Reports = () => {
                     const keys = Object.keys(data[0]);
                     const sumRow = {};
                     const avgRow = {};
+                    const statusKey = t('admin_refund_order_status');
+                    
+                    const parseNumber = (val) => {
+                        if (val === null || val === undefined || val === '-') return 0;
+                        if (typeof val === 'number') return val;
+                        const clean = String(val).replace(/[^0-9.-]/g, '');
+                        const num = Number(clean);
+                        return isNaN(num) ? 0 : num;
+                    };
+                    const normalRows = data.filter(r => {
+                        const statusVal = r[statusKey];
+                        if (statusVal === undefined) return true;
+                        return statusVal === t('refund_status_EXCEL_NORMAL');
+                    });
                     keys.forEach(k => {
                         if (numericKeys.includes(k)) {
-                            const vals = data.map(r => Number(r[k] || 0));
-                            sumRow[k] = vals.reduce((a, b) => a + b, 0);
-                            avgRow[k] = Math.round(sumRow[k] / (data.length || 1));
+                            const sumVal = normalRows.map(r => parseNumber(r[k])).reduce((a, b) => a + b, 0);
+                            sumRow[k] = sumVal;
+                            avgRow[k] = Math.round(sumVal / (normalRows.length || 1));
                         } else if (k === keys[0]) {
                             sumRow[k] = t('admin_total_label');
                             avgRow[k] = t('admin_average_label');
@@ -193,7 +207,8 @@ const Reports = () => {
                         const subtotalVal = Number(o.subtotal || 0);
                         const voucherVal = Number(o.voucherDiscount || 0);
                         const shipVal = Number(o.shippingFee || 0);
-                        const finalTotal = Number(o.total || 0) + shipVal;
+                        const refundVal = Number(o.refundAmount || 0);
+                        const finalTotal = Number(o.total || 0) + shipVal - refundVal;
                         
                         return {
                             [`${t('admin_order_id')}`]: o.id || '-',
@@ -203,74 +218,81 @@ const Reports = () => {
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: subtotalVal,
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherVal > 0 ? `-${voucherVal}` : 0,
                             [`${t('shipping_fee')} (${t('admin_unit_vnd')})`]: shipVal,
+                            [`${t('refund_price')} (${t('admin_unit_vnd')})`]: refundVal > 0 ? `-${refundVal}` : 0,
                             [`${t('grand_total')} (${t('admin_unit_vnd')})`]: finalTotal
                         };
                     },
                     productTransaction: (d) => {
                         if (!d) return {};
-                        const qty = d.quantity || 1;
-                        const orig = d.originalPrice;
+                        const isRefunded = Boolean(d.isRefunded);
+                        const qty = d.quantity ?? 1;
+                        const orig = d.originalPrice ?? 0;
                         const promo = d.promotionalPrice ? d.promotionalPrice : orig;
                         const effective = promo < orig ? promo : orig;
                         const voucherPerUnit = d.voucherDiscount ? Math.round(d.voucherDiscount / qty) : 0;
                         const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
-                            [`${t('admin_variant_id')}`]: d.variantId || '-',
-                            [`${t('admin_product_name')}`]: d.name || '-',
+                            [`${t('admin_variant_id')}`]: d.variantId ?? '-',
+                            [`${t('admin_product_name')}`]: d.name ?? '-',
+                            [`${t('admin_refund_order_status')}`]: isRefunded ? t('refund_status_EXCEL_REFUNDED') : t('refund_status_EXCEL_NORMAL'),
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
                             [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
-                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue,
-                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue ?? 0,
+                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit ?? 0
                         };
                     },
                     brandTransaction: (d) => {
                         if (!d) return {};
-                        const qty = d.quantity || 1;
-                        const orig = d.originalPrice;
+                        const isRefunded = Boolean(d.isRefunded);
+                        const qty = d.quantity ?? 1;
+                        const orig = d.originalPrice ?? 0;
                         const promo = d.promotionalPrice ? d.promotionalPrice : orig;
                         const effective = promo < orig ? promo : orig;
                         const voucherPerUnit = d.voucherDiscount ? Math.round(d.voucherDiscount / qty) : 0;
                         const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
-                            [`${t('admin_col_brand_id')}`]: d.entityId || '-',
-                            [`${t('admin_col_brand_name')}`]: d.entityName || '-',
-                            [`${t('admin_variant_id')}`]: d.productId || '-',
-                            [`${t('admin_product_name')}`]: d.productVariantName || '-',
+                            [`${t('admin_col_brand_id')}`]: d.entityId ?? '-',
+                            [`${t('admin_col_brand_name')}`]: d.entityName ?? '-',
+                            [`${t('admin_variant_id')}`]: d.productId ?? '-',
+                            [`${t('admin_product_name')}`]: d.productVariantName ?? '-',
+                            [`${t('admin_refund_order_status')}`]: isRefunded ? t('refund_status_EXCEL_REFUNDED') : t('refund_status_EXCEL_NORMAL'),
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
                             [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
-                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue,
-                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue ?? 0,
+                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit ?? 0
                         };
                     },
                     categoryTransaction: (d) => {
                         if (!d) return {};
-                        const qty = d.quantity || 1;
-                        const orig = d.originalPrice;
+                        const isRefunded = Boolean(d.isRefunded);
+                        const qty = d.quantity ?? 1;
+                        const orig = d.originalPrice ?? 0;
                         const promo = d.promotionalPrice ? d.promotionalPrice : orig;
                         const effective = promo < orig ? promo : orig;
                         const voucherPerUnit = d.voucherDiscount ? Math.round(d.voucherDiscount / qty) : 0;
                         const finalUnit = effective - voucherPerUnit;
                         return {
                             [`${t('admin_col_time')}`]: d.date ? dayjs(d.date).format('YYYY-MM-DD HH:mm:ss') : '-',
-                            [`${t('admin_col_category_id')}`]: d.entityId || '-',
-                            [`${t('admin_col_category_name')}`]: d.entityName || '-',
-                            [`${t('admin_variant_id')}`]: d.productId || '-',
-                            [`${t('admin_product_name')}`]: d.productVariantName || '-',
+                            [`${t('admin_col_category_id')}`]: d.entityId ?? '-',
+                            [`${t('admin_col_category_name')}`]: d.entityName ?? '-',
+                            [`${t('admin_variant_id')}`]: d.productId ?? '-',
+                            [`${t('admin_product_name')}`]: d.productVariantName ?? '-',
+                            [`${t('admin_refund_order_status')}`]: isRefunded ? t('refund_status_EXCEL_REFUNDED') : t('refund_status_EXCEL_NORMAL'),
                             [`${t('admin_col_quantity')} (${t('admin_unit_product')})`]: d.quantity,
                             [`${t('original_price')} (${t('admin_unit_vnd')})`]: orig,
                             [`${t('promo_price')} (${t('admin_unit_vnd')})`]: promo < orig ? promo : '-',
                             [`${t('voucher')} (${t('admin_unit_vnd')})`]: voucherPerUnit ? `-${voucherPerUnit}` : '-',
                             [`${t('final_price')} (${t('admin_unit_vnd')})`]: finalUnit,
-                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue,
-                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit
+                            [`${t('admin_col_revenue')} (${t('admin_unit_vnd')})`]: d.revenue ?? 0,
+                            [`${t('admin_col_profit')} (${t('admin_unit_vnd')})`]: d.profit ?? 0
                         };
                     }
                 };
@@ -297,6 +319,7 @@ const Reports = () => {
                 const colOriginal = `${t('original_price')} (${vnd})`;
                 const colPromo = `${t('promo_price')} (${vnd})`;
                 const colVoucher = `${t('voucher')} (${vnd})`;
+                const colRefund = `${t('refund_price')} (${vnd})`;
                 const colSubtotal = `${t('subtotal')} (${vnd})`;
                 const colGrandTotal = `${t('grand_total')} (${vnd})`;
 
@@ -314,7 +337,7 @@ const Reports = () => {
                     XLSX.utils.book_append_sheet(wb, buildSheet(catsData, [colQty, colRev]), sanitizeSheetName(t('admin_sheet_categories')));
 
                     const invoiceData = (reportData.recentOrders ?? []).map(mappers.invoiceDetail);
-                    XLSX.utils.book_append_sheet(wb, buildSheet(invoiceData, [colOriginal, colPromo, colVoucher, colShip, colGrandTotal]), sanitizeSheetName(t('admin_sheet_daily_summary')));
+                    XLSX.utils.book_append_sheet(wb, buildSheet(invoiceData, [colOriginal, colPromo, colVoucher, colShip, colRefund, colGrandTotal]), sanitizeSheetName(t('admin_sheet_daily_summary')));
 
                     if (reportData.productDetail?.length) {
                         const d = reportData.productDetail.map(mappers.productTransaction);
