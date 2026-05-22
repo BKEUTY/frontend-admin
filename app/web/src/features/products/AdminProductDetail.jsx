@@ -5,7 +5,7 @@ import ReviewList from '@/features/reviews/ReviewList';
 import { useQuery } from '@tanstack/react-query';
 import brandService from '@/features/brands/services/brandService';
 import NotFound from '@/pages/error/NotFound';
-import { getImageUrl } from '@/services/axiosClient';
+import { getImageUrl, getOptimizedImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug, getIdFromSlug, PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
 import { DeleteOutlined, EditOutlined, PlusOutlined, StarFilled } from '@ant-design/icons';
@@ -335,13 +335,13 @@ export default function AdminProductDetail() {
                                 onClick={() => setMainImage(img)}
                                 type="button"
                             >
-                                <img src={img} alt={`Thumb ${idx}`} width="80" height="80" loading="lazy" onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} />
+                                <img src={getOptimizedImageUrl(img, 256)} alt={`Thumb ${idx}`} width="80" height="80" loading="lazy" onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} />
                             </button>
                         ))}
                     </div>
                     <div className="admin-pd-main-image">
                         <img
-                            src={mainImage}
+                            src={getOptimizedImageUrl(mainImage, 1080)}
                             alt={displayName}
                             onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }}
                             width="450"
@@ -546,7 +546,7 @@ export default function AdminProductDetail() {
                             <div className="admin-pd-edit-images">
                                 {editVariantImages.map((url, idx) => (
                                     <div key={`existing-${idx}`} className="admin-pd-edit-img-item">
-                                        <img src={getImageUrl(url)} alt={`img-${idx}`} />
+                                        <img src={getOptimizedImageUrl(url, 256)} alt={`img-${idx}`} />
                                         <button type="button" className="admin-pd-edit-img-remove" onClick={() => handleEditVariantRemoveExisting(idx)}>
                                             <DeleteOutlined />
                                         </button>
@@ -613,7 +613,7 @@ export default function AdminProductDetail() {
                             <div className="admin-pd-edit-images">
                                 {editProductImages.map((url, idx) => (
                                     <div key={`existing-${idx}`} className="admin-pd-edit-img-item">
-                                        <img src={getImageUrl(url)} alt={`img-${idx}`} />
+                                        <img src={getOptimizedImageUrl(url, 256)} alt={`img-${idx}`} />
                                         <button type="button" className="admin-pd-edit-img-remove" onClick={() => handleEditProductRemoveExisting(idx)}>
                                             <DeleteOutlined />
                                         </button>

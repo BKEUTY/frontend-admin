@@ -200,4 +200,15 @@ export const getImageUrl = (imagePath) => {
     return `${SERVER_URL}${imagePath.startsWith('/') ? imagePath : `/${imagePath}`}`;
 };
 
+export const getOptimizedImageUrl = (url, width = 384, quality = 75) => {
+    if (!url) return null;
+    const resolvedUrl = getImageUrl(url);
+    if (!resolvedUrl) return null;
+    const isProduction = import.meta.env.PROD;
+    if (isProduction && resolvedUrl.includes('bkeuty-bucket.s3')) {
+        return `/_vercel/image?url=${encodeURIComponent(resolvedUrl)}&w=${width}&q=${quality}`;
+    }
+    return resolvedUrl;
+};
+
 export default axiosClient;

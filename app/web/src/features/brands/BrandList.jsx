@@ -3,7 +3,7 @@ import { CButton, EmptyState, PageWrapper, Pagination } from '@/components/commo
 import { useBrands, useCreateBrand, useDeleteBrand, useUpdateBrand } from '@/features/brands/hooks/useBrands';
 import { useDebounce } from '@/hooks/useDebounce';
 import useQueryParams from '@/hooks/useQueryParams';
-import { getImageUrl } from '@/services/axiosClient';
+import { getImageUrl, getOptimizedImageUrl } from '@/services/axiosClient';
 import { useAuth } from '@/store/AuthContext';
 import { useLanguage } from '@/store/LanguageContext';
 import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, SortAscendingOutlined, SyncOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
@@ -149,7 +149,7 @@ const BrandList = () => {
             align: 'center',
             render: (src) => (
                 <div className="admin-table-image-wrapper">
-                    {src ? <img src={getImageUrl(src)} alt="brand" className="admin-table-image" width="60" height="60" loading="lazy" />
+                    {src ? <img src={getOptimizedImageUrl(src, 256)} alt="brand" className="admin-table-image" width="60" height="60" loading="lazy" />
                         : <div style={{ background: '#f1f5f9', width: '100%', height: '100%' }}></div>}
                 </div>
             )

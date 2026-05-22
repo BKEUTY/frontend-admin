@@ -18,7 +18,7 @@ import { useAdminRefunds, useUpdateRefundStatus } from '@/features/orders/hooks/
 import { EmptyState, PageWrapper, CButton, Pagination } from '@/components/common';
 import useQueryParams from '@/hooks/useQueryParams';
 import { PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
-import { getImageUrl } from '@/services/axiosClient';
+import { getImageUrl, getOptimizedImageUrl } from '@/services/axiosClient';
 import '@/admin-list.css';
 import './OrderRefundList.css';
 
@@ -277,7 +277,7 @@ const OrderRefundList = () => {
                                 {(selectedRefund.items ?? []).map((item, index) => (
                                     <div key={index} className="admin-refund-summary-item">
                                          <img 
-                                             src={item.productImageUrl ? getImageUrl(item.productImageUrl) : PRODUCT_IMAGE_FALLBACK} 
+                                             src={item.productImageUrl ? getOptimizedImageUrl(item.productImageUrl, 256) : PRODUCT_IMAGE_FALLBACK} 
                                              alt={item.productVariantName} 
                                              onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }}
                                          />
@@ -350,7 +350,7 @@ const OrderRefundList = () => {
                                         {selectedRefund.evidenceImageUrls.map((imgUrl, i) => (
                                             <img 
                                                 key={i} 
-                                                src={imgUrl} 
+                                                src={getOptimizedImageUrl(imgUrl, 256)} 
                                                 alt="evidence" 
                                                 className="admin-refund-evidence-thumb" 
                                                 onClick={() => setPreviewImage(imgUrl)}
@@ -425,7 +425,7 @@ const OrderRefundList = () => {
             >
                 {previewImage && (
                     <img 
-                        src={previewImage} 
+                        src={getOptimizedImageUrl(previewImage, 1080)} 
                         alt="evidence preview" 
                         style={{ width: '100%', height: 'auto', borderRadius: '8px' }} 
                     />

@@ -4,7 +4,7 @@ import OrderProgress from '@/features/orders/components/OrderProgress';
 import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug, PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
-import { getImageUrl } from '@/services/axiosClient';
+import { getImageUrl, getOptimizedImageUrl } from '@/services/axiosClient';
 import generateInvoice from '@/utils/InvoiceService';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Card, Col, Descriptions, Row, Select, Table, Tag, Typography } from 'antd';
@@ -98,7 +98,7 @@ export default function AdminOrderDetail() {
             render: (text, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <img
-                        src={record.productVariantImage ? getImageUrl(record.productVariantImage) : PRODUCT_IMAGE_FALLBACK}
+                        src={record.productVariantImage ? getOptimizedImageUrl(record.productVariantImage, 256) : PRODUCT_IMAGE_FALLBACK}
                         alt="product"
                         style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }}
                         onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }}

@@ -5,6 +5,7 @@ import { useLanguage } from '@/store/LanguageContext';
 import { useNotification } from '@/store/NotificationContext';
 import { useReviews } from '@/features/reviews/hooks/useReviews';
 import { Pagination, CButton } from '@/components/common';
+import { getOptimizedImageUrl } from '@/services/axiosClient';
 import '@/admin-list.css';
 import './ReviewList.css';
 
@@ -265,7 +266,7 @@ const ReviewList = ({ variantId }) => {
                                                     {rev.images?.length > 0 && (
                                                         <div className="admin-pr-image-gallery">
                                                             {rev.images.filter(img => img && img.trim() !== "").map((img, idx) => (
-                                                                <img key={idx} src={img} alt="review" className="admin-pr-review-img" onClick={() => window.open(img, '_blank')} />
+                                                                <img key={idx} src={getOptimizedImageUrl(img, 256)} alt="review" className="admin-pr-review-img" onClick={() => window.open(img, '_blank')} />
                                                             ))}
                                                         </div>
                                                     )}

@@ -1,6 +1,12 @@
 {
     "buildCommand": "npm run build",
     "outputDirectory": "build",
+    "images": {
+        "sizes": [256, 384, 512, 640, 750, 828, 1080],
+        "domains": ["bkeuty-bucket.s3.us-east-1.amazonaws.com"],
+        "minimumCacheTTL": 31536000,
+        "formats": ["image/avif", "image/webp"]
+    },
     "rewrites": [
         {
             "source": "/(.*)",

@@ -13,7 +13,7 @@ import { Col, Form, InputNumber, Row, Select, Space, Steps, Upload, notification
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import brandService from '@/features/brands/services/brandService';
-import { getImageUrl } from '@/services/axiosClient';
+import { getImageUrl, getOptimizedImageUrl } from '@/services/axiosClient';
 import { CButton, CInput } from '@/components/common';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { usePublicProducts } from '@/features/products/hooks/usePublicProducts';
@@ -289,7 +289,7 @@ const ProductCreate = () => {
     const getVariantPreviewImage = () => {
         if (!currentVariant) return previewImage;
         if (currentVariant.newImageFiles?.length > 0) return URL.createObjectURL(currentVariant.newImageFiles[0]);
-        if (currentVariant.existingImageUrls?.length > 0) return getImageUrl(currentVariant.existingImageUrls[0]);
+        if (currentVariant.existingImageUrls?.length > 0) return getOptimizedImageUrl(currentVariant.existingImageUrls[0], 1080);
         return previewImage;
     };
 
@@ -527,7 +527,7 @@ const ProductCreate = () => {
                                                         <div className="pc-variant-thumbs">
                                                             {(record.existingImageUrls ?? []).map((url, idx) => (
                                                                 <div key={`existing-${idx}`} className="pc-variant-thumb-item">
-                                                                    <img src={getImageUrl(url)} alt={`v-${idx}`} />
+                                                                    <img src={getOptimizedImageUrl(url, 256)} alt={`v-${idx}`} />
                                                                 </div>
                                                             ))}
                                                             {(record.newImageFiles ?? []).map((file, idx) => (

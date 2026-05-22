@@ -3,7 +3,7 @@ import { useProducts } from '@/features/products/hooks/useProducts';
 import { usePublicProducts } from '@/features/products/hooks/usePublicProducts';
 import { useDebounce } from '@/hooks/useDebounce';
 import useQueryParams from '@/hooks/useQueryParams';
-import { getImageUrl } from '@/services/axiosClient';
+import { getImageUrl, getOptimizedImageUrl } from '@/services/axiosClient';
 import { useLanguage } from '@/store/LanguageContext';
 import { generateSlug, PRODUCT_IMAGE_FALLBACK } from '@/utils/helpers';
 import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusOutlined, StarFilled, SyncOutlined, FilterOutlined, SortAscendingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
@@ -252,7 +252,7 @@ const ProductList = () => {
             width: 80,
             align: 'center',
             render: (src) => {
-                const imageSrc = src ? getImageUrl(src) : PRODUCT_IMAGE_FALLBACK;
+                const imageSrc = src ? getOptimizedImageUrl(src, 256) : PRODUCT_IMAGE_FALLBACK;
                 return (
                     <div className="admin-table-image-wrapper">
                         <img src={imageSrc} alt="product" className="admin-table-image" onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} width="60" height="60" loading="lazy" />
@@ -623,7 +623,7 @@ const ProductList = () => {
                         <div className="admin-pd-edit-images">
                             {editVariantImages.map((url, idx) => (
                                 <div key={`existing-${idx}`} className="admin-pd-edit-img-item">
-                                    <img src={getImageUrl(url)} alt={`img-${idx}`} onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} />
+                                    <img src={getOptimizedImageUrl(url, 256)} alt={`img-${idx}`} onError={(e) => { e.target.src = PRODUCT_IMAGE_FALLBACK; }} />
                                     <button type="button" className="admin-pd-edit-img-remove" onClick={() => handleEditVariantRemoveExisting(idx)}>
                                         <DeleteOutlined />
                                     </button>
