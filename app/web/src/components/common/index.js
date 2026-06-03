@@ -11,3 +11,4 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as StatsCard } from './StatsCard';
 export { default as LazyImage } from './LazyImage';
 export { default as ScrollToTop } from './ScrollToTop';
+export { default as AnimatedPage } from './AnimatedPage';

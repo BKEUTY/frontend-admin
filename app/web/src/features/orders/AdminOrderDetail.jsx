@@ -1,4 +1,4 @@
-import { CButton, PageWrapper, Skeleton } from '@/components/common';
+import { CButton, PageWrapper, Skeleton, AnimatedPage } from '@/components/common';
 import MembershipTag from '@/components/admin/MembershipTag';
 import OrderProgress from '@/features/orders/components/OrderProgress';
 import { useOrderDetail, useUpdateOrderStatus } from '@/features/orders/hooks/useOrders';
@@ -224,23 +224,44 @@ export default function AdminOrderDetail() {
     const grandTotal = subtotal - voucherDiscount + shippingFee;
 
     return (
-        <PageWrapper noCard>
-            <div className="admin-pd-breadcrumb">
-                <Link to="/admin/orders">{t('admin_home_orders_title')}</Link>
-                <span className="admin-pd-divider">/</span>
-                <span className="admin-pd-current">{t('invoice_order')} #{id}</span>
-            </div>
+        <AnimatedPage>
+            <PageWrapper noCard>
+                <div className="admin-pd-breadcrumb">
+                    <Link 
+                        to="/admin/orders"
+                        onClick={(e) => {
+                            if (window.history.length > 1) {
+                                e.preventDefault();
+                                navigate(-1);
+                            }
+                        }}
+                    >
+                        {t('admin_home_orders_title')}
+                    </Link>
+                    <span className="admin-pd-divider">/</span>
+                    <span className="admin-pd-current">{t('invoice_order')} #{id}</span>
+                </div>
 
-            <Row justify="space-between" align="middle" className="admin-mb30">
-                <Col>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <CButton type="outline" icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/orders')} />
-                        <Title level={4} style={{ margin: 0, color: 'var(--admin-text-main)' }}>{t('order_detail')} #{orderDetail.orderId || id}</Title>
-                        <Tag color="cyan" style={{ padding: '6px 12px', fontSize: '14px', borderRadius: '8px', fontWeight: 600 }}>
-                            {orderDetail.paymentMethod}
-                        </Tag>
-                    </div>
-                </Col>
+                <Row justify="space-between" align="middle" className="admin-mb30">
+                    <Col>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <CButton 
+                                type="outline" 
+                                icon={<ArrowLeftOutlined />} 
+                                onClick={() => {
+                                    if (window.history.length > 1) {
+                                        navigate(-1);
+                                    } else {
+                                        navigate('/admin/orders');
+                                    }
+                                }} 
+                            />
+                            <Title level={4} style={{ margin: 0, color: 'var(--admin-text-main)' }}>{t('order_detail')} #{orderDetail.orderId || id}</Title>
+                            <Tag color="cyan" style={{ padding: '6px 12px', fontSize: '14px', borderRadius: '8px', fontWeight: 600 }}>
+                                {orderDetail.paymentMethod}
+                            </Tag>
+                        </div>
+                    </Col>
                 <Col>
                     <button
                         className="admin-btn-download"
@@ -387,5 +408,6 @@ export default function AdminOrderDetail() {
                 </Col>
             </Row>
         </PageWrapper>
+        </AnimatedPage>
     );
 }

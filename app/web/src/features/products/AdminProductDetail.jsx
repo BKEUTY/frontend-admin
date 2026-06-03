@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/common";
+import { Skeleton, AnimatedPage } from "@/components/common";
 import publicProductService from '@/features/products/services/publicProductService';
 import productService from '@/features/products/services/productService';
 import ReviewList from '@/features/reviews/ReviewList';
@@ -318,12 +318,24 @@ export default function AdminProductDetail() {
     const currentVariant = productData.variants?.find(v => v.id === productData.id);
 
     return (
-        <div className="admin-pd-page">
-            <div className="admin-pd-breadcrumb">
-                <Link to={'/admin/products'} state={{ fromDetail: true }}>{t('admin_home_products_title')}</Link>
-                <span className="admin-pd-divider">/</span>
-                <span className="admin-pd-current">{displayName}</span>
-            </div>
+        <AnimatedPage>
+            <div className="admin-pd-page">
+                <div className="admin-pd-breadcrumb">
+                    <Link 
+                        to="/admin/products" 
+                        state={{ fromDetail: true }}
+                        onClick={(e) => {
+                            if (window.history.length > 1) {
+                                e.preventDefault();
+                                navigate(-1);
+                            }
+                        }}
+                    >
+                        {t('admin_home_products_title')}
+                    </Link>
+                    <span className="admin-pd-divider">/</span>
+                    <span className="admin-pd-current">{displayName}</span>
+                </div>
 
             <div className="admin-pd-top-section">
                 <div className="admin-pd-gallery">
@@ -647,5 +659,6 @@ export default function AdminProductDetail() {
                 )}
             </Modal>
         </div>
+        </AnimatedPage>
     );
 }
