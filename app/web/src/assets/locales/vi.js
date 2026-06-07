@@ -50,6 +50,7 @@ export default {
     promo_price: "Giá khuyến mãi",
     voucher: "Voucher",
     final_price: "Giá cuối",
+    refund_price: "Số tiền hoàn",
     quantity: "Số lượng",
     revenue: "Doanh thu",
     profit: "Lợi nhuận",

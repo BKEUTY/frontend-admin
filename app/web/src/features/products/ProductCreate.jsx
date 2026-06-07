@@ -97,9 +97,19 @@ const ProductCreate = () => {
             setCurrentStep(1);
         } catch (error) {
             if (!error.isGlobalHandled) {
+                const status = error.response?.status;
+                let description = '';
+                if (status >= 500) {
+                    description = t('error_500') || 'Internal Server Error';
+                } else if (error.message === 'Network Error' || !error.response) {
+                    description = t('api_error_network') || 'Network Error';
+                } else {
+                    description = error.response?.data?.message ?? t('api_error_general');
+                }
+
                 notification.error({
                     message: t('error'),
-                    description: error.response?.data?.message ?? t('api_error_general')
+                    description: description
                 });
             }
         } finally {

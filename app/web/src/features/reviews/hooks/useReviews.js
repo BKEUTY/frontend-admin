@@ -11,10 +11,22 @@ export const useReviews = (page, pageSize, selectedVariantId, ratingFilter, hasI
     const handleMutationError = (error, actionKey) => {
         if (!error?.isGlobalHandled) {
             const status = error.response?.status;
+            let description = '';
+            
+            if (status >= 500) {
+                description = t('error_500') || 'Internal Server Error';
+            } else if (error.message === 'Network Error' || !error.response) {
+                description = t('api_error_network') || 'Network Error';
+            } else if (status === 403 || status === 400) {
+                description = t('review_not_eligible_msg') || t('api_error_general');
+            } else {
+                description = error.response?.data?.message || error.response?.data?.error || t('api_error_general');
+            }
+
             notification.error({
                 key: actionKey,
-                message: t('error'),
-                description: (status === 403 || status === 400) ? t('review_not_eligible_msg') : (error.response?.data?.message || t('api_error_general'))
+                message: t('error') || 'Error',
+                description: description
             });
         }
     };
